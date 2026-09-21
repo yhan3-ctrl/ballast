@@ -26,6 +26,8 @@ Export presets are included for Windows x86_64, Windows x86_32, Linux x86_64, an
 
 Build checks and SHA-256 values are recorded in `docs/BUILD-VERIFICATION.md`.
 
-The current prototype uses original procedural graphics and original generated placeholder event sounds. No third-party art or audio is included.
+The current prototype uses original procedural graphics, original generated event sounds and original music. No third-party art or audio is included.
+
+The original 48-second looping underwater theme and event sounds can be regenerated with `python3 tools/generate_audio.py`; the script and note sequence are kept in the repository as asset provenance.
 
 Status: playable prototype. Automated checks and package creation do not count as human playtesting or validation on the destination operating systems.

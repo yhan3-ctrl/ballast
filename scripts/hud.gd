@@ -25,7 +25,7 @@ func _draw() -> void:
 		text(Vector2(82, 272), "BALLAST", 96)
 		text(Vector2(90, 329), "Every breath moves you. Every light changes things.", 21, MUTED)
 		text(Vector2(90, 440), "Recover the eggs. Read the currents. Spend your air wisely.", 18)
-		text(Vector2(90, 482), "W / S   Rise & sink      A / D   Swim      SPACE   Lantern", 17, MUTED)
+		text(Vector2(90, 482), "HOLD W / S   Rise & sink      HOLD A / D   Swim      SPACE   Lantern", 17, MUTED)
 		draw_rect(Rect2(88, 541, 340, 61), Color("183e47"))
 		text(Vector2(112, 580), "ENTER   BEGIN THE DESCENT", 19)
 		text(Vector2(90, 651), "T   Test dive / controls & light lab", 17, GOLD)
@@ -47,9 +47,18 @@ func _draw() -> void:
 	text(Vector2(780, 63), "ANCHOR %02d" % (world.active_checkpoint + 1), 14)
 	text(Vector2(1080, 36), "%02d:%02d" % [int(world.elapsed) / 60, int(world.elapsed) % 60], 22)
 	text(Vector2(1080, 64), "RETRIES %02d" % world.deaths, 12, MUTED)
+	text(Vector2(780, 87), "PEARLS %02d/%02d    SCORE %05d" % [world.collected_pearls, world.total_pearls, world.score], 13, GOLD)
 	draw_rect(Rect2(0, 758, 1280, 42), Color("071923"))
 	text(Vector2(35, 784), "W/S  Rise / sink     A/D  Swim     SPACE  Light     R  Retry     ESC  Pause", 14, MUTED)
 	text(Vector2(1090, 784), "F1  Diagnostics", 13, MUTED)
+	if world.combo > 1 and world.combo_left > 0:
+		var scale := 1.0 + minf(world.combo_left, 0.25) * 0.8
+		text(Vector2(1050, 145), "FLOW CHAIN  x%d" % world.combo, int(21 * scale), GOLD)
+	if world.tutorial_active and not world.paused:
+		draw_rect(Rect2(395, 555, 490, 128), Color(0.02, 0.075, 0.095, 0.94))
+		text(Vector2(459, 591), "HOLD A KEY TO SWIM", 24, GOLD)
+		text(Vector2(455, 625), "W  rise     S  sink     A  left     D  right", 17)
+		text(Vector2(466, 655), "Release the keys to glide and save air.", 14, MUTED)
 	if p.air < 25:
 		for i in range(8):
 			var opacity: float = (1.0 - p.air / 25.0) * (0.02 + i * 0.003)
@@ -79,5 +88,7 @@ func _draw() -> void:
 		text(Vector2(120, 248), "TEST DIVE COMPLETE" if world.test_room else "A LITTLE LIGHT, RETURNED.", 45)
 		text(Vector2(123, 310), "The eggs are safe. Your next dive can be wiser.", 22, MUTED)
 		text(Vector2(123, 388), "TIME  %02d:%02d       RETRIES  %d" % [int(world.elapsed) / 60, int(world.elapsed) % 60, world.deaths], 24, GOLD)
-		text(Vector2(123, 467), "First-time play length and clarity still need human testing.", 17, MUTED)
+		text(Vector2(123, 430), "PEARLS  %d / %d       SCORE  %05d       BEST CHAIN  x%d" % [world.collected_pearls, world.total_pearls, world.score, world.best_combo], 21)
+		var rank := "DEEP-SEA NATURAL" if world.collected_pearls >= world.total_pearls and world.deaths == 0 else ("CURRENT READER" if world.collected_pearls >= int(world.total_pearls * 0.7) else "BRAVE BEGINNER")
+		text(Vector2(123, 485), "DIVE RANK  /  " + rank, 21, GOLD)
 		text(Vector2(123, 550), "ENTER  New journey     T  Test dive", 20)

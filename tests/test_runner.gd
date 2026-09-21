@@ -41,8 +41,8 @@ func run_all() -> void:
 	player.dying = true
 	check(not vent.try_collect(player), "drowning player cannot collect air")
 	check(not vent.used, "drowning contact does not consume vent")
-	player.queue_free()
-	vent.queue_free()
+	player.free()
+	vent.free()
 
 	var world = World.new()
 	root.add_child(world)
@@ -73,6 +73,13 @@ func run_all() -> void:
 
 	check(world.currents.size() >= 2, "test room contains drift and rip current exercises")
 	check(world.creatures.size() >= 1, "test room contains a Glimmer exercise")
+	check(world.pearls.size() >= 12, "test room contains a visible reward trail")
+	var first_pearl = world.pearls[0]
+	first_pearl._touch(world.player)
+	check(world.collected_pearls == 1, "pearl contact increments collection count")
+	check(world.score == 100, "first pearl awards base score")
+	first_pearl._touch(world.player)
+	check(world.collected_pearls == 1, "collected pearl cannot be scored twice")
 
 	var glimmer = world.creatures[0]
 	glimmer.position += Vector2(70, 30)
@@ -103,5 +110,8 @@ func run_all() -> void:
 	check(world.get_tree().paused, "pause stops the scene tree")
 	check(near(world.elapsed, time_before_pause), "pause freezes the run timer")
 	world.set_paused(false)
+	check(ResourceLoader.exists("res://assets/audio/music.wav"), "original music asset is present")
+	check(ResourceLoader.exists("res://assets/audio/pearl.wav"), "pearl event sound is present")
 	print("RESULT: %d checks, %d failures" % [checks, failures])
+	world.free()
 	quit(1 if failures else 0)

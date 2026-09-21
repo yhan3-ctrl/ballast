@@ -24,6 +24,9 @@ var controlled: bool = true
 var test_input: Vector2 = Vector2.ZERO
 var use_test_input: bool = false
 var invulnerable_left: float = 0.0
+var trail_clock: float = 0.0
+var swim_burst: float = 0.0
+var in_current: bool = false
 
 func _ready() -> void:
 	collision_layer = 2
@@ -80,6 +83,7 @@ func calculate_drain(direction: Vector2, up_held: bool, down_held: bool, opposin
 
 func _physics_process(delta: float) -> void:
 	clock += delta
+	trail_clock += delta
 	invulnerable_left = maxf(0.0, invulnerable_left - delta)
 	if dying:
 		death_left -= delta
@@ -97,9 +101,11 @@ func _physics_process(delta: float) -> void:
 	var force := Vector2.ZERO
 	var opposing := false
 	var rip_dir := Vector2.ZERO
+	in_current = false
 	if is_instance_valid(world):
 		for flow in world.currents:
 			if flow.contains_point(global_position):
+				in_current = true
 				force += flow.flow_direction * flow.strength
 				if flow.kind != "DRIFT" and direction.dot(flow.flow_direction) < -0.05:
 					opposing = true
@@ -110,7 +116,11 @@ func _physics_process(delta: float) -> void:
 	if air <= 0.0:
 		begin_drowning()
 		return
-	var acceleration: Vector2 = direction * THRUST + force + Vector2(0, 32) - velocity * DRAG
+	if direction.length() > 0.1:
+		swim_burst = minf(1.0, swim_burst + delta * 4.0)
+	else:
+		swim_burst = maxf(0.0, swim_burst - delta * 2.2)
+	var acceleration: Vector2 = direction * THRUST * (1.0 + swim_burst * 0.12) + force + Vector2(0, 32) - velocity * DRAG
 	velocity += acceleration * delta
 	velocity = velocity.limit_length(235.0)
 	if rip_dir != Vector2.ZERO:
@@ -118,6 +128,9 @@ func _physics_process(delta: float) -> void:
 		if along < 45.0:
 			velocity += rip_dir * (45.0 - along)
 	move_and_slide()
+	if is_instance_valid(world) and velocity.length() > 90.0 and trail_clock >= 0.09:
+		trail_clock = 0.0
+		world.spawn_trail(global_position - velocity.normalized() * 20.0, -velocity.normalized() * 18.0)
 	if absf(direction.x) > 0.01:
 		facing = signf(direction.x)
 	rotation = lerp_angle(rotation, clampf(velocity.y * 0.0015 * facing, -0.22, 0.22), delta * 5.0)
@@ -179,6 +192,9 @@ func _draw() -> void:
 	draw_line(Vector2(0, -12), Vector2(4, -33), Color("9de4d0"), 2, true)
 	draw_line(Vector2(4, -33), Vector2(19, -32 + wiggle), Color("9de4d0"), 2, true)
 	draw_circle(Vector2(20, -30 + wiggle), 6 if lantern_on else 3, Color("ffe1a3") if lantern_on else Color("6b9299"))
+	if velocity.length() > 80.0:
+		for i in range(3):
+			draw_circle(Vector2(-35 - i * 11, 8 + sin(clock * 5 + i) * 8), 3.5 - i * 0.6, Color(0.55, 0.92, 0.9, 0.45), false, 1.4, true)
 	draw_circle(Vector2(12, -5), 6, Color("071e2c"))
 	draw_circle(Vector2(14, -7), 2.2, Color.WHITE)
 	draw_line(Vector2(21, 6), Vector2(27, 4), Color("428d8c"), 1.5, true)

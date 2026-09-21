@@ -89,11 +89,11 @@ Ballast does not simulate real buoyancy physics. It uses a **simplified underwat
 | Parameter | Placeholder value |
 |---|---|
 | Max air | 100 |
-| Inflate | 6 air/sec |
-| Deflate | 4 air/sec |
-| Horizontal swim | 1.5 air/sec |
-| Lantern lit | 1.0 air/sec |
-| Passive drain | 0.25 air/sec |
+| Rise | 2.2 air/sec |
+| Sink | 1.4 air/sec |
+| Horizontal swim | 0.7 air/sec |
+| Lantern lit | 0.7 air/sec |
+| Passive drain | 0.15 air/sec |
 | Against a current | cost x2 |
 | Low-air warning | at 25 |
 | Vent refill | +40, single use |
@@ -112,7 +112,7 @@ Three strengths: drift (small assist), push (doubles cost against it), rip (cann
 
 ### 6.3 Lantern
 
-Toggled, costs air while lit. Lit radius `placeholder: 160 px`, unlit radius `placeholder: 40 px`. It reveals geometry, vents, pearls and the light-sensitive creature. It does **not** reveal currents, which are already visible.
+Toggled, costs air while lit. The current procedural light has an approximately 240 px lit radius and a 60 px unlit aura. It reveals geometry, vents, pearls and the light-sensitive creature. It does **not** reveal currents, which are already visible.
 
 ### 6.4 Light-sensitive creature (Glimmer)
 
@@ -125,6 +125,10 @@ One passive creature type, not an enemy AI. Three states:
 Contact with Lumen returns Lumen to the last checkpoint. The creature cannot be killed, blocked or damaged. It has no search behaviour and no randomness.
 
 > 中文批注：这只生物是全局最大的实现风险，所以它被排到第二天验证，而不是最后。验收三条：引诱是否有趣、行为是否可预测、重置是否可靠。任何一条不过关，就把它退化成纯装饰（只在第一关出现供观察），三关改为纯洋流与气量解谜，同时删掉 §9 里依赖它的论据。
+
+### 6.5 Pearl trails and flow chains
+
+Pearls turn traversal into a readable short-term challenge without adding a new control. They are arranged along useful current lines and alternate routes. Collecting another pearl within 3.5 seconds raises the flow chain; a pearl awards `100 × min(chain, 5)` points. Pearls persist through death, cannot be collected twice, and never change air or movement. This keeps the air economy intact while giving the player immediate sound, particle and score feedback for clean movement.
 
 ---
 
@@ -149,7 +153,7 @@ Structured on the three levels defined in Salen and Zimmerman, *Rules of Play*.
 13. A Glimmer drifts on a fixed path, moves toward a lit lantern within range, and returns to its path when the lantern is dark or out of range.
 14. A level ends when Lumen reaches the egg nest; the next level loads automatically.
 15. Pearls are optional, persist through death, and are reported on the end screen.
-16. The run is scored by elapsed time and pearls collected. The score is displayed at the end and has no other effect.
+16. Each pearl awards 100 points multiplied by the current flow chain, capped at x5. The chain resets after 3.5 seconds without a pearl or on death. Time, pearls, score and best chain are displayed at the end and have no mechanical effect.
 
 ### 7.2 Constitutive Rules
 
@@ -270,7 +274,7 @@ The loop closes **through the player**, which is why it is a cybernetic system a
 
 **Audio events (the assignment names pickups, attacks and damage as examples):** pearl pickup, vent refill, lantern toggle, low-air heartbeat, drowning, Glimmer contact, checkpoint activated, level complete, ambient bed. Ambient music is optional and does not substitute for event audio.
 
-The current prototype uses original procedural graphics and original generated placeholder event sounds. No third-party art or audio is included. Any later third-party asset must be credited with its licence in README before release.
+The current prototype uses original procedural graphics, original generated event sounds and an original 48-second looping underwater theme. The music generator and note sequence are stored in `tools/generate_audio.py` as provenance. No third-party art or audio is included. Any later third-party asset must be credited with its licence in README before release.
 
 ---
 
@@ -345,4 +349,4 @@ From source: clone the repository, open `project.godot` in Godot `4.7.2 stable`,
 - The three level layouts are a first playable blockout and have not yet been validated for a 5–10 minute completion time.
 - External human playtesting has not yet been completed; clarity and fun remain unverified.
 - Windows and Linux packages have been created but not launched on their destination operating systems.
-- Art and sound are original placeholders and need a final polish pass after the core rules are stable.
+- Procedural art has received an initial feedback pass, but final visual polish still depends on human playtest observations.

@@ -20,6 +20,8 @@ This file separates automated rule checks from human playtests. Automated checks
 | Respawn resets current-segment vents | Automated |
 | Respawn resets current-segment Glimmer state and position | Automated |
 | Test room includes current and Glimmer exercises | Automated |
+| Pearl collection increments once and awards the documented base score | Automated |
+| Original music and pearl event sound load as project resources | Automated |
 | Pause freezes the scene tree and run timer | Automated; manual motion check pending |
 | Rip current cannot be overcome head-on | Automated; geometry escape check pending |
 | Test room can be completed from entrance to eggs | Manual test pending |
