@@ -2,13 +2,13 @@
 
 This file separates automated rule checks from human playtests. Automated checks do not establish clarity, fun, or actual completion time.
 
-## 2026-09-20 - Automated verification, local prototype
+## 2026-09-21 - Automated verification, local prototype
 
 - Tester: automated Godot test runner, not a human playtest
 - Build: commit `1c40cc4` (`v0.3-danger-pass`)
 - Purpose: verify boundary rules before manual play
 - Command: `Godot --headless --path . --script tests/test_runner.gd`
-- Result: 38 checks passed, 0 failures
+- Result: 40 checks passed, 0 failures
 
 | Check | Status |
 |---|---|
@@ -17,14 +17,16 @@ This file separates automated rule checks from human playtests. Automated checks
 | Drowning blocks vent collection | Automated |
 | W+S charges both vertical costs | Automated |
 | A checkpoint restores air only on first forward activation | Automated |
+| A new checkpoint converts pre-refill air into the documented efficiency score | Automated |
 | Respawn restores position and full air | Automated |
 | Respawn resets current-segment vents | Automated |
 | Respawn resets current-segment Glimmer state and position | Automated |
 | Test room includes current and Glimmer exercises | Automated |
 | Pearl collection increments once and awards the documented base score | Automated |
 | Original music and pearl event sound load as project resources | Automated |
-| Coral removes 35 air, applies one hit, and can cause a clearly attributed drowning | Automated |
+| Coral removes 25 air, applies one hit, and can cause a clearly attributed drowning | Automated |
 | Hostile Glimmer contact causes a clearly attributed drowning | Automated |
+| Glimmer chase speed exceeds Yuun's top speed | Automated |
 | Pause freezes the scene tree and run timer | Automated; manual motion check pending |
 | Rip current cannot be overcome head-on | Automated; geometry escape check pending |
 | Test room can be completed from entrance to eggs | Manual test pending |
@@ -41,7 +43,7 @@ Record an observed result for every item; do not turn expectations into findings
 - [ ] Re-enter an activated checkpoint. Confirm it does not refill air.
 - [ ] Pause inside a current. Confirm timer and movement stop.
 - [ ] Die after consuming a vent. Confirm the current segment resets.
-- [ ] Enter and exit the rip current repeatedly. Confirm it cannot push Lumen into a wall trap.
+- [ ] Enter and exit the rip current repeatedly. Confirm it cannot push Yuun into a wall trap.
 - [ ] Light a Glimmer, turn the lantern off, and die near it. Confirm attraction, return, and reset are predictable.
 
 ## Build verification

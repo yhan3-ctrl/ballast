@@ -206,7 +206,7 @@ func build_test_room() -> void:
 	add_flow(Rect2(830, 515, 510, 140), Vector2.RIGHT, 330, "DRIFT")
 	add_pearl_line(Vector2(900, 570), Vector2(92, -18), 4, 0)
 	add_hazard(Rect2(1340, 662, 105, 58))
-	add_sign(Vector2(1260, 585), "RED CORAL", "Touching it costs 35 air.\nSwim above it or accept the hit.")
+	add_sign(Vector2(1260, 585), "RED CORAL", "Touching it costs 25 air.\nSwim above it or accept the hit.")
 	add_wall(Rect2(1230, 150, 80, 305))
 	add_checkpoint(Vector2(1470, 520), 1)
 	add_sign(Vector2(1440, 235), "02 / SPEND LIGHT WISELY", "SPACE toggles the lantern.\nLight attracts Glimmers. Dark lets them return.")
@@ -221,7 +221,7 @@ func build_test_room() -> void:
 	add_pearl_line(Vector2(2460, 270), Vector2(82, 0), 4, 1)
 	add_glimmer(Rect2(2470, 175, 300, 300), 1)
 	add_sign(Vector2(2410, 395), "RIP CURRENT", "Purple flow is one way.\nExit sideways; never fight it.")
-	add_sign(Vector2(2450, 525), "DANGER IS REAL", "Red coral costs 35 air.\nA hostile Glimmer ends the attempt on contact.")
+	add_sign(Vector2(2450, 525), "DANGER IS REAL", "Red coral costs 25 air.\nA hostile Glimmer ends the attempt on contact.")
 	add_checkpoint(Vector2(2950, 500), 2)
 	add_sign(Vector2(2920, 235), "RETURN WITH WHAT YOU LEARNED", "Reach the eggs to finish this test dive.")
 
@@ -240,7 +240,7 @@ func build_campaign_layout() -> void:
 			if seg == 0:
 				add_sign(Vector2(115, 230), "01 / A BREATH IS A CHOICE", "W / S rise & sink. A / D swim.\nFind a vent before your air runs out.")
 				add_sign(Vector2(740, 635), "ONE BREATH, ONCE", "Vents give +40 air. Spent vents reset on death.")
-				add_sign(Vector2(1080, 575), "STINGING CORAL", "Red means danger: -35 air and knockback.\nAvoid it now; later currents push you toward it.")
+				add_sign(Vector2(1080, 575), "STINGING CORAL", "Red means danger: -25 air and knockback.\nAvoid it now; later currents push you toward it.")
 			elif seg == 1:
 				add_sign(Vector2(offset + 100, 230), "02 / BORROW THE CURRENT", "Blue arrows stay visible in darkness.\nFlow carries you while you save your breath.")
 				add_flow(Rect2(offset + 1175, 170, 230, 185), Vector2.LEFT, 300, "PUSH")
@@ -256,8 +256,8 @@ func build_campaign_layout() -> void:
 			add_flow(Rect2(offset + 1150, 195, 240, 120), Vector2.LEFT, 280, "PUSH")
 			add_vent(Vector2(offset + 720, 235), seg)
 			add_vent(Vector2(offset + 1270, 550), seg)
-			add_pearl_line(Vector2(offset + 420, 560), Vector2(105, 0), 5, seg)
-			add_pearl_line(Vector2(offset + 690, 255), Vector2(110, 0), 4, seg)
+			add_pearl_line(Vector2(offset + 420, 560), Vector2(150, 0), 3, seg)
+			add_pearl_line(Vector2(offset + 650, 250), Vector2(125, 0), 6, seg)
 			add_hazard(Rect2(offset + 1210, 665, 160, 55))
 			if level_index == 1:
 				add_glimmer(Rect2(offset + 670, 480, 450, 210), seg)
@@ -379,6 +379,8 @@ func add_sign(point: Vector2, title: String, body: String) -> void:
 func activate_checkpoint(cp: Node) -> bool:
 	if player.dying or respawn_pending or cp.activated or cp.checkpoint_id <= active_checkpoint:
 		return false
+	var air_bonus: int = int(round(player.air)) * 8
+	score += air_bonus
 	cp.activated = true
 	cp.queue_redraw()
 	active_checkpoint = cp.checkpoint_id
@@ -387,7 +389,7 @@ func activate_checkpoint(cp: Node) -> bool:
 	segment_time = 0
 	play_sound("checkpoint")
 	spawn_burst(cp.global_position, Color("e8c38a"), 18)
-	notify("ANCHOR SET  /  AIR RESTORED")
+	notify("ANCHOR SET  /  AIR BONUS +%d  /  REFILLED" % air_bonus)
 	return true
 
 func request_respawn(reason: String) -> void:

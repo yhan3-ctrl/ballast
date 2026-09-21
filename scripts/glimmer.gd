@@ -10,7 +10,7 @@ var world: Node2D
 var clock: float = 0.0
 var phase: float = 0.0
 var detection_radius: float = 220.0
-var speed: float = 85.0
+var speed: float = 265.0
 var saw_attraction: bool = false
 var saw_return: bool = false
 

@@ -28,7 +28,7 @@ func _touch(body: Node) -> void:
 		var away: Vector2 = (body.global_position - (position + bounds.size / 2.0)).normalized()
 		if away == Vector2.ZERO:
 			away = Vector2.UP
-		body.take_damage(35.0, away * 230.0, "Stinging coral")
+		body.take_damage(25.0, away * 230.0, "Stinging coral")
 
 func _process(delta: float) -> void:
 	clock += delta

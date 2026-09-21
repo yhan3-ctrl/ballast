@@ -21,9 +21,10 @@ func _draw() -> void:
 			draw_line(Vector2(760, y), Vector2(1280, y - 140), Color(0.12, 0.25, 0.29, 0.35), 1, true)
 		for i in range(5):
 			draw_arc(Vector2(975, 390), 70 + i * 48, PI * 0.3, PI * 1.8, 80, Color(0.28, 0.6, 0.6, 0.17), 1.5, true)
-		text(Vector2(88, 130), "A SMALL JOURNEY INTO THE DEEP", 14, GOLD)
+		text(Vector2(88, 130), "YU HAN PRESENTS  /  A SMALL JOURNEY INTO THE DEEP", 14, GOLD)
 		text(Vector2(82, 272), "BALLAST", 96)
-		text(Vector2(90, 329), "Every breath moves you. Every light changes things.", 21, MUTED)
+		text(Vector2(90, 315), "YUUN THE JADEFIN", 18, GOLD)
+		text(Vector2(90, 347), "Every breath moves you. Every light changes things.", 21, MUTED)
 		text(Vector2(90, 440), "Recover the eggs. Read the currents. Spend your air wisely.", 18)
 		text(Vector2(90, 482), "HOLD W / S   Rise & sink      HOLD A / D   Swim      SPACE   Lantern", 17, MUTED)
 		draw_rect(Rect2(88, 541, 340, 61), Color("183e47"))
@@ -36,7 +37,7 @@ func _draw() -> void:
 	var p = world.player
 	draw_rect(Rect2(0, 0, 1280, 104), Color("071923"))
 	draw_line(Vector2(34, 103), Vector2(1246, 103), Color("20444e"), 1)
-	text(Vector2(35, 35), "BALLAST", 22)
+	text(Vector2(35, 35), "YUUN / JADEFIN", 19)
 	text(Vector2(35, 66), "TEST DIVE" if world.test_room else "%02d  /  %s" % [world.level_index + 1, world.title_names[world.level_index]], 13, GOLD)
 	text(Vector2(330, 31), "BREATH", 12, MUTED)
 	draw_rect(Rect2(330, 43, 280, 12), Color("1b3c46"))
@@ -86,7 +87,7 @@ func _draw() -> void:
 	if world.finished:
 		draw_rect(Rect2(0, 104, 1280, 654), Color("071923"))
 		text(Vector2(120, 248), "TEST DIVE COMPLETE" if world.test_room else "A LITTLE LIGHT, RETURNED.", 45)
-		text(Vector2(123, 310), "The eggs are safe. Your next dive can be wiser.", 22, MUTED)
+		text(Vector2(123, 310), "Yuun brought the eggs home. The next dive can be wiser.", 22, MUTED)
 		text(Vector2(123, 388), "TIME  %02d:%02d       RETRIES  %d" % [int(world.elapsed) / 60, int(world.elapsed) % 60, world.deaths], 24, GOLD)
 		text(Vector2(123, 430), "PEARLS  %d / %d       SCORE  %05d       BEST CHAIN  x%d" % [world.collected_pearls, world.total_pearls, world.score, world.best_combo], 21)
 		var rank := "DEEP-SEA NATURAL" if world.collected_pearls >= world.total_pearls and world.deaths == 0 else ("CURRENT READER" if world.collected_pearls >= int(world.total_pearls * 0.7) else "BRAVE BEGINNER")

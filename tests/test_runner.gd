@@ -24,9 +24,9 @@ func near(actual: float, expected: float, tolerance: float = 0.001) -> bool:
 func run_all() -> void:
 	var player = Player.new()
 	root.add_child(player)
-	check(near(player.calculate_drain(Vector2.ZERO, false, false, false), 0.35), "passive drain")
-	check(near(player.calculate_drain(Vector2.ZERO, true, true, false), 5.55), "W+S has zero directional input but charges both vertical costs")
-	check(near(player.calculate_drain(Vector2.RIGHT, false, false, true), 3.35), "opposing current doubles thrust cost only")
+	check(near(player.calculate_drain(Vector2.ZERO, false, false, false), 0.5), "passive drain")
+	check(near(player.calculate_drain(Vector2.ZERO, true, true, false), 7.5), "W+S has zero directional input but charges both vertical costs")
+	check(near(player.calculate_drain(Vector2.RIGHT, false, false, true), 4.9), "opposing current doubles thrust cost only")
 
 	var vent = Vent.new()
 	root.add_child(vent)
@@ -51,6 +51,7 @@ func run_all() -> void:
 	var checkpoint = world.checkpoints[1]
 	world.player.air = 41.0
 	check(world.activate_checkpoint(checkpoint), "new forward checkpoint activates")
+	check(world.score == 328, "checkpoint converts remaining air into score before refill")
 	check(near(world.player.air, 100.0), "first activation restores full air")
 	world.player.air = 52.0
 	check(not world.activate_checkpoint(checkpoint), "re-entering active checkpoint does not reactivate")
@@ -74,6 +75,9 @@ func run_all() -> void:
 	check(world.currents.size() >= 2, "test room contains drift and rip current exercises")
 	check(world.creatures.size() >= 1, "test room contains a Glimmer exercise")
 	check(world.pearls.size() >= 12, "test room contains a visible reward trail")
+	world.score = 0
+	world.combo = 0
+	world.combo_left = 0.0
 	var first_pearl = world.pearls[0]
 	first_pearl._touch(world.player)
 	check(world.collected_pearls == 1, "pearl contact increments collection count")
@@ -114,8 +118,8 @@ func run_all() -> void:
 	world.player.reset_at(world.spawn_point)
 	world.player.invulnerable_left = 0.0
 	world.hazards[0]._touch(world.player)
-	check(near(world.player.air, 65.0), "coral contact removes 35 air")
-	world.player.air = 30.0
+	check(near(world.player.air, 75.0), "coral contact removes 25 air")
+	world.player.air = 20.0
 	world.player.invulnerable_left = 0.0
 	world.hazards[0]._touch(world.player)
 	check(world.player.dying, "lethal coral damage starts the drowning state")
@@ -127,6 +131,7 @@ func run_all() -> void:
 	hostile_glimmer._physics_process(0.01)
 	check(world.player.dying, "hostile Glimmer contact starts the drowning state")
 	check(world.player.death_reason == "Glimmer contact", "Glimmer death records a clear cause")
+	check(hostile_glimmer.speed > 235.0, "Glimmer chase speed exceeds player top speed")
 	check(ResourceLoader.exists("res://assets/audio/music.wav"), "original music asset is present")
 	check(ResourceLoader.exists("res://assets/audio/pearl.wav"), "pearl event sound is present")
 	print("RESULT: %d checks, %d failures" % [checks, failures])

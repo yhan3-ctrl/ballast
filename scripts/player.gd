@@ -3,11 +3,11 @@ extends CharacterBody2D
 signal drowned
 signal lantern_changed(lit: bool)
 const MAX_AIR: float = 100.0
-const UP_COST: float = 3.0
-const DOWN_COST: float = 2.2
-const SIDE_COST: float = 1.5
-const LAMP_COST: float = 1.2
-const PASSIVE_COST: float = 0.35
+const UP_COST: float = 4.0
+const DOWN_COST: float = 3.0
+const SIDE_COST: float = 2.2
+const LAMP_COST: float = 1.3
+const PASSIVE_COST: float = 0.5
 const THRUST: float = 470.0
 const DRAG: float = 3.5
 var air: float = MAX_AIR
@@ -214,4 +214,8 @@ func _draw() -> void:
 			draw_circle(Vector2(-35 - i * 11, 8 + sin(clock * 5 + i) * 8), 3.5 - i * 0.6, Color(0.55, 0.92, 0.9, 0.45), false, 1.4, true)
 	draw_circle(Vector2(12, -5), 6, Color("071e2c"))
 	draw_circle(Vector2(14, -7), 2.2, Color.WHITE)
+	# A small H-shaped jade marking connects Yuun to creator Yu Han.
+	draw_line(Vector2(-7, -7), Vector2(-7, 7), Color("398f83"), 2.0, true)
+	draw_line(Vector2(1, -7), Vector2(1, 7), Color("398f83"), 2.0, true)
+	draw_line(Vector2(-7, 0), Vector2(1, 0), Color("398f83"), 2.0, true)
 	draw_line(Vector2(21, 6), Vector2(27, 4), Color("428d8c"), 1.5, true)

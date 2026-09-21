@@ -3,7 +3,7 @@
 **CSCI 5999B Project 1 (Graduate Section)** | Yu Han | Fall 2026
 Repository: `https://github.com/<your-account>/ballast` | Engine: Godot `4.7.2 stable` | Theme: Underwater
 
-**Document status:** design draft, revision 2 (2026-09-20). Sections marked *Hypothesis* are design intent that has not yet been verified in play. Numeric values marked *placeholder* are starting points for calibration in the first test room, not measured results.
+**Document status:** design draft, revision 3 (2026-09-21). Sections marked *Hypothesis* are design intent that has not yet been verified in play. Numeric values marked *placeholder* are starting points for calibration in the first test room, not measured results.
 
 > 中文批注：灰色引用块是给你自己的说明，**提交前整段删除**。本版相对 v1 的改动记在 §12.3，改动理由都是设计评审得出的，不是试玩结果，文档里也照实这么写。
 
@@ -26,7 +26,7 @@ Repository: `https://github.com/<your-account>/ballast` | Engine: Godot `4.7.2 s
 
 ## 2. Concept
 
-Ballast is built on one tension: **the resource that keeps you alive is the same resource that moves you**. Lumen controls depth by inflating and deflating a swim bladder, and both directions cost air. Air refills only at vents, and each vent works once. Every metre of travel is therefore a spending decision, and the shortest route is usually not the cheapest one.
+Ballast is built on one tension: **the resource that keeps you alive is the same resource that moves you**. Yuun controls depth by inflating and deflating a swim bladder, and both directions cost air. Air refills only at vents, and each vent works once. Every metre of travel is therefore a spending decision, and the shortest route is usually not the cheapest one.
 
 Two environmental systems modify that economy: **currents**, which make some directions nearly free and others expensive, and a **lantern**, which reveals obstacles in the dark but draws the attention of a light-sensitive creature.
 
@@ -38,7 +38,7 @@ Deliberate scope decision: the game has three verbs and no unlockable abilities.
 
 ### 3.1 Fiction
 
-Lumen is a newly hatched anglerfish. A surge along the trench wall has scattered its siblings' eggs through three depth zones: the sunlit Reef, the mid-water Kelp Drift, and the lightless Trench. Lumen descends to bring them home. Delivered through the environment and one text card per level. No dialogue system.
+Yuun is a newly hatched jade-coloured anglerfish, also called the Jadefin. The name begins with `Yu` to follow creator Yu Han's English name order, takes its final `n` from Han, and keeps the doubled `u` as a visual echo of the creator's handle `hnuu`. It also connects the sounds of 玉 (jade) and 鱼 (fish) to the character's colour and form. A surge along the trench wall has scattered Yuun's siblings' eggs through three depth zones: the sunlit Reef, the mid-water Kelp Drift, and the lightless Trench. Yuun descends to bring them home. Delivered through the environment and one text card per level. No dialogue system.
 
 ### 3.2 What the grader needs to know before playing
 
@@ -46,7 +46,7 @@ Lumen is a newly hatched anglerfish. A surge along the trench wall has scattered
 - The bar at the top left is air. It is fuel and health at the same time.
 - Blue particle streams are currents. They are visible at all times, including in the dark.
 - The lantern is available from the first second and is never taken away.
-- There are no lives. Death returns Lumen to the last checkpoint with full air.
+- There are no lives. Death returns Yuun to the last checkpoint with full air.
 - Pearls are optional and are not required to finish.
 
 ### 3.3 Controls
@@ -84,16 +84,16 @@ Ballast does not simulate real buoyancy physics. It uses a **simplified underwat
 
 ### 6.1 Buoyancy and air
 
-`W` applies upward thrust, `S` applies downward thrust. Both accelerate rather than teleport, so inputs must be led. With no input Lumen drifts slightly downward.
+`W` applies upward thrust, `S` applies downward thrust. Both accelerate rather than teleport, so inputs must be led. With no input Yuun drifts slightly downward.
 
 | Parameter | Placeholder value |
 |---|---|
 | Max air | 100 |
-| Rise | 3.0 air/sec |
-| Sink | 2.2 air/sec |
-| Horizontal swim | 1.5 air/sec |
-| Lantern lit | 1.2 air/sec |
-| Passive drain | 0.35 air/sec |
+| Rise | 4.0 air/sec |
+| Sink | 3.0 air/sec |
+| Horizontal swim | 2.2 air/sec |
+| Lantern lit | 1.3 air/sec |
+| Passive drain | 0.5 air/sec |
 | Against a current | cost x2 |
 | Low-air warning | at 25 |
 | Vent refill | +40, single use |
@@ -102,7 +102,7 @@ Ballast does not simulate real buoyancy physics. It uses a **simplified underwat
 
 **Low air (below 25)** produces a vignette and a heartbeat audio layer only. It does **not** reduce movement speed. Rationale in §12.3.
 
-**At zero air** Lumen enters a drowning state: control is released, a 1.5 second animation plays, then respawn (see §7.1).
+**At zero air** Yuun enters a drowning state: control is released, a 1.5 second animation plays, then respawn (see §7.1).
 
 ### 6.2 Currents
 
@@ -122,7 +122,7 @@ One passive creature type, not an enemy AI. Three states:
 2. **Attracted:** while a lit lantern is within `placeholder: 220 px`, moves toward it at a fixed speed.
 3. **Return:** when the lantern goes dark or leaves range, returns to the nearest point of its path and resumes drifting.
 
-Contact with Lumen returns Lumen to the last checkpoint. The creature cannot be killed, blocked or damaged. It has no search behaviour and no randomness.
+Contact with Yuun returns Yuun to the last checkpoint. When attracted, a Glimmer moves slightly faster than Yuun's maximum swim speed, so the intended escape is to turn off the lantern rather than outrun it. The creature cannot be killed, blocked or damaged. It has no search behaviour and no randomness.
 
 > 中文批注：这只生物是全局最大的实现风险，所以它被排到第二天验证，而不是最后。验收三条：引诱是否有趣、行为是否可预测、重置是否可靠。任何一条不过关，就把它退化成纯装饰（只在第一关出现供观察），三关改为纯洋流与气量解谜，同时删掉 §9 里依赖它的论据。
 
@@ -138,23 +138,24 @@ Structured on the three levels defined in Salen and Zimmerman, *Rules of Play*.
 
 ### 7.1 Operational Rules
 
-1. The player controls one character, Lumen, in continuous 2D space.
-2. `W` moves Lumen up, `S` moves Lumen down. Both consume air.
-3. `A` and `D` move Lumen horizontally and consume air at a lower rate.
+1. The player controls one character, Yuun, in continuous 2D space.
+2. `W` moves Yuun up, `S` moves Yuun down. Both consume air.
+3. `A` and `D` move Yuun horizontally and consume air at a lower rate.
 4. `Space` toggles the lantern, which consumes air while lit.
 5. Air decreases continuously and never regenerates except at a vent or a checkpoint.
 6. Touching a vent at less than full air restores up to 40, discards any overflow, and permanently consumes that vent for the current attempt.
 7. Touching a vent at full air does nothing and does not consume the vent.
 8. Only first activation of a new, forward checkpoint restores full air. Revisiting an activated arch does not refill air or move the active checkpoint backward.
-9. On death or on pressing `R`, Lumen returns to the active checkpoint with full air, and every vent and creature in the current segment is reset to its initial state.
-10. At zero air, Lumen loses control, drowns over 1.5 seconds, and respawns per rule 9. Air cannot be collected during the drowning animation.
-11. Contact with a Glimmer respawns Lumen per rule 9.
+9. On death or on pressing `R`, Yuun returns to the active checkpoint with full air, and every vent and creature in the current segment is reset to its initial state.
+10. At zero air, Yuun loses control, drowns over 1.5 seconds, and respawns per rule 9. Air cannot be collected during the drowning animation.
+11. Contact with a hostile Glimmer starts Yuun's drowning sequence and then respawns Yuun per rule 9.
 12. Currents apply a constant force inside their volume. Rip currents cannot be moved against.
 13. A Glimmer drifts on a fixed path, moves toward a lit lantern within range, and returns to its path when the lantern is dark or out of range.
-14. A level ends when Lumen reaches the egg nest; the next level loads automatically.
+14. A level ends when Yuun reaches the egg nest; the next level loads automatically.
 15. Pearls are optional, persist through death, and are reported on the end screen.
 16. Each pearl awards 100 points multiplied by the current flow chain, capped at x5. The chain resets after 3.5 seconds without a pearl or on death. Time, pearls, score and best chain are displayed at the end and have no mechanical effect.
-17. Red stinging coral removes 35 air and knocks Lumen away. A 0.9-second contact grace period prevents one collision from applying repeatedly. If the damage reaches zero air, the standard drowning and checkpoint reset sequence runs.
+17. Red stinging coral removes 25 air and knocks Yuun away. A 0.9-second contact grace period prevents one collision from applying repeatedly. If the damage reaches zero air, the standard drowning and checkpoint reset sequence runs.
+18. First activation of a forward checkpoint converts the air remaining before refill into score at 8 points per whole air unit. This rewards efficient movement while pearl chains reward riskier detours.
 
 ### 7.2 Constitutive Rules
 
@@ -272,7 +273,7 @@ The loop closes **through the player**, which is why it is a cybernetic system a
 
 ## 11. Art and Audio Requirements
 
-**Animations:** Lumen idle, swim, rise, sink, drown; Glimmer drift and attracted. Loop counts are a scope choice, not an assignment requirement; AnimatedSprite2D loops are sufficient.
+**Animations:** Yuun idle, swim, rise, sink, drown; Glimmer drift and attracted. Loop counts are a scope choice, not an assignment requirement; AnimatedSprite2D loops are sufficient.
 
 **Audio events (the assignment names pickups, attacks and damage as examples):** pearl pickup, vent refill, lantern toggle, low-air heartbeat, drowning, Glimmer contact, checkpoint activated, level complete, ambient bed. Ambient music is optional and does not substitute for event audio.
 

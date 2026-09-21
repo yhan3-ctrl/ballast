@@ -2,6 +2,8 @@
 
 Local development prototype for CSCI 5999B Project 1.
 
+The player character is **Yuun the Jadefin**, a jade-coloured anglerfish named from creator Yu Han's English name order and visually linked to the personal handle `hnuu`.
+
 Engine: Godot 4.7.2 stable, GDScript, Compatibility renderer.
 
 Open `project.godot` with Godot and use **Play Project** for the main menu. On macOS the shortcut is `Command+B`. From the title screen, press `T` for the focused test dive.
@@ -16,7 +18,7 @@ Open `project.godot` with Godot and use **Play Project** for the main menu. On m
 - `F1`: diagnostics overlay
 - `T` on the title screen: open the focused test dive
 
-Red coral removes 35 air and knocks Lumen away. Hostile Glimmers cause drowning on contact. The first test room labels both hazards before the final exercise.
+Red coral removes 25 air and knocks Yuun away. Hostile Glimmers cause drowning on contact. The first test room labels both hazards before the final exercise.
 
 ## Local verification
 
