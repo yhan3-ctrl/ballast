@@ -49,6 +49,8 @@ var music_player: AudioStreamPlayer
 var score: int = 0
 var collected_pearls: int = 0
 var total_pearls: int = 0
+var pending_pearls: Array = []
+var pending_score: int = 0
 var combo: int = 0
 var best_combo: int = 0
 var combo_left: float = 0.0
@@ -57,6 +59,7 @@ var fx_particles: Array = []
 var tutorial_active: bool = true
 var tutorial_origin := Vector2.ZERO
 var title_names := ["THE REEF", "THE KELP DRIFT", "THE TRENCH"]
+const AIR_BONUS_MULTIPLIER: int = 20
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -128,6 +131,8 @@ func start_game() -> void:
 	score = 0
 	collected_pearls = 0
 	total_pearls = 0
+	pending_pearls.clear()
+	pending_score = 0
 	combo = 0
 	best_combo = 0
 	combo_left = 0.0
@@ -350,11 +355,32 @@ func collect_pearl(pearl: Node) -> void:
 	combo_left = 3.5
 	best_combo = maxi(best_combo, combo)
 	last_points = 100 * mini(combo, 5)
-	score += last_points
-	collected_pearls += 1
+	pending_score += last_points
+	pending_pearls.append(pearl)
 	spawn_burst(pearl.global_position, Color("f5d69a"), 13)
 	play_sound("pearl")
-	notify("PEARL +%d  /  FLOW CHAIN x%d" % [last_points, combo])
+	notify("PEARL +%d AT RISK  /  FLOW CHAIN x%d" % [last_points, combo])
+
+func bank_segment_rewards() -> Dictionary:
+	var result := {"pearls": pending_pearls.size(), "score": pending_score}
+	collected_pearls += pending_pearls.size()
+	score += pending_score
+	pending_pearls.clear()
+	pending_score = 0
+	combo = 0
+	combo_left = 0.0
+	return result
+
+func discard_segment_rewards() -> int:
+	var lost: int = pending_pearls.size()
+	for pearl in pending_pearls:
+		if is_instance_valid(pearl):
+			pearl.reset_pearl()
+	pending_pearls.clear()
+	pending_score = 0
+	combo = 0
+	combo_left = 0.0
+	return lost
 
 func spawn_trail(point: Vector2, drift: Vector2) -> void:
 	fx_particles.append({"position": point, "velocity": drift + Vector2(randf_range(-8, 8), randf_range(-14, 2)), "life": 0.7, "max_life": 0.7, "size": randf_range(2.0, 4.5), "color": Color("8de6df")})
@@ -379,7 +405,8 @@ func add_sign(point: Vector2, title: String, body: String) -> void:
 func activate_checkpoint(cp: Node) -> bool:
 	if player.dying or respawn_pending or cp.activated or cp.checkpoint_id <= active_checkpoint:
 		return false
-	var air_bonus: int = int(round(player.air)) * 8
+	var banked: Dictionary = bank_segment_rewards()
+	var air_bonus: int = int(round(player.air)) * AIR_BONUS_MULTIPLIER
 	score += air_bonus
 	cp.activated = true
 	cp.queue_redraw()
@@ -389,7 +416,7 @@ func activate_checkpoint(cp: Node) -> bool:
 	segment_time = 0
 	play_sound("checkpoint")
 	spawn_burst(cp.global_position, Color("e8c38a"), 18)
-	notify("ANCHOR SET  /  AIR BONUS +%d  /  REFILLED" % air_bonus)
+	notify("ANCHOR  /  %d PEARLS BANKED  /  AIR BONUS +%d" % [banked.pearls, air_bonus])
 	return true
 
 func request_respawn(reason: String) -> void:
@@ -404,6 +431,7 @@ func respawn() -> void:
 		respawn_pending = false
 		return
 	deaths += 1
+	var lost_pearls: int = discard_segment_rewards()
 	segment_time = 0
 	for vent in vents:
 		if vent.segment == active_checkpoint:
@@ -412,11 +440,9 @@ func respawn() -> void:
 		if creature.segment == active_checkpoint:
 			creature.reset_creature()
 	player.reset_at(spawn_point)
-	combo = 0
-	combo_left = 0.0
 	respawn_pending = false
 	play_sound("contact")
-	notify("BACK AT ANCHOR  /  " + last_reason.to_upper())
+	notify("BACK AT ANCHOR  /  %s  /  %d PEARLS LOST" % [last_reason.to_upper(), lost_pearls])
 
 func complete_observation() -> void:
 	if observation_complete:
@@ -447,6 +473,7 @@ func _physics_process(delta: float) -> void:
 	if not player.dying and not respawn_pending and player.position.distance_to(exit_point) < 65:
 		if level_index == 0 and not test_room and not observation_complete:
 			return
+		bank_segment_rewards()
 		play_sound("complete")
 		if test_room or level_index >= 2:
 			finished = true

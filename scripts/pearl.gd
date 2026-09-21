@@ -28,6 +28,13 @@ func _touch(body: Node) -> void:
 	visible = false
 	world.collect_pearl(self)
 
+func reset_pearl() -> void:
+	collected = false
+	visible = true
+	monitoring = true
+	position.y = base_y
+	queue_redraw()
+
 func _process(delta: float) -> void:
 	clock += delta
 	position.y = base_y + sin(clock * 2.2 + position.x * 0.01) * 7.0
@@ -39,4 +46,3 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, 14.0 * pulse, Color("e9d69d"))
 	draw_circle(Vector2(-4, -5), 4.5, Color("fff8d7"))
 	draw_arc(Vector2.ZERO, 18.0 * pulse, 0.0, TAU, 24, Color(0.72, 0.98, 0.91, 0.65), 2.0, true)
-

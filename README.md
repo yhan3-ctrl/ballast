@@ -20,6 +20,8 @@ Open `project.godot` with Godot and use **Play Project** for the main menu. On m
 
 Red coral removes 25 air and knocks Yuun away. Hostile Glimmers cause drowning on contact. The first test room labels both hazards before the final exercise.
 
+Pearls collected inside the current segment are marked **AT RISK**. They and their pending score are banked only at the next anchor or level exit; death or `R` returns them to the room.
+
 ## Local verification
 
 Run the automated boundary checks with:

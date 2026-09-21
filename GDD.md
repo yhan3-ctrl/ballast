@@ -128,7 +128,7 @@ Contact with Yuun returns Yuun to the last checkpoint. When attracted, a Glimmer
 
 ### 6.5 Pearl trails and flow chains
 
-Pearls turn traversal into a readable short-term challenge without adding a new control. They are arranged along useful current lines and alternate routes. Collecting another pearl within 3.5 seconds raises the flow chain; a pearl awards `100 × min(chain, 5)` points. Pearls persist through death, cannot be collected twice, and never change air or movement. This keeps the air economy intact while giving the player immediate sound, particle and score feedback for clean movement.
+Pearls turn traversal into a readable short-term challenge without adding a new control. They are arranged along useful current lines and alternate routes. Collecting another pearl within 3.5 seconds raises the flow chain; a pearl awards `100 × min(chain, 5)` pending points. Pearls and their points remain **at risk** until the next forward checkpoint or level exit banks them. Death or `R` returns every at-risk pearl in the current segment to its original position and clears its pending points. Banked pearls persist. Pearls never change air or movement, so the air economy remains intact while clean movement receives immediate sound, particle and score feedback.
 
 ---
 
@@ -152,20 +152,20 @@ Structured on the three levels defined in Salen and Zimmerman, *Rules of Play*.
 12. Currents apply a constant force inside their volume. Rip currents cannot be moved against.
 13. A Glimmer drifts on a fixed path, moves toward a lit lantern within range, and returns to its path when the lantern is dark or out of range.
 14. A level ends when Yuun reaches the egg nest; the next level loads automatically.
-15. Pearls are optional, persist through death, and are reported on the end screen.
-16. Each pearl awards 100 points multiplied by the current flow chain, capped at x5. The chain resets after 3.5 seconds without a pearl or on death. Time, pearls, score and best chain are displayed at the end and have no mechanical effect.
+15. Pearls are optional. Pearls collected after the active checkpoint are at risk until the next forward checkpoint or level exit; death or `R` restores those pearls to the room and removes their pending points. Once banked, pearls persist through later deaths.
+16. Each pearl creates 100 pending points multiplied by the current flow chain, capped at x5. The chain resets after 3.5 seconds without a pearl or on death. Banking transfers pending pearl points into permanent score. Time, banked pearls, score and best chain are displayed at the end and have no mechanical effect.
 17. Red stinging coral removes 25 air and knocks Yuun away. A 0.9-second contact grace period prevents one collision from applying repeatedly. If the damage reaches zero air, the standard drowning and checkpoint reset sequence runs.
-18. First activation of a forward checkpoint converts the air remaining before refill into score at 8 points per whole air unit. This rewards efficient movement while pearl chains reward riskier detours.
+18. First activation of a forward checkpoint converts the air remaining before refill into score at a provisional 20 points per whole air unit. This multiplier puts a 30-air route difference near a 600-point pearl detour; F1 measurements must confirm the final value.
 
 ### 7.2 Constitutive Rules
 
 The game is a constrained traversal problem on a 2D vector field. The state is:
 
-`S = (position, velocity, air, lantern_on, level_id, checkpoint_id, vents_used, glimmer_states, pearls, elapsed_time)`
+`S = (position, velocity, air, lantern_on, level_id, checkpoint_id, vents_used, glimmer_states, banked_pearls, pending_pearls, score, pending_score, elapsed_time)`
 
 - Motion is integrated, not set: each frame, `acceleration = player_thrust + field_force + drag`, and `velocity` follows from it. The player never commands a position directly, which is why inputs must be led.
 - Air is strictly decreasing except at discrete refill events (vents, checkpoints). A segment is solvable only if some path exists whose integrated cost is below the air available in that segment, so each segment is a bounded-budget path problem.
-- Because `vents_used` and `glimmer_states` reset with the checkpoint, each segment is an independent sub-problem with a fixed initial state. This is what makes repeated attempts comparable and what makes the air budget designable.
+- Because `vents_used`, `glimmer_states`, `pending_pearls` and `pending_score` reset with the checkpoint, each segment is an independent sub-problem with a fixed initial state. This is what makes repeated attempts comparable, makes the air budget designable, and prevents restart farming from combining both route rewards.
 - `lantern_on` appears in both the player's cost function and the Glimmer's transition condition. It is the only variable the player controls that is also an input to the environment's behaviour, which is the formal reason the lantern can be used as a tool and not only as a cost.
 
 ### 7.3 Implicit Rules
@@ -311,6 +311,10 @@ These are design-review outcomes, not playtest results, and are labelled as such
 4. **Changed: currents are always visible.** The earlier draft had them visible in one section and lantern-dependent in another. Planning information should not be hidden; the lantern reveals obstacles instead.
 5. **Cut: cycling clam gates, creature-triggered rock breaking, creatures carried by currents, timed final ascent, randomised creature search.** Each was a named mechanic with no defined rules, and each represented real implementation work that the schedule does not support.
 6. **Added: the L1 observation chamber gates its exit** on the player toggling the lantern, because a demonstration the player can walk past does not satisfy "learn in one level, use in the next".
+
+### 12.4 Emergent rule interaction found in design review (2026-09-21)
+
+The first efficiency-score implementation combined three individually reasonable rules: pearls persisted through death, restart restored full air, and checkpoint score depended on remaining air. Together they created an unintended dominant strategy: collect every expensive-route pearl, restart for full air, then take the efficient route and receive both rewards. The fix makes segment pearls and their score pending until the next checkpoint or exit; restart returns them to the room. An automated regression test deliberately collects a pearl, restarts, and verifies that the pearl returns while permanent score remains unchanged. This is a real emergent interaction discovered by attempting to break the rules, not a hypothetical example.
 
 ---
 

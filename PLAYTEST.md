@@ -8,7 +8,7 @@ This file separates automated rule checks from human playtests. Automated checks
 - Build: commit `022ba4a` (`v0.4-budget-pass`)
 - Purpose: verify boundary rules before manual play
 - Command: `Godot --headless --path . --script tests/test_runner.gd`
-- Result: 40 checks passed, 0 failures
+- Result: 47 checks passed, 0 failures
 
 | Check | Status |
 |---|---|
@@ -23,6 +23,9 @@ This file separates automated rule checks from human playtests. Automated checks
 | Respawn resets current-segment Glimmer state and position | Automated |
 | Test room includes current and Glimmer exercises | Automated |
 | Pearl collection increments once and awards the documented base score | Automated |
+| At-risk pearls and pending score reset on death or `R` | Automated |
+| Reset cannot combine an expensive-route pearl reward with a fresh-air efficiency reward | Automated |
+| Banked pearl count and score persist through later death | Automated |
 | Original music and pearl event sound load as project resources | Automated |
 | Coral removes 25 air, applies one hit, and can cause a clearly attributed drowning | Automated |
 | Hostile Glimmer contact causes a clearly attributed drowning | Automated |
@@ -45,6 +48,8 @@ Record an observed result for every item; do not turn expectations into findings
 - [ ] Die after consuming a vent. Confirm the current segment resets.
 - [ ] Enter and exit the rip current repeatedly. Confirm it cannot push Yuun into a wall trap.
 - [ ] Light a Glimmer, turn the lantern off, and die near it. Confirm attraction, return, and reset are predictable.
+- [ ] Collect several pearls, press `R`, and confirm they return with no permanent score gain.
+- [ ] Bank pearls at an anchor, die afterward, and confirm the banked total remains.
 
 ## Build verification
 

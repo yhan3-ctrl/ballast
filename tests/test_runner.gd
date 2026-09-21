@@ -51,7 +51,7 @@ func run_all() -> void:
 	var checkpoint = world.checkpoints[1]
 	world.player.air = 41.0
 	check(world.activate_checkpoint(checkpoint), "new forward checkpoint activates")
-	check(world.score == 328, "checkpoint converts remaining air into score before refill")
+	check(world.score == 820, "checkpoint converts remaining air into score before refill")
 	check(near(world.player.air, 100.0), "first activation restores full air")
 	world.player.air = 52.0
 	check(not world.activate_checkpoint(checkpoint), "re-entering active checkpoint does not reactivate")
@@ -78,12 +78,23 @@ func run_all() -> void:
 	world.score = 0
 	world.combo = 0
 	world.combo_left = 0.0
-	var first_pearl = world.pearls[0]
+	var first_pearl = world.pearls.filter(func(p): return p.segment == world.active_checkpoint)[0]
 	first_pearl._touch(world.player)
-	check(world.collected_pearls == 1, "pearl contact increments collection count")
-	check(world.score == 100, "first pearl awards base score")
+	check(world.collected_pearls == 0, "unbanked pearl does not increment permanent collection count")
+	check(world.score == 0, "unbanked pearl does not change permanent score")
+	check(world.pending_pearls.size() == 1 and world.pending_score == 100, "first pearl enters at-risk segment rewards")
 	first_pearl._touch(world.player)
-	check(world.collected_pearls == 1, "collected pearl cannot be scored twice")
+	check(world.pending_pearls.size() == 1, "pending pearl cannot be scored twice")
+	world.respawn()
+	check(world.pending_pearls.is_empty() and world.pending_score == 0, "restart clears at-risk pearl rewards")
+	check(not first_pearl.collected and first_pearl.visible, "restart returns at-risk pearl to the room")
+	check(world.score == 0 and world.collected_pearls == 0, "restart cannot combine pearl and efficiency rewards")
+	first_pearl._touch(world.player)
+	world.bank_segment_rewards()
+	check(world.score == 100 and world.collected_pearls == 1, "banking commits pending pearl and score")
+	world.respawn()
+	check(first_pearl.collected and not first_pearl.visible, "banked pearl persists through later death")
+	check(world.score == 100 and world.collected_pearls == 1, "banked pearl score persists through later death")
 
 	var glimmer = world.creatures[0]
 	glimmer.position += Vector2(70, 30)

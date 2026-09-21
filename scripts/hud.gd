@@ -48,7 +48,7 @@ func _draw() -> void:
 	text(Vector2(780, 63), "ANCHOR %02d" % (world.active_checkpoint + 1), 14)
 	text(Vector2(1080, 36), "%02d:%02d" % [int(world.elapsed) / 60, int(world.elapsed) % 60], 22)
 	text(Vector2(1080, 64), "RETRIES %02d" % world.deaths, 12, MUTED)
-	text(Vector2(780, 87), "PEARLS %02d/%02d    SCORE %05d" % [world.collected_pearls, world.total_pearls, world.score], 13, GOLD)
+	text(Vector2(780, 87), "BANKED %02d  AT RISK %02d  SCORE %05d (+%d)" % [world.collected_pearls, world.pending_pearls.size(), world.score, world.pending_score], 11, GOLD)
 	draw_rect(Rect2(0, 758, 1280, 42), Color("071923"))
 	text(Vector2(35, 784), "W/S  Rise / sink     A/D  Swim     SPACE  Light     R  Retry     ESC  Pause", 14, MUTED)
 	text(Vector2(1090, 784), "F1  Diagnostics", 13, MUTED)
