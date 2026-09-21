@@ -8,6 +8,7 @@ This file separates automated rule checks from human playtests. Automated checks
 - Build: commit `78c4961` (`v0.2-fun-pass`)
 - Purpose: verify boundary rules before manual play
 - Command: `Godot --headless --path . --script tests/test_runner.gd`
+- Result: 32 checks passed, 0 failures
 
 | Check | Status |
 |---|---|
