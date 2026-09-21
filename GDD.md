@@ -296,7 +296,7 @@ Each human round will use the controls card only, without verbal guidance. Recor
 |---|---|---|---|---|
 | v0.1-prototype | 2026-09-20 | `881832c` | Playable test room plus first three-level blockout: buoyancy, air, drift and rip currents, one-use vents, forward checkpoints, respawn, lantern, Glimmer, animation, event audio and diagnostics | Verify the complete rule loop early; automated boundary checks passed, while human clarity and timing tests remain pending |
 | v0.2-fun-pass | 2026-09-20 | `78c4961` | Added an explicit hold-key tutorial, current-aligned pearl trails, timed flow-chain scoring, movement trails, pickup bursts, background schools and rays, an original looping theme, and a distinct pearl sound | Respond to the first direct player reaction that the rule prototype was unclear, static and not yet fun; preserve the air economy while adding short-term goals and feedback |
-| v0.3 | `TODO` | `TODO` | `TODO` | `TODO` |
+| v0.3-danger-pass | 2026-09-20 | `1c40cc4` | Rebalanced a continuously swimming air tank to roughly 40–55 seconds; added labelled stinging coral with air damage and knockback; made hostile Glimmer contact use the visible drowning sequence; added a dangerous final test-room exercise | Direct play feedback showed that the safe prototype felt like consequence-free swimming, so failure had to become visible, attributable and avoidable |
 | v1.0 | `TODO` | `TODO` | Art, animation, audio, three-platform export | Release |
 
 ### 12.3 Design decisions recorded before implementation (2026-09-20 review)
