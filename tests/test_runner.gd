@@ -83,6 +83,7 @@ func run_all() -> void:
 	check(world.collected_pearls == 0, "unbanked pearl does not increment permanent collection count")
 	check(world.score == 0, "unbanked pearl does not change permanent score")
 	check(world.pending_pearls.size() == 1 and world.pending_score == 100, "first pearl enters at-risk segment rewards")
+	check(world.pearl_tutorial_shown and world.pearl_tutorial_left > 0.0, "first pearl displays the anchor-banking tutorial")
 	first_pearl._touch(world.player)
 	check(world.pending_pearls.size() == 1, "pending pearl cannot be scored twice")
 	world.respawn()

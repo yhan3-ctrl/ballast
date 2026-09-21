@@ -68,6 +68,9 @@ func _draw() -> void:
 		var size: Vector2 = font.get_string_size(world.notice_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
 		draw_rect(Rect2((1280 - size.x) / 2 - 22, 116, size.x + 44, 42), Color(0.025, 0.08, 0.11, 0.94))
 		text(Vector2((1280 - size.x) / 2, 143), world.notice_text, 16, GOLD)
+	if world.pearl_tutorial_left > 0:
+		draw_rect(Rect2(369, 170, 542, 46), Color(0.025, 0.08, 0.11, 0.96))
+		text(Vector2(406, 199), "AT RISK  —  PEARLS BANK AT THE NEXT ANCHOR", 16, GOLD)
 	if p.dying:
 		text(Vector2(487, 395), "OUT OF BREATH", 32, GOLD)
 		text(Vector2(476, 432), "Returning to your last anchor...", 18)

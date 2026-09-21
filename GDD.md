@@ -128,7 +128,7 @@ Contact with Yuun returns Yuun to the last checkpoint. When attracted, a Glimmer
 
 ### 6.5 Pearl trails and flow chains
 
-Pearls turn traversal into a readable short-term challenge without adding a new control. They are arranged along useful current lines and alternate routes. Collecting another pearl within 3.5 seconds raises the flow chain; a pearl awards `100 × min(chain, 5)` pending points. Pearls and their points remain **at risk** until the next forward checkpoint or level exit banks them. Death or `R` returns every at-risk pearl in the current segment to its original position and clears its pending points. Banked pearls persist. Pearls never change air or movement, so the air economy remains intact while clean movement receives immediate sound, particle and score feedback.
+Pearls turn traversal into a readable short-term challenge without adding a new control. They are arranged along useful current lines and alternate routes. Collecting another pearl within 3.5 seconds raises the flow chain; a pearl awards `100 × min(chain, 5)` pending points. Pearls and their points remain **at risk** until the next forward checkpoint or level exit banks them. Death or `R` returns every at-risk pearl in the current segment to its original position and clears its pending points. Banked pearls persist. On the first pearl pickup, an independent six-second tutorial states `AT RISK — PEARLS BANK AT THE NEXT ANCHOR`; later pickup notices cannot overwrite it. Pearls never change air or movement, so the air economy remains intact while clean movement receives immediate sound, particle and score feedback.
 
 ---
 

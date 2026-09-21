@@ -8,7 +8,7 @@ This file separates automated rule checks from human playtests. Automated checks
 - Build: commit `115040b` (`v0.5-reward-integrity`)
 - Purpose: verify boundary rules before manual play
 - Command: `Godot --headless --path . --script tests/test_runner.gd`
-- Result: 47 checks passed, 0 failures
+- Result: 48 checks passed, 0 failures
 
 | Check | Status |
 |---|---|
@@ -26,6 +26,7 @@ This file separates automated rule checks from human playtests. Automated checks
 | At-risk pearls and pending score reset on death or `R` | Automated |
 | Reset cannot combine an expensive-route pearl reward with a fresh-air efficiency reward | Automated |
 | Banked pearl count and score persist through later death | Automated |
+| First pearl displays an explicit anchor-banking tutorial | Automated |
 | Original music and pearl event sound load as project resources | Automated |
 | Coral removes 25 air, applies one hit, and can cause a clearly attributed drowning | Automated |
 | Hostile Glimmer contact causes a clearly attributed drowning | Automated |
@@ -61,11 +62,18 @@ The macOS export has been launched from the exported application and reached the
 - Tester relationship and prior knowledge:
 - Build or commit:
 - Instructions provided: controls card only
+- Observer intervention: none unless the tester is stuck for more than two minutes
 - Completion time:
-- Deaths by checkpoint:
+- Time per level:
+- Checkpoint, route chosen, and air remaining:
+- Deaths and causes: drowning / Glimmer / coral
 - First moment of confusion:
 - Response to low-air warning:
 - Route chosen and why:
+- Did the tester turn off the lantern to escape a Glimmer without prompting?:
+- Did the tester explain `AT RISK` correctly without prompting?:
 - Glimmer behavior: interesting / predictable / reset reliable:
+- Post-play answer — most fun moment:
+- Post-play answer — most frustrating moment:
 - Rule-breaking result:
 - Changes made afterward and matching commit:

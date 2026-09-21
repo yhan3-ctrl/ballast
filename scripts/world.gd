@@ -51,6 +51,8 @@ var collected_pearls: int = 0
 var total_pearls: int = 0
 var pending_pearls: Array = []
 var pending_score: int = 0
+var pearl_tutorial_shown: bool = false
+var pearl_tutorial_left: float = 0.0
 var combo: int = 0
 var best_combo: int = 0
 var combo_left: float = 0.0
@@ -133,6 +135,8 @@ func start_game() -> void:
 	total_pearls = 0
 	pending_pearls.clear()
 	pending_score = 0
+	pearl_tutorial_shown = false
+	pearl_tutorial_left = 0.0
 	combo = 0
 	best_combo = 0
 	combo_left = 0.0
@@ -357,6 +361,9 @@ func collect_pearl(pearl: Node) -> void:
 	last_points = 100 * mini(combo, 5)
 	pending_score += last_points
 	pending_pearls.append(pearl)
+	if not pearl_tutorial_shown:
+		pearl_tutorial_shown = true
+		pearl_tutorial_left = 6.0
 	spawn_burst(pearl.global_position, Color("f5d69a"), 13)
 	play_sound("pearl")
 	notify("PEARL +%d AT RISK  /  FLOW CHAIN x%d" % [last_points, combo])
@@ -489,6 +496,7 @@ func _process(delta: float) -> void:
 	if not paused:
 		visual_clock += delta
 		notice_left = maxf(0, notice_left - delta)
+		pearl_tutorial_left = maxf(0.0, pearl_tutorial_left - delta)
 		combo_left = maxf(0.0, combo_left - delta)
 		if combo_left <= 0.0:
 			combo = 0
