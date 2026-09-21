@@ -89,11 +89,11 @@ Ballast does not simulate real buoyancy physics. It uses a **simplified underwat
 | Parameter | Placeholder value |
 |---|---|
 | Max air | 100 |
-| Rise | 2.2 air/sec |
-| Sink | 1.4 air/sec |
-| Horizontal swim | 0.7 air/sec |
-| Lantern lit | 0.7 air/sec |
-| Passive drain | 0.15 air/sec |
+| Rise | 3.0 air/sec |
+| Sink | 2.2 air/sec |
+| Horizontal swim | 1.5 air/sec |
+| Lantern lit | 1.2 air/sec |
+| Passive drain | 0.35 air/sec |
 | Against a current | cost x2 |
 | Low-air warning | at 25 |
 | Vent refill | +40, single use |
@@ -154,6 +154,7 @@ Structured on the three levels defined in Salen and Zimmerman, *Rules of Play*.
 14. A level ends when Lumen reaches the egg nest; the next level loads automatically.
 15. Pearls are optional, persist through death, and are reported on the end screen.
 16. Each pearl awards 100 points multiplied by the current flow chain, capped at x5. The chain resets after 3.5 seconds without a pearl or on death. Time, pearls, score and best chain are displayed at the end and have no mechanical effect.
+17. Red stinging coral removes 35 air and knocks Lumen away. A 0.9-second contact grace period prevents one collision from applying repeatedly. If the damage reaches zero air, the standard drowning and checkpoint reset sequence runs.
 
 ### 7.2 Constitutive Rules
 
@@ -195,6 +196,7 @@ This table is the design contract for the rubric line "learn in one level, utili
 | Buoyancy and air budget | Rise and sink through a shaft; watch the meter fall; find the vent | Choose between two routes with different air costs | Budget an entire dark segment before lighting the lantern once |
 | Current | Ride a drift across a gap that cannot be crossed unaided; feel the doubled cost going back | Take the longer current-assisted route as the cheap option | Use the current to cross the corridor cleared of its Glimmer |
 | Lantern | Reveal a dark alcove containing the exit; then, at a safe enclosure, light it and watch a Glimmer approach, darken it and watch the Glimmer return | Travel past a Glimmer with the lantern off, using memorised geometry | Light it deliberately to pull the Glimmer away from a passage |
+| Hazard reading | Avoid a labelled red coral strip in still water | Avoid coral while choosing between two current-assisted routes | Account for coral knockback while timing a Glimmer lure |
 
 **L1's Glimmer enclosure is an active exercise, not a cutscene:** the exit does not open until the player has lit and darkened the lantern once inside the observation chamber, so the reaction cannot be walked past unnoticed.
 

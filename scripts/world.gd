@@ -6,6 +6,7 @@ const Vent = preload("res://scripts/vent.gd")
 const Checkpoint = preload("res://scripts/checkpoint.gd")
 const Glimmer = preload("res://scripts/glimmer.gd")
 const Pearl = preload("res://scripts/pearl.gd")
+const Hazard = preload("res://scripts/hazard.gd")
 const HUD = preload("res://scripts/hud.gd")
 @export var test_room: bool = false
 var player
@@ -14,6 +15,7 @@ var vents: Array = []
 var checkpoints: Array = []
 var creatures: Array = []
 var pearls: Array = []
+var hazards: Array = []
 var walls: Array[Rect2] = []
 var signs: Array = []
 var world_layer: Node2D
@@ -155,6 +157,7 @@ func build_level() -> void:
 	checkpoints.clear()
 	creatures.clear()
 	pearls.clear()
+	hazards.clear()
 	walls.clear()
 	signs.clear()
 	observation_gate = null
@@ -184,7 +187,7 @@ func build_level() -> void:
 	player.reset_at(spawn_point)
 	tutorial_origin = spawn_point
 	tutorial_active = true
-	player.drowned.connect(func(): request_respawn("Air exhausted"))
+	player.drowned.connect(func(): request_respawn(player.death_reason))
 	player.lantern_changed.connect(func(_lit): play_sound("toggle"))
 	checkpoints[0].activated = true
 	camera = Camera2D.new()
@@ -202,6 +205,8 @@ func build_test_room() -> void:
 	add_vent(Vector2(780, 560), 0)
 	add_flow(Rect2(830, 515, 510, 140), Vector2.RIGHT, 330, "DRIFT")
 	add_pearl_line(Vector2(900, 570), Vector2(92, -18), 4, 0)
+	add_hazard(Rect2(1340, 662, 105, 58))
+	add_sign(Vector2(1260, 585), "RED CORAL", "Touching it costs 35 air.\nSwim above it or accept the hit.")
 	add_wall(Rect2(1230, 150, 80, 305))
 	add_checkpoint(Vector2(1470, 520), 1)
 	add_sign(Vector2(1440, 235), "02 / SPEND LIGHT WISELY", "SPACE toggles the lantern.\nLight attracts Glimmers. Dark lets them return.")
@@ -214,7 +219,9 @@ func build_test_room() -> void:
 	add_wall(Rect2(2300, 440, 85, 280))
 	add_flow(Rect2(2390, 210, 440, 135), Vector2.RIGHT, 700, "RIP")
 	add_pearl_line(Vector2(2460, 270), Vector2(82, 0), 4, 1)
+	add_glimmer(Rect2(2470, 175, 300, 300), 1)
 	add_sign(Vector2(2410, 395), "RIP CURRENT", "Purple flow is one way.\nExit sideways; never fight it.")
+	add_sign(Vector2(2450, 525), "DANGER IS REAL", "Red coral costs 35 air.\nA hostile Glimmer ends the attempt on contact.")
 	add_checkpoint(Vector2(2950, 500), 2)
 	add_sign(Vector2(2920, 235), "RETURN WITH WHAT YOU LEARNED", "Reach the eggs to finish this test dive.")
 
@@ -229,9 +236,11 @@ func build_campaign_layout() -> void:
 			add_vent(Vector2(offset + 760, 540), seg)
 			add_flow(Rect2(offset + 680, 230, 360, 130), Vector2.RIGHT, 310 if seg < 2 else 700, "DRIFT" if seg < 2 else "RIP")
 			add_pearl_line(Vector2(offset + 700, 290), Vector2(78, 0), 4, seg)
+			add_hazard(Rect2(offset + 1180, 665, 150, 55))
 			if seg == 0:
 				add_sign(Vector2(115, 230), "01 / A BREATH IS A CHOICE", "W / S rise & sink. A / D swim.\nFind a vent before your air runs out.")
 				add_sign(Vector2(740, 635), "ONE BREATH, ONCE", "Vents give +40 air. Spent vents reset on death.")
+				add_sign(Vector2(1080, 575), "STINGING CORAL", "Red means danger: -35 air and knockback.\nAvoid it now; later currents push you toward it.")
 			elif seg == 1:
 				add_sign(Vector2(offset + 100, 230), "02 / BORROW THE CURRENT", "Blue arrows stay visible in darkness.\nFlow carries you while you save your breath.")
 				add_flow(Rect2(offset + 1175, 170, 230, 185), Vector2.LEFT, 300, "PUSH")
@@ -249,6 +258,7 @@ func build_campaign_layout() -> void:
 			add_vent(Vector2(offset + 1270, 550), seg)
 			add_pearl_line(Vector2(offset + 420, 560), Vector2(105, 0), 5, seg)
 			add_pearl_line(Vector2(offset + 690, 255), Vector2(110, 0), 4, seg)
+			add_hazard(Rect2(offset + 1210, 665, 160, 55))
 			if level_index == 1:
 				add_glimmer(Rect2(offset + 670, 480, 450, 210), seg)
 				add_sign(Vector2(offset + 80, 230), "%02d / CHOOSE YOUR COST" % (seg + 1), "High route: spend air climbing.\nLow route: borrow the flow, travel dark near Glimmers.")
@@ -326,6 +336,12 @@ func add_pearl(point: Vector2, seg: int) -> void:
 func add_pearl_line(start: Vector2, step: Vector2, count: int, seg: int) -> void:
 	for i in range(count):
 		add_pearl(start + step * i + Vector2(0, sin(i * 1.7) * 30), seg)
+
+func add_hazard(rect: Rect2) -> void:
+	var hazard = Hazard.new()
+	hazard.setup(rect, self)
+	world_layer.add_child(hazard)
+	hazards.append(hazard)
 
 func collect_pearl(pearl: Node) -> void:
 	if not pearl in pearls:

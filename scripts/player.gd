@@ -3,11 +3,11 @@ extends CharacterBody2D
 signal drowned
 signal lantern_changed(lit: bool)
 const MAX_AIR: float = 100.0
-const UP_COST: float = 2.2
-const DOWN_COST: float = 1.4
-const SIDE_COST: float = 0.7
-const LAMP_COST: float = 0.7
-const PASSIVE_COST: float = 0.15
+const UP_COST: float = 3.0
+const DOWN_COST: float = 2.2
+const SIDE_COST: float = 1.5
+const LAMP_COST: float = 1.2
+const PASSIVE_COST: float = 0.35
 const THRUST: float = 470.0
 const DRAG: float = 3.5
 var air: float = MAX_AIR
@@ -27,6 +27,7 @@ var invulnerable_left: float = 0.0
 var trail_clock: float = 0.0
 var swim_burst: float = 0.0
 var in_current: bool = false
+var death_reason: String = "Air exhausted"
 
 func _ready() -> void:
 	collision_layer = 2
@@ -151,9 +152,24 @@ func refill(amount: float) -> bool:
 	air = minf(MAX_AIR, air + amount)
 	return true
 
-func begin_drowning() -> void:
+func take_damage(amount: float, knockback: Vector2, reason: String) -> bool:
+	if dying or invulnerable_left > 0.0:
+		return false
+	air = maxf(0.0, air - amount)
+	velocity += knockback
+	invulnerable_left = 0.9
+	if is_instance_valid(world):
+		world.spawn_burst(global_position, Color("ed7180"), 16)
+		world.play_sound("contact")
+		world.notify("STING  -%d AIR  /  MOVE AWAY" % int(amount))
+	if air <= 0.0:
+		begin_drowning(reason)
+	return true
+
+func begin_drowning(reason: String = "Air exhausted") -> void:
 	if dying:
 		return
+	death_reason = reason
 	dying = true
 	death_left = 1.5
 	lantern_on = false
@@ -172,6 +188,7 @@ func reset_at(point: Vector2) -> void:
 	lantern_on = false
 	death_left = 0.0
 	invulnerable_left = 0.7
+	death_reason = "Air exhausted"
 	if light:
 		light.enabled = false
 	queue_redraw()

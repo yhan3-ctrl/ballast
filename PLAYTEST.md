@@ -8,7 +8,7 @@ This file separates automated rule checks from human playtests. Automated checks
 - Build: commit `78c4961` (`v0.2-fun-pass`)
 - Purpose: verify boundary rules before manual play
 - Command: `Godot --headless --path . --script tests/test_runner.gd`
-- Result: 32 checks passed, 0 failures
+- Result: 38 checks passed, 0 failures
 
 | Check | Status |
 |---|---|
@@ -23,6 +23,8 @@ This file separates automated rule checks from human playtests. Automated checks
 | Test room includes current and Glimmer exercises | Automated |
 | Pearl collection increments once and awards the documented base score | Automated |
 | Original music and pearl event sound load as project resources | Automated |
+| Coral removes 35 air, applies one hit, and can cause a clearly attributed drowning | Automated |
+| Hostile Glimmer contact causes a clearly attributed drowning | Automated |
 | Pause freezes the scene tree and run timer | Automated; manual motion check pending |
 | Rip current cannot be overcome head-on | Automated; geometry escape check pending |
 | Test room can be completed from entrance to eggs | Manual test pending |

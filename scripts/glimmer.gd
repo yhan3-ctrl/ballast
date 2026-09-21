@@ -56,7 +56,7 @@ func _physics_process(delta: float) -> void:
 	target = target.clamp(bounds.position + Vector2(20, 20), bounds.end - Vector2(20, 20))
 	position = position.move_toward(target, speed * delta)
 	if not harmless and p.invulnerable_left <= 0 and position.distance_to(p.position) < 34:
-		world.request_respawn("Glimmer contact")
+		p.begin_drowning("Glimmer contact")
 	if harmless and saw_attraction and saw_return:
 		world.complete_observation()
 	queue_redraw()

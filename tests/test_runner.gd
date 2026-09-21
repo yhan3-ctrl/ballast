@@ -24,9 +24,9 @@ func near(actual: float, expected: float, tolerance: float = 0.001) -> bool:
 func run_all() -> void:
 	var player = Player.new()
 	root.add_child(player)
-	check(near(player.calculate_drain(Vector2.ZERO, false, false, false), 0.15), "passive drain")
-	check(near(player.calculate_drain(Vector2.ZERO, true, true, false), 3.75), "W+S has zero directional input but charges both vertical costs")
-	check(near(player.calculate_drain(Vector2.RIGHT, false, false, true), 1.55), "opposing current doubles thrust cost only")
+	check(near(player.calculate_drain(Vector2.ZERO, false, false, false), 0.35), "passive drain")
+	check(near(player.calculate_drain(Vector2.ZERO, true, true, false), 5.55), "W+S has zero directional input but charges both vertical costs")
+	check(near(player.calculate_drain(Vector2.RIGHT, false, false, true), 3.35), "opposing current doubles thrust cost only")
 
 	var vent = Vent.new()
 	root.add_child(vent)
@@ -110,6 +110,23 @@ func run_all() -> void:
 	check(world.get_tree().paused, "pause stops the scene tree")
 	check(near(world.elapsed, time_before_pause), "pause freezes the run timer")
 	world.set_paused(false)
+	check(world.hazards.size() >= 1, "test room contains visible stinging coral")
+	world.player.reset_at(world.spawn_point)
+	world.player.invulnerable_left = 0.0
+	world.hazards[0]._touch(world.player)
+	check(near(world.player.air, 65.0), "coral contact removes 35 air")
+	world.player.air = 30.0
+	world.player.invulnerable_left = 0.0
+	world.hazards[0]._touch(world.player)
+	check(world.player.dying, "lethal coral damage starts the drowning state")
+	check(world.player.death_reason == "Stinging coral", "hazard death records a clear cause")
+	world.player.reset_at(world.spawn_point)
+	var hostile_glimmer = world.creatures.filter(func(c): return not c.harmless)[0]
+	world.player.invulnerable_left = 0.0
+	hostile_glimmer.position = world.player.position
+	hostile_glimmer._physics_process(0.01)
+	check(world.player.dying, "hostile Glimmer contact starts the drowning state")
+	check(world.player.death_reason == "Glimmer contact", "Glimmer death records a clear cause")
 	check(ResourceLoader.exists("res://assets/audio/music.wav"), "original music asset is present")
 	check(ResourceLoader.exists("res://assets/audio/pearl.wav"), "pearl event sound is present")
 	print("RESULT: %d checks, %d failures" % [checks, failures])

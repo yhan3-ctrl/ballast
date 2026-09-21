@@ -16,6 +16,8 @@ Open `project.godot` with Godot and use **Play Project** for the main menu. On m
 - `F1`: diagnostics overlay
 - `T` on the title screen: open the focused test dive
 
+Red coral removes 35 air and knocks Lumen away. Hostile Glimmers cause drowning on contact. The first test room labels both hazards before the final exercise.
+
 ## Local verification
 
 Run the automated boundary checks with:
