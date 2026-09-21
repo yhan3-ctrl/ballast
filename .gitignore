@@ -1,4 +1,6 @@
 .godot/
 .DS_Store
 builds/
+captures/*
+!captures/.gitkeep
 *.log

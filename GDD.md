@@ -270,7 +270,7 @@ The loop closes **through the player**, which is why it is a cybernetic system a
 
 **Audio events (the assignment names pickups, attacks and damage as examples):** pearl pickup, vent refill, lantern toggle, low-air heartbeat, drowning, Glimmer contact, checkpoint activated, level complete, ambient bed. Ambient music is optional and does not substitute for event audio.
 
-`TODO` Credits and licences for all third-party assets, in README.
+The current prototype uses original procedural graphics and original generated placeholder event sounds. No third-party art or audio is included. Any later third-party asset must be credited with its licence in README before release.
 
 ---
 
@@ -280,7 +280,7 @@ The loop closes **through the player**, which is why it is a cybernetic system a
 
 ### 12.1 Playtest protocol
 
-Each round: `TODO` N testers, controls card only, no verbal guidance. Recorded: time per segment, deaths per checkpoint, the moment of verbalised confusion, whether the player reacted to the low-air warning, and whether the hidden route was found unprompted.
+Each human round will use the controls card only, without verbal guidance. Record the number of testers, time per segment, deaths per checkpoint, the first moment of confusion, whether the player reacted to the low-air warning, and whether the alternate route was found unprompted. Automated rule checks are recorded separately and are not presented as human playtests.
 
 **Rule-breaking pass (Rules of Play, ch. on breaking the rules).** Each round must also include deliberate abuse: hold `W` and `S` together; touch a vent at exactly full air; touch a vent during the drowning animation; die on the same frame as touching a checkpoint; pause during a current; die and confirm that vents and Glimmers in the segment reset; enter and leave a rip current repeatedly; stand still with the lantern lit next to a Glimmer.
 
@@ -342,4 +342,7 @@ From source: clone the repository, open `project.godot` in Godot `4.7.2 stable`,
 
 ## 15. Known Issues and Future Work
 
-`TODO` Record honestly. Known bugs, cut features, and anything playtesting revealed that was not fixed in time.
+- The three level layouts are a first playable blockout and have not yet been validated for a 5–10 minute completion time.
+- External human playtesting has not yet been completed; clarity and fun remain unverified.
+- Windows and Linux packages have been created but not launched on their destination operating systems.
+- Art and sound are original placeholders and need a final polish pass after the core rules are stable.
