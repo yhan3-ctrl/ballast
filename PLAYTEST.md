@@ -5,7 +5,7 @@ This file separates automated rule checks from human playtests. Automated checks
 ## 2026-09-21 - Automated verification, local prototype
 
 - Tester: automated Godot test runner, not a human playtest
-- Build: commit `115040b` (`v0.5-reward-integrity`)
+- Build: commit `ebf46b7` (`v0.5.1-tutorial`)
 - Purpose: verify boundary rules before manual play
 - Command: `Godot --headless --path . --script tests/test_runner.gd`
 - Result: 48 checks passed, 0 failures
