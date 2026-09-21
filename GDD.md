@@ -288,7 +288,7 @@ Each human round will use the controls card only, without verbal guidance. Recor
 
 | Version | Date | Commits / tag | What changed | Why |
 |---|---|---|---|---|
-| v0.1 | `TODO` | `TODO` | Test room: buoyancy, air, one current, one vent, one checkpoint, respawn | Verify the core loop before any level is built |
+| v0.1-prototype | 2026-09-20 | `881832c` | Playable test room plus first three-level blockout: buoyancy, air, drift and rip currents, one-use vents, forward checkpoints, respawn, lantern, Glimmer, animation, event audio and diagnostics | Verify the complete rule loop early; automated boundary checks passed, while human clarity and timing tests remain pending |
 | v0.2 | `TODO` | `TODO` | `TODO` | `TODO` |
 | v0.3 | `TODO` | `TODO` | `TODO` | `TODO` |
 | v1.0 | `TODO` | `TODO` | Art, animation, audio, three-platform export | Release |

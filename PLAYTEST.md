@@ -5,7 +5,7 @@ This file separates automated rule checks from human playtests. Automated checks
 ## 2026-09-20 - Automated verification, local prototype
 
 - Tester: automated Godot test runner, not a human playtest
-- Build: local working tree
+- Build: commit `881832c` (`v0.1-prototype`)
 - Purpose: verify boundary rules before manual play
 - Command: `Godot --headless --path . --script tests/test_runner.gd`
 
