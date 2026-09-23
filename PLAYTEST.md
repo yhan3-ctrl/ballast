@@ -84,3 +84,5 @@ The macOS export has been launched from the exported application and reached the
 Added physics-server checks for blocked sight, blocked Glimmer motion, delayed observation completion, non-overlapping creature homes, consistent and non-repeatable exit rewards, pre-refill telemetry, final chapter timing and focus-loss pause. Original economy/restart checks remain. See `logs/improvements-test.log` for results.
 
 For an actual outside playtest, record route choice alongside each `BALLAST_TELEMETRY` arrival/retry from Godot Output. F1 now retains the last arrival's air and duration. Do not use this automated run as a tester entry. Music/effects are independently toggled with M/N. Check that the mint observation creature can be attracted and watched returning; quick tapping must not unlock the gate.
+
+Result: **61 checks, 0 failures**, implementation `6edef57`. Local macOS exported test room also passed a headless startup smoke check. No human tester or visual/audio pass is claimed.

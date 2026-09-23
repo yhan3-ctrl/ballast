@@ -303,6 +303,8 @@ Each human round will use the controls card only, without verbal guidance. Recor
 | v0.5.1-tutorial | 2026-09-21 | `ebf46b7` | Added an independent six-second first-pearl tutorial explaining that at-risk pearls bank at the next anchor; expanded the external playtest form to record route air, death causes, unprompted Glimmer learning, reward-rule comprehension, and fun/frustration | `AT RISK` and `BANKED` were new rules whose labels alone might not satisfy the requirement that a first-time player understand without asking |
 | v1.0 | `TODO` | `TODO` | Art, animation, audio, three-platform export | Release |
 
+Local revision `v0.5.2-fairness` / implementation commit `6edef57`: wall-aware Glimmer, completed-return tutorial, consistent exit rewards, arrival telemetry and pause/audio controls. Automated regression: 61 checks passed; external playtest pending.
+
 ### 12.3 Design decisions recorded before implementation (2026-09-20 review)
 
 These are design-review outcomes, not playtest results, and are labelled as such.
