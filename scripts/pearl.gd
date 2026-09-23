@@ -21,17 +21,17 @@ func _ready() -> void:
 	material = mat
 
 func _touch(body: Node) -> void:
-	if collected or not is_instance_valid(world) or body != world.player:
+	if collected or not is_instance_valid(world) or body != world.player or body.dying:
 		return
 	collected = true
-	monitoring = false
+	set_deferred("monitoring", false)
 	visible = false
 	world.collect_pearl(self)
 
 func reset_pearl() -> void:
 	collected = false
 	visible = true
-	monitoring = true
+	set_deferred("monitoring", true)
 	position.y = base_y
 	queue_redraw()
 

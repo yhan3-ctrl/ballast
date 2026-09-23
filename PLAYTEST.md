@@ -77,3 +77,10 @@ The macOS export has been launched from the exported application and reached the
 - Post-play answer — most frustrating moment:
 - Rule-breaking result:
 - Changes made afterward and matching commit:
+
+
+## 2026-09-22 — automated fairness regression (not a human playtest)
+
+Added physics-server checks for blocked sight, blocked Glimmer motion, delayed observation completion, non-overlapping creature homes, consistent and non-repeatable exit rewards, pre-refill telemetry, final chapter timing and focus-loss pause. Original economy/restart checks remain. See `logs/improvements-test.log` for results.
+
+For an actual outside playtest, record route choice alongside each `BALLAST_TELEMETRY` arrival/retry from Godot Output. F1 now retains the last arrival's air and duration. Do not use this automated run as a tester entry. Music/effects are independently toggled with M/N. Check that the mint observation creature can be attracted and watched returning; quick tapping must not unlock the gate.

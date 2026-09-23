@@ -37,3 +37,7 @@ The current prototype uses original procedural graphics, original generated even
 The original 48-second looping underwater theme and event sounds can be regenerated with `python3 tools/generate_audio.py`; the script and note sequence are kept in the repository as asset provenance.
 
 Status: playable prototype. Automated checks and package creation do not count as human playtesting or validation on the destination operating systems.
+
+
+### Fairness revision controls and measurement
+M toggles music; N toggles effects. Losing focus pauses a running dive. F1 preserves the latest pre-refill arrival air/time. Godot Output emits `BALLAST_TELEMETRY` JSON per arrival/retry; this is measurement data, not a completed human playtest. Exit rewards now use the same settlement as anchors.

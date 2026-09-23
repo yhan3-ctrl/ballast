@@ -30,7 +30,7 @@ func _draw() -> void:
 		draw_rect(Rect2(88, 541, 340, 61), Color("183e47"))
 		text(Vector2(112, 580), "ENTER   BEGIN THE DESCENT", 19)
 		text(Vector2(90, 651), "T   Test dive / controls & light lab", 17, GOLD)
-		text(Vector2(90, 744), "DEVELOPMENT PROTOTYPE  /  3 CHAPTERS  /  HUMAN PLAYTEST PENDING", 12, MUTED)
+		text(Vector2(90, 744), "3 CHAPTERS  /  M  MUSIC ON/OFF  /  N  EFFECTS ON/OFF", 12, MUTED)
 		return
 	if not is_instance_valid(world.player):
 		return
@@ -72,7 +72,7 @@ func _draw() -> void:
 		draw_rect(Rect2(369, 170, 542, 46), Color(0.025, 0.08, 0.11, 0.96))
 		text(Vector2(406, 199), "AT RISK  —  PEARLS BANK AT THE NEXT ANCHOR", 16, GOLD)
 	if p.dying:
-		text(Vector2(487, 395), "OUT OF BREATH", 32, GOLD)
+		text(Vector2(487, 395), p.death_reason.to_upper(), 32, GOLD)
 		text(Vector2(476, 432), "Returning to your last anchor...", 18)
 	if world.debug_visible:
 		draw_rect(Rect2(30, 550, 365, 188), Color(0.01, 0.025, 0.04, 0.95))
@@ -81,12 +81,14 @@ func _draw() -> void:
 		text(Vector2(46, 635), "Velocity (%+.1f, %+.1f)" % [p.velocity.x, p.velocity.y], 14)
 		text(Vector2(46, 663), "Segment %.1fs   /   position %.0f, %.0f" % [world.segment_time, p.position.x, p.position.y], 14)
 		text(Vector2(46, 693), "State: %s   /   observation %s" % ["drowning" if p.dying else "swimming", world.observation_complete], 14)
-		text(Vector2(46, 719), "Prototype values; not a human playtest.", 12, MUTED)
+		text(Vector2(46, 719), ("Last arrival: %.1f air / %.1fs" % [world.last_arrival.air, world.last_arrival.seconds]) if not world.last_arrival.is_empty() else "No arrival recorded yet.", 12, MUTED)
 	if world.paused:
 		draw_rect(Rect2(0, 104, 1280, 654), Color("071923"))
 		text(Vector2(480, 348), "DIVE PAUSED", 42)
 		text(Vector2(450, 409), "Time, air and the ocean are stopped.", 18, MUTED)
 		text(Vector2(478, 477), "ESC  Resume     Q  Main menu", 18, GOLD)
+		text(Vector2(400, 530), "WASD  Swim   SPACE  Lantern   R  Retry", 18)
+		text(Vector2(400, 570), "M  Music: %s    N  Effects: %s" % ["OFF" if world.music_muted else "ON", "OFF" if world.effects_muted else "ON"], 18, GOLD)
 	if world.finished:
 		draw_rect(Rect2(0, 104, 1280, 654), Color("071923"))
 		text(Vector2(120, 248), "TEST DIVE COMPLETE" if world.test_room else "A LITTLE LIGHT, RETURNED.", 45)

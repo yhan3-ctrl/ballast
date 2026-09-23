@@ -46,6 +46,12 @@ var visual_clock: float = 0.0
 var level_times: Array[float] = []
 var sound_streams: Dictionary = {}
 var music_player: AudioStreamPlayer
+var segment_records: Array[Dictionary] = []
+var last_arrival: Dictionary = {}
+var level_started_at: float = 0.0
+var music_muted: bool = false
+var effects_muted: bool = false
+var exit_settled: bool = false
 var score: int = 0
 var collected_pearls: int = 0
 var total_pearls: int = 0
@@ -104,6 +110,12 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("debug"):
 		debug_visible = not debug_visible
+	if event is InputEventKey and event.physical_keycode == KEY_M:
+		music_muted = not music_muted
+		if is_instance_valid(music_player):
+			music_player.volume_db = -80.0 if music_muted else -17.0
+	if event is InputEventKey and event.physical_keycode == KEY_N:
+		effects_muted = not effects_muted
 	if menu or finished:
 		if event.is_action_pressed("start"):
 			test_room = false
@@ -142,6 +154,9 @@ func start_game() -> void:
 	combo_left = 0.0
 	level_index = 0
 	level_times.clear()
+	segment_records.clear()
+	last_arrival = {}
+	level_started_at = 0.0
 	build_level()
 	running = true
 
@@ -158,6 +173,8 @@ func to_menu() -> void:
 	player = null
 
 func build_level() -> void:
+	exit_settled = false
+	level_started_at = elapsed
 	if is_instance_valid(world_layer):
 		remove_child(world_layer)
 		world_layer.queue_free()
@@ -272,7 +289,7 @@ func build_campaign_layout() -> void:
 				add_glimmer(Rect2(offset + 670, 480, 450, 210), seg)
 				add_sign(Vector2(offset + 80, 230), "%02d / CHOOSE YOUR COST" % (seg + 1), "High route: spend air climbing.\nLow route: borrow the flow, travel dark near Glimmers.")
 			else:
-				add_glimmer(Rect2(offset + 970, 210, 480, 480), seg)
+				add_glimmer(Rect2(offset + 970, 490, 410, 200), seg)
 				add_wall(Rect2(offset + 1390, 150, 60, 270))
 				add_wall(Rect2(offset + 1390, 550, 60, 170))
 				add_sign(Vector2(offset + 80, 230), "%02d / MAKE AN OPENING" % (seg + 1), "Draw the Glimmer away from the passage.\nGo dark, descend, and borrow the current.")
@@ -353,7 +370,7 @@ func add_hazard(rect: Rect2) -> void:
 	hazards.append(hazard)
 
 func collect_pearl(pearl: Node) -> void:
-	if not pearl in pearls:
+	if not pearl in pearls or pearl in pending_pearls or player.dying:
 		return
 	combo = combo + 1 if combo_left > 0.0 else 1
 	combo_left = 3.5
@@ -412,9 +429,8 @@ func add_sign(point: Vector2, title: String, body: String) -> void:
 func activate_checkpoint(cp: Node) -> bool:
 	if player.dying or respawn_pending or cp.activated or cp.checkpoint_id <= active_checkpoint:
 		return false
-	var banked: Dictionary = bank_segment_rewards()
-	var air_bonus: int = int(round(player.air)) * AIR_BONUS_MULTIPLIER
-	score += air_bonus
+	var banked := settle_segment("anchor")
+	var air_bonus: int = banked.air_bonus
 	cp.activated = true
 	cp.queue_redraw()
 	active_checkpoint = cp.checkpoint_id
@@ -425,6 +441,27 @@ func activate_checkpoint(cp: Node) -> bool:
 	spawn_burst(cp.global_position, Color("e8c38a"), 18)
 	notify("ANCHOR  /  %d PEARLS BANKED  /  AIR BONUS +%d" % [banked.pearls, air_bonus])
 	return true
+
+func record_segment(event: String, air_bonus: int = 0) -> Dictionary:
+	var entry := {"event": event, "level": level_index + 1, "segment": active_checkpoint + 1,
+		"seconds": snappedf(segment_time, 0.01), "air": snappedf(player.air, 0.01),
+		"pearls": pending_pearls.size(), "pearl_score": pending_score,
+		"air_bonus": air_bonus, "reason": last_reason if event == "retry" else ""}
+	segment_records.append(entry)
+	print("BALLAST_TELEMETRY ", JSON.stringify(entry))
+	return entry
+
+func settle_segment(event: String) -> Dictionary:
+	var air_bonus := int(round(player.air)) * AIR_BONUS_MULTIPLIER
+	last_arrival = record_segment(event, air_bonus)
+	var banked := bank_segment_rewards()
+	score += air_bonus
+	banked["air_bonus"] = air_bonus
+	return banked
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and running and not finished:
+		set_paused(true)
 
 func request_respawn(reason: String) -> void:
 	if respawn_pending or not running:
@@ -437,6 +474,7 @@ func respawn() -> void:
 	if not is_instance_valid(player):
 		respawn_pending = false
 		return
+	record_segment("retry")
 	deaths += 1
 	var lost_pearls: int = discard_segment_rewards()
 	segment_time = 0
@@ -477,10 +515,12 @@ func _physics_process(delta: float) -> void:
 			heartbeat_timer = 1.1
 	if player.position.y > 900 or player.position.x < -150:
 		request_respawn("Out of bounds")
-	if not player.dying and not respawn_pending and player.position.distance_to(exit_point) < 65:
+	if not exit_settled and not player.dying and not respawn_pending and player.position.distance_to(exit_point) < 65:
 		if level_index == 0 and not test_room and not observation_complete:
 			return
-		bank_segment_rewards()
+		exit_settled = true
+		settle_segment("exit")
+		level_times.append(elapsed - level_started_at)
 		play_sound("complete")
 		if test_room or level_index >= 2:
 			finished = true
@@ -488,7 +528,6 @@ func _physics_process(delta: float) -> void:
 			player.controlled = false
 			world_layer.process_mode = Node.PROCESS_MODE_DISABLED
 		else:
-			level_times.append(elapsed)
 			level_index += 1
 			call_deferred("build_level")
 
@@ -515,7 +554,7 @@ func notify(message: String) -> void:
 	notice_left = 4.0
 
 func play_sound(sound: String) -> void:
-	if not sound_streams.has(sound) or DisplayServer.get_name() == "headless":
+	if effects_muted or not sound_streams.has(sound) or DisplayServer.get_name() == "headless":
 		return
 	var audio := AudioStreamPlayer.new()
 	audio.stream = sound_streams[sound]

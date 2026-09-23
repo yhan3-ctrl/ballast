@@ -146,6 +146,67 @@ func run_all() -> void:
 	check(hostile_glimmer.speed > 235.0, "Glimmer chase speed exceeds player top speed")
 	check(ResourceLoader.exists("res://assets/audio/music.wav"), "original music asset is present")
 	check(ResourceLoader.exists("res://assets/audio/pearl.wav"), "pearl event sound is present")
+	# Synchronize the physics server before testing actual walls and ray queries.
+	world.set_physics_process(false)
+	world.player.set_physics_process(false)
+	for creature in world.creatures:
+		creature.set_physics_process(false)
+	world.player.reset_at(Vector2(700, 300))
+	glimmer.position = Vector2(550, 300)
+	await physics_frame
+	await physics_frame
+	check(not glimmer.has_sight_to(world.player.global_position), "real wall blocks Glimmer line of sight")
+	world.player.lantern_on = true
+	glimmer.state = glimmer.State.DRIFT
+	glimmer._physics_process(0.1)
+	check(glimmer.state != glimmer.State.ATTRACTED, "lantern behind wall cannot attract Glimmer")
+	glimmer.position = Vector2(550, 300)
+	glimmer.move_and_collide(Vector2(200, 0))
+	check(glimmer.position.x <= 560.1, "Glimmer collision body cannot cross real wall")
+	glimmer.reset_creature()
+	world.observation_complete = false
+	glimmer.position = glimmer.home + Vector2(50, 0)
+	glimmer.state = glimmer.State.ATTRACTED
+	glimmer.saw_attraction = true
+	world.player.lantern_on = false
+	glimmer._physics_process(0.01)
+	check(not world.observation_complete, "observation is not complete when return merely begins")
+	for frame in range(90):
+		glimmer._physics_process(1.0 / 60.0)
+	check(world.observation_complete, "observation completes after creature reaches home")
+	world.player.reset_at(world.exit_point)
+	world.player.air = 37.0
+	world.segment_time = 23.5
+	var score_before_exit: int = world.score
+	world._physics_process(0.0)
+	check(world.score == score_before_exit + 740, "exit awards the same air bonus as an anchor")
+	check(near(world.last_arrival.air, 37.0) and near(world.last_arrival.seconds, 23.5), "arrival telemetry preserves pre-refill air and segment duration")
+	world._physics_process(0.0)
+	check(world.score == score_before_exit + 740, "exit cannot award the bonus twice")
+	check(world.level_times.size() == 1, "final level duration is recorded")
+	world.finished = false
+	world.running = true
+	world._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	check(world.paused, "losing application focus pauses an active dive")
+	world.set_paused(false)
+	world.test_room = false
+	for level in range(3):
+		world.level_index = level
+		world.build_level()
+		world.world_layer.process_mode = Node.PROCESS_MODE_DISABLED
+		await physics_frame
+		await physics_frame
+		var clear_homes := true
+		for creature in world.creatures:
+			var query := PhysicsShapeQueryParameters2D.new()
+			var circle := CircleShape2D.new()
+			circle.radius = 20.0
+			query.shape = circle
+			query.transform = Transform2D(0, creature.global_position)
+			query.collision_mask = 1
+			if not creature.get_world_2d().direct_space_state.intersect_shape(query).is_empty():
+				clear_homes = false
+		check(clear_homes, "chapter %d Glimmer homes do not overlap walls" % (level + 1))
 	print("RESULT: %d checks, %d failures" % [checks, failures])
 	world.free()
 	quit(1 if failures else 0)

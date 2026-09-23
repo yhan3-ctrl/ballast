@@ -112,7 +112,7 @@ Three strengths: drift (small assist), push (doubles cost against it), rip (cann
 
 ### 6.3 Lantern
 
-Toggled, costs air while lit. The current procedural light has an approximately 240 px lit radius and a 60 px unlit aura. It reveals geometry, vents, pearls and the light-sensitive creature. It does **not** reveal currents, which are already visible.
+Toggled, costs air while lit. The current procedural light has an approximately 240 px lit radius and a 60 px unlit aura. It improves visibility of geometry, vents and the light-sensitive creature. Pearls glow independently of the lantern as route cues. It does **not** reveal currents, which are already visible.
 
 ### 6.4 Light-sensitive creature (Glimmer)
 
@@ -122,7 +122,7 @@ One passive creature type, not an enemy AI. Three states:
 2. **Attracted:** while a lit lantern is within `placeholder: 220 px`, moves toward it at a fixed speed.
 3. **Return:** when the lantern goes dark or leaves range, returns to the nearest point of its path and resumes drifting.
 
-Contact with Yuun returns Yuun to the last checkpoint. When attracted, a Glimmer moves slightly faster than Yuun's maximum swim speed, so the intended escape is to turn off the lantern rather than outrun it. The creature cannot be killed, blocked or damaged. It has no search behaviour and no randomness.
+Contact with Yuun returns Yuun to the last checkpoint. When attracted, a Glimmer moves slightly faster than Yuun's maximum swim speed, so the intended escape is to turn off the lantern rather than outrun it. The creature cannot be killed or damaged; solid walls block both its sight and movement. It has no search behaviour and no randomness.
 
 > 中文批注：这只生物是全局最大的实现风险，所以它被排到第二天验证，而不是最后。验收三条：引诱是否有趣、行为是否可预测、重置是否可靠。任何一条不过关，就把它退化成纯装饰（只在第一关出现供观察），三关改为纯洋流与气量解谜，同时删掉 §9 里依赖它的论据。
 
@@ -155,7 +155,7 @@ Structured on the three levels defined in Salen and Zimmerman, *Rules of Play*.
 15. Pearls are optional. Pearls collected after the active checkpoint are at risk until the next forward checkpoint or level exit; death or `R` restores those pearls to the room and removes their pending points. Once banked, pearls persist through later deaths.
 16. Each pearl creates 100 pending points multiplied by the current flow chain, capped at x5. The chain resets after 3.5 seconds without a pearl or on death. Banking transfers pending pearl points into permanent score. Time, banked pearls, score and best chain are displayed at the end and have no mechanical effect.
 17. Red stinging coral removes 25 air and knocks Yuun away. A 0.9-second contact grace period prevents one collision from applying repeatedly. If the damage reaches zero air, the standard drowning and checkpoint reset sequence runs.
-18. First activation of a forward checkpoint converts the air remaining before refill into score at a provisional 20 points per whole air unit. This multiplier puts a 30-air route difference near a 600-point pearl detour; F1 measurements must confirm the final value.
+18. First activation of a forward checkpoint, and each level exit once, converts remaining air into score at a provisional 20 points per rounded air unit. This multiplier puts a 30-air route difference near a 600-point pearl detour; F1 measurements must confirm the final value.
 
 ### 7.2 Constitutive Rules
 
@@ -215,7 +215,7 @@ Three schemas from *Rules of Play*, chosen because they describe the systems thi
 
 **Definition.** How information is distributed, revealed and withheld, and how that distribution shapes decisions.
 
-**Implementation.** Four categories are deliberately separated: geometry and vents are hidden until lit; currents are always known; the Glimmer's path is discoverable but its current position outside the lit radius is not; pearls are hidden off the critical path. No ability is unlocked, so progression is entirely progression in what the player knows.
+**Implementation.** Four categories are deliberately separated: geometry and vents are dim outside the lantern; currents are always known; the Glimmer's path is discoverable but its current position outside the lit radius is not; pearls glow even in darkness to advertise optional routes. No ability is unlocked, so progression is entirely progression in what the player knows.
 
 **Player decision.** Whether to buy information now or commit from memory. Lighting the lantern spends air and, near a Glimmer, spends safety. Going dark spends certainty. This is the decision the game asks most often.
 
@@ -360,3 +360,12 @@ From source: clone the repository, open `project.godot` in Godot `4.7.2 stable`,
 - External human playtesting has not yet been completed; clarity and fun remain unverified.
 - Windows and Linux packages have been created but not launched on their destination operating systems.
 - Procedural art has received an initial feedback pass, but final visual polish still depends on human playtest observations.
+
+
+### Local fairness and measurement revision (2026-09-22)
+
+Glimmer checks line of sight against solid walls and has a 20 px collision body. New attraction has a 0.35 second visible warning; chase speed remains 265 px/s, while drift and return move at 120 px/s. Safe specimens are mint-coloured. The observation gate requires at least 0.6 seconds of attraction, at least 30 px displacement from home, and an actual return home after the lantern is switched off. A quick toggle does not complete it. The third chapter's creature homes were moved out of rock geometry.
+
+Anchors and level exits share pearl and air settlement. Each arrival/retry records chapter, segment, attempt duration, pre-refill air, pending pearl count/points, air bonus and retry reason to `BALLAST_TELEMETRY` in the runtime output. F1 retains the latest arrival's air/time. Records describe gameplay events, not proof of human playtesting; route choice still needs an observer. Level durations are individual rather than cumulative, including the final chapter.
+
+Focus loss pauses active play. M toggles music and N toggles effects for the current session; pause shows controls. Death text names the cause. Exported content still needs human visual/audio and Windows/Linux launch checks. Route balance, 5–10 minute duration and whether L3 meaningfully requires luring remain hypotheses, not validated rubric claims.
