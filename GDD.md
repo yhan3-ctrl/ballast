@@ -379,3 +379,5 @@ The map exposes three chapter buttons; chapters 2 and 3 unlock only after the pr
 Time is hidden from the normal gameplay HUD. Diagnostics retain live chapter time; results show elapsed time including retries. Pauses, introductions, map and results add no time. Whole-chapter replay resets attempt statistics; checkpoint retry preserves time. Fastest chapter times appear on the map only after completion and do not affect points or unlocks. Unlocks and fastest times persist locally; source runs store `saves/progress.cfg`, exports use the application's `user://progress.cfg`. Save data is excluded from Git and exports. Layout learning remains in the levels; the large startup movement overlay is restricted to the test room.
 
 This revision changes navigation and presentation, not the three level geometries. More distinct route challenges, actual rescue animations and external playtesting remain work to validate; introductory objectives refer to currently implemented exits.
+
+Implementation: `c73296b`, local tag `v0.6.0-chapter-map`. Automated checks: 74 passed; four exports passed, macOS map startup verified headlessly. No external human playtest claimed.
