@@ -207,6 +207,49 @@ func run_all() -> void:
 			if not creature.get_world_2d().direct_space_state.intersect_shape(query).is_empty():
 				clear_homes = false
 		check(clear_homes, "chapter %d Glimmer homes do not overlap walls" % (level + 1))
+	world.to_menu()
+	world.unlocked_chapter = 0
+	check(not world.open_chapter(1), "locked chapter cannot open its introduction")
+	check(not world.start_chapter(2), "locked chapter cannot launch through API")
+	check(world.open_chapter(0), "unlocked chapter opens introduction")
+	var intro_time: float = world.elapsed
+	world._physics_process(10.0)
+	check(near(world.elapsed, intro_time) and world.player == null, "introduction consumes no time or air")
+	world.start_chapter(0)
+	check(world.level_index == 0 and near(world.elapsed, 0.0), "challenge starts its own fresh timer")
+	world.elapsed = 45.0
+	world.respawn()
+	check(near(world.elapsed, 45.0), "checkpoint retry retains chapter elapsed time")
+	world.observation_complete = true
+	world.player.position = world.exit_point
+	world._physics_process(0.0)
+	check(world.finished and world.level_index == 0 and not world.running, "chapter exit waits at settlement instead of auto-advancing")
+	check(world.unlocked_chapter == 1 and near(world.best_times[0], 45.0), "first completion unlocks next chapter and records time")
+	world._physics_process(12.0)
+	check(near(world.elapsed, 45.0), "settlement freezes chapter time")
+	world.open_chapter(0)
+	world.start_chapter(0)
+	check(world.score == 0 and world.deaths == 0 and near(world.elapsed, 0.0), "whole-chapter replay resets attempt statistics")
+	world.elapsed = 60.0
+	world.observation_complete = true
+	world.player.position = world.exit_point
+	world._physics_process(0.0)
+	check(near(world.best_times[0], 45.0), "slower replay preserves personal best")
+	world.open_chapter(1)
+	world.start_chapter(1)
+	world.elapsed = 52.0
+	world.player.position = world.exit_point
+	world._physics_process(0.0)
+	check(world.unlocked_chapter == 2 and near(world.best_times[1], 52.0), "chapter two completion unlocks chapter three")
+	world.save_path_override = "res://logs/test-progress.cfg"
+	world.save_enabled = true
+	world.save_progress()
+	world.unlocked_chapter = 0
+	world.best_times = [0.0, 0.0, 0.0]
+	world.load_progress()
+	check(world.unlocked_chapter == 2 and near(world.best_times[0], 45.0), "progress survives save/load using isolated test file")
+	world.save_enabled = false
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(world.save_path_override))
 	print("RESULT: %d checks, %d failures" % [checks, failures])
 	world.free()
 	quit(1 if failures else 0)

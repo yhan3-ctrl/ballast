@@ -4,3 +4,5 @@ builds/
 captures/*
 !captures/.gitkeep
 *.log
+
+saves/

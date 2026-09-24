@@ -371,3 +371,11 @@ Glimmer checks line of sight against solid walls and has a 20 px collision body.
 Anchors and level exits share pearl and air settlement. Each arrival/retry records chapter, segment, attempt duration, pre-refill air, pending pearl count/points, air bonus and retry reason to `BALLAST_TELEMETRY` in the runtime output. F1 retains the latest arrival's air/time. Records describe gameplay events, not proof of human playtesting; route choice still needs an observer. Level durations are individual rather than cumulative, including the final chapter.
 
 Focus loss pauses active play. M toggles music and N toggles effects for the current session; pause shows controls. Death text names the cause. Exported content still needs human visual/audio and Windows/Linux launch checks. Route balance, 5–10 minute duration and whether L3 meaningfully requires luring remain hypotheses, not validated rubric claims.
+
+
+### Chapter map revision — 2026-09-23
+The map exposes three chapter buttons; chapters 2 and 3 unlock only after the previous chapter is completed. Each chapter opens an introduction with its current objective and two short tips. Chapter 1 explains pearl banking before first exposure. Starting the challenge creates a fresh chapter attempt. Exits stop at a result screen (map, replay, next chapter); next chapter opens its introduction, never starts silently. Test dives do not unlock campaign chapters or save best times.
+
+Time is hidden from the normal gameplay HUD. Diagnostics retain live chapter time; results show elapsed time including retries. Pauses, introductions, map and results add no time. Whole-chapter replay resets attempt statistics; checkpoint retry preserves time. Fastest chapter times appear on the map only after completion and do not affect points or unlocks. Unlocks and fastest times persist locally; source runs store `saves/progress.cfg`, exports use the application's `user://progress.cfg`. Save data is excluded from Git and exports. Layout learning remains in the levels; the large startup movement overlay is restricted to the test room.
+
+This revision changes navigation and presentation, not the three level geometries. More distinct route challenges, actual rescue animations and external playtesting remain work to validate; introductory objectives refer to currently implemented exits.

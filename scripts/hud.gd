@@ -14,23 +14,7 @@ func text(at: Vector2, value: String, size: int = 18, color: Color = INK) -> voi
 func _draw() -> void:
 	if not font:
 		return
-	if world.menu:
-		draw_rect(Rect2(0, 0, 1280, 800), Color("071923"))
-		for i in range(16):
-			var y: float = 180 + i * 36
-			draw_line(Vector2(760, y), Vector2(1280, y - 140), Color(0.12, 0.25, 0.29, 0.35), 1, true)
-		for i in range(5):
-			draw_arc(Vector2(975, 390), 70 + i * 48, PI * 0.3, PI * 1.8, 80, Color(0.28, 0.6, 0.6, 0.17), 1.5, true)
-		text(Vector2(88, 130), "YU HAN PRESENTS  /  A SMALL JOURNEY INTO THE DEEP", 14, GOLD)
-		text(Vector2(82, 272), "BALLAST", 96)
-		text(Vector2(90, 315), "YUUN THE JADEFIN", 18, GOLD)
-		text(Vector2(90, 347), "Every breath moves you. Every light changes things.", 21, MUTED)
-		text(Vector2(90, 440), "Recover the eggs. Read the currents. Spend your air wisely.", 18)
-		text(Vector2(90, 482), "HOLD W / S   Rise & sink      HOLD A / D   Swim      SPACE   Lantern", 17, MUTED)
-		draw_rect(Rect2(88, 541, 340, 61), Color("183e47"))
-		text(Vector2(112, 580), "ENTER   BEGIN THE DESCENT", 19)
-		text(Vector2(90, 651), "T   Test dive / controls & light lab", 17, GOLD)
-		text(Vector2(90, 744), "3 CHAPTERS  /  M  MUSIC ON/OFF  /  N  EFFECTS ON/OFF", 12, MUTED)
+	if world.menu or world.finished:
 		return
 	if not is_instance_valid(world.player):
 		return
@@ -46,7 +30,6 @@ func _draw() -> void:
 	text(Vector2(330, 80), "LOW AIR  /  SEEK A VENT" if p.air < 25 else "FUEL + LIFE  /  VENTS +40", 11, GOLD if p.air < 25 else MUTED)
 	text(Vector2(780, 35), "LANTERN " + ("ON" if p.lantern_on else "OFF"), 14, GOLD if p.lantern_on else MUTED)
 	text(Vector2(780, 63), "ANCHOR %02d" % (world.active_checkpoint + 1), 14)
-	text(Vector2(1080, 36), "%02d:%02d" % [int(world.elapsed) / 60, int(world.elapsed) % 60], 22)
 	text(Vector2(1080, 64), "RETRIES %02d" % world.deaths, 12, MUTED)
 	text(Vector2(780, 87), "BANKED %02d  AT RISK %02d  SCORE %05d (+%d)" % [world.collected_pearls, world.pending_pearls.size(), world.score, world.pending_score], 11, GOLD)
 	draw_rect(Rect2(0, 758, 1280, 42), Color("071923"))
@@ -80,7 +63,7 @@ func _draw() -> void:
 		text(Vector2(46, 607), "Air %.2f   /   drain %.2f per second" % [p.air, p.drain_rate], 14)
 		text(Vector2(46, 635), "Velocity (%+.1f, %+.1f)" % [p.velocity.x, p.velocity.y], 14)
 		text(Vector2(46, 663), "Segment %.1fs   /   position %.0f, %.0f" % [world.segment_time, p.position.x, p.position.y], 14)
-		text(Vector2(46, 693), "State: %s   /   observation %s" % ["drowning" if p.dying else "swimming", world.observation_complete], 14)
+		text(Vector2(46, 693), "Chapter %.1fs / observation %s" % [world.elapsed, world.observation_complete], 14)
 		text(Vector2(46, 719), ("Last arrival: %.1f air / %.1fs" % [world.last_arrival.air, world.last_arrival.seconds]) if not world.last_arrival.is_empty() else "No arrival recorded yet.", 12, MUTED)
 	if world.paused:
 		draw_rect(Rect2(0, 104, 1280, 654), Color("071923"))
@@ -89,12 +72,3 @@ func _draw() -> void:
 		text(Vector2(478, 477), "ESC  Resume     Q  Main menu", 18, GOLD)
 		text(Vector2(400, 530), "WASD  Swim   SPACE  Lantern   R  Retry", 18)
 		text(Vector2(400, 570), "M  Music: %s    N  Effects: %s" % ["OFF" if world.music_muted else "ON", "OFF" if world.effects_muted else "ON"], 18, GOLD)
-	if world.finished:
-		draw_rect(Rect2(0, 104, 1280, 654), Color("071923"))
-		text(Vector2(120, 248), "TEST DIVE COMPLETE" if world.test_room else "A LITTLE LIGHT, RETURNED.", 45)
-		text(Vector2(123, 310), "Yuun brought the eggs home. The next dive can be wiser.", 22, MUTED)
-		text(Vector2(123, 388), "TIME  %02d:%02d       RETRIES  %d" % [int(world.elapsed) / 60, int(world.elapsed) % 60, world.deaths], 24, GOLD)
-		text(Vector2(123, 430), "PEARLS  %d / %d       SCORE  %05d       BEST CHAIN  x%d" % [world.collected_pearls, world.total_pearls, world.score, world.best_combo], 21)
-		var rank := "DEEP-SEA NATURAL" if world.collected_pearls >= world.total_pearls and world.deaths == 0 else ("CURRENT READER" if world.collected_pearls >= int(world.total_pearls * 0.7) else "BRAVE BEGINNER")
-		text(Vector2(123, 485), "DIVE RANK  /  " + rank, 21, GOLD)
-		text(Vector2(123, 550), "ENTER  New journey     T  Test dive", 20)

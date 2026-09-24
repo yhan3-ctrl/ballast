@@ -41,3 +41,7 @@ Status: playable prototype. Automated checks and package creation do not count a
 
 ### Fairness revision controls and measurement
 M toggles music; N toggles effects. Losing focus pauses a running dive. F1 preserves the latest pre-refill arrival air/time. Godot Output emits `BALLAST_TELEMETRY` JSON per arrival/retry; this is measurement data, not a completed human playtest. Exit rewards now use the same settlement as anchors.
+
+
+### Chapter map (v0.6.0)
+Click an unlocked dive, read its objective/tips, then Start Challenge. Completing a chapter opens results and unlocks the next. Replay resets that chapter's attempt; R only retries the active anchor. Normal gameplay has no timer; results and F1 show time. Map best times appear after completion. Progress is game-local: `saves/progress.cfg` in source runs, Godot's app-specific user data in exports. Source save data is excluded from release packages.

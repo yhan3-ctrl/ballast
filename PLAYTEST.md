@@ -86,3 +86,7 @@ Added physics-server checks for blocked sight, blocked Glimmer motion, delayed o
 For an actual outside playtest, record route choice alongside each `BALLAST_TELEMETRY` arrival/retry from Godot Output. F1 now retains the last arrival's air and duration. Do not use this automated run as a tester entry. Music/effects are independently toggled with M/N. Check that the mint observation creature can be attracted and watched returning; quick tapping must not unlock the gate.
 
 Result: **61 checks, 0 failures**, implementation `6edef57`. Local macOS exported test room also passed a headless startup smoke check. No human tester or visual/audio pass is claimed.
+
+
+## 2026-09-23 — chapter flow automated regression
+74 checks passed, including locked launches, intro/results clock freeze, retry clock retention, fresh replay statistics, sequential unlock, best-time retention and save/load using an isolated test file. This is not a human playtest. Graphical capture failed at native application startup (exit 134) in this environment; mouse interaction and visual layout still require a graphical pass.

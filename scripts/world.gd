@@ -7,6 +7,7 @@ const Checkpoint = preload("res://scripts/checkpoint.gd")
 const Glimmer = preload("res://scripts/glimmer.gd")
 const Pearl = preload("res://scripts/pearl.gd")
 const Hazard = preload("res://scripts/hazard.gd")
+const ChapterMenu = preload("res://scripts/chapter_menu.gd")
 const HUD = preload("res://scripts/hud.gd")
 @export var test_room: bool = false
 var player
@@ -52,6 +53,13 @@ var level_started_at: float = 0.0
 var music_muted: bool = false
 var effects_muted: bool = false
 var exit_settled: bool = false
+var chapter_menu
+var intro_chapter: int = -1
+var unlocked_chapter: int = 0
+var best_times: Array = [0.0, 0.0, 0.0]
+var save_warning: String = ""
+var save_enabled: bool = true
+var save_path_override: String = ""
 var score: int = 0
 var collected_pearls: int = 0
 var total_pearls: int = 0
@@ -92,6 +100,12 @@ func _ready() -> void:
 	hud = HUD.new()
 	hud.world = self
 	layer.add_child(hud)
+	save_enabled = DisplayServer.get_name() != "headless"
+	load_progress()
+	chapter_menu = ChapterMenu.new()
+	chapter_menu.world = self
+	layer.add_child(chapter_menu)
+	chapter_menu.refresh()
 	if test_room or "--test-room" in OS.get_cmdline_user_args():
 		test_room = true
 		start_game()
@@ -117,9 +131,15 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.physical_keycode == KEY_N:
 		effects_muted = not effects_muted
 	if menu or finished:
-		if event.is_action_pressed("start"):
-			test_room = false
-			start_game()
+		if event.is_action_pressed("pause"):
+			to_menu()
+		elif event.is_action_pressed("start"):
+			if intro_chapter >= 0:
+				start_chapter(intro_chapter)
+			elif finished:
+				to_menu()
+			else:
+				open_chapter(unlocked_chapter)
 		elif event is InputEventKey and event.physical_keycode == KEY_T:
 			test_room = true
 			start_game()
@@ -136,7 +156,51 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("restart"):
 		request_respawn("Manual restart")
 
-func start_game() -> void:
+func progress_path() -> String:
+	if not save_path_override.is_empty():
+		return save_path_override
+	return "res://saves/progress.cfg" if OS.has_feature("editor") else "user://progress.cfg"
+
+func load_progress() -> void:
+	if not save_enabled:
+		return
+	var config := ConfigFile.new()
+	if config.load(progress_path()) != OK:
+		return
+	unlocked_chapter = clampi(int(config.get_value("progress", "unlocked", 0)), 0, 2)
+	for i in range(3):
+		var value = config.get_value("times", str(i), 0.0)
+		if (value is float or value is int) and is_finite(float(value)) and float(value) > 0:
+			best_times[i] = float(value)
+
+func save_progress() -> void:
+	if not save_enabled:
+		return
+	var path := progress_path()
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
+	var config := ConfigFile.new()
+	config.set_value("progress", "unlocked", unlocked_chapter)
+	for i in range(3):
+		config.set_value("times", str(i), best_times[i])
+	if config.save(path) != OK:
+		save_warning = "Progress could not be saved; this session remains playable."
+
+func open_chapter(index: int) -> bool:
+	if index < 0 or index > unlocked_chapter or index > 2:
+		return false
+	to_menu()
+	intro_chapter = index
+	chapter_menu.refresh()
+	return true
+
+func start_chapter(index: int) -> bool:
+	if index < 0 or index > unlocked_chapter or index > 2:
+		return false
+	test_room = false
+	start_game(index)
+	return true
+
+func start_game(chapter: int = 0) -> void:
 	set_paused(false)
 	menu = false
 	finished = false
@@ -152,13 +216,17 @@ func start_game() -> void:
 	combo = 0
 	best_combo = 0
 	combo_left = 0.0
-	level_index = 0
+	level_index = chapter
+	intro_chapter = -1
+	respawn_pending = false
+	fx_particles.clear()
 	level_times.clear()
 	segment_records.clear()
 	last_arrival = {}
 	level_started_at = 0.0
 	build_level()
 	running = true
+	chapter_menu.refresh()
 
 func set_paused(value: bool) -> void:
 	paused = value
@@ -168,9 +236,15 @@ func to_menu() -> void:
 	set_paused(false)
 	running = false
 	menu = true
+	finished = false
+	intro_chapter = -1
 	if is_instance_valid(world_layer):
+		remove_child(world_layer)
 		world_layer.queue_free()
+		world_layer = null
 	player = null
+	if chapter_menu:
+		chapter_menu.refresh()
 
 func build_level() -> void:
 	exit_settled = false
@@ -212,7 +286,7 @@ func build_level() -> void:
 	spawn_point = checkpoints[0].position
 	player.reset_at(spawn_point)
 	tutorial_origin = spawn_point
-	tutorial_active = true
+	tutorial_active = test_room
 	player.drowned.connect(func(): request_respawn(player.death_reason))
 	player.lantern_changed.connect(func(_lit): play_sound("toggle"))
 	checkpoints[0].activated = true
@@ -522,14 +596,16 @@ func _physics_process(delta: float) -> void:
 		settle_segment("exit")
 		level_times.append(elapsed - level_started_at)
 		play_sound("complete")
-		if test_room or level_index >= 2:
-			finished = true
-			running = false
-			player.controlled = false
-			world_layer.process_mode = Node.PROCESS_MODE_DISABLED
-		else:
-			level_index += 1
-			call_deferred("build_level")
+		finished = true
+		running = false
+		player.controlled = false
+		world_layer.process_mode = Node.PROCESS_MODE_DISABLED
+		if not test_room:
+			unlocked_chapter = maxi(unlocked_chapter, mini(level_index + 1, 2))
+			if best_times[level_index] <= 0 or elapsed < best_times[level_index]:
+				best_times[level_index] = elapsed
+			save_progress()
+		chapter_menu.refresh()
 
 func _process(delta: float) -> void:
 	if not paused:
