@@ -106,3 +106,7 @@ Rule suite: 74 checks passed. Static clearance checks: all 3 chapters' anchors, 
 Tester: creator Yu Han, screenshots and comments during play, not an independent outside tester. Reported: could not identify the old egg/exit symbol, did not understand how a chapter completes, and felt they were only swimming while losing resources. No session duration or death count inferred. Response: visible baby fish/contact rescue, a golden home, persistent goal/count/direction, +25-air rescue reward, persistent rescue progress across retries, removal of the observation gate, and stronger glide feedback. New feedback requires a fresh human run; do not mark the usability issue resolved solely from tests.
 
 Rescue regression result: **74 existing checks + 19 rescue checks passed**. Added checks include touch rescue, capped/one-time air reward, pause/death rejection, wall line of sight, retry persistence, home completion and hands-off flow feedback. Three static path checks include all baby locations. Implementation commit: `3bd180b`.
+
+
+### v0.8.1 rescue clarity follow-up
+The objective HUD and glide feedback now include Chinese text. The direction arrow selects the nearest unrescued baby, and reaching home early explicitly states the missing count. Followers face their direction of movement. 74 regression checks and 21 rescue checks passed; three static route checks passed. Graphical capture still exits at native startup in the current tool environment; no new visual pass is claimed.

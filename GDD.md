@@ -124,3 +124,7 @@ Rescue requires proximity within 48 px and clear wall line of sight. Dead, pause
 Hands-off motion with a current now produces a brighter wake, a visible ring, a short sound and a live drain indicator. It does not secretly increase force or award free air: the positive feedback makes the existing reduced thrust expenditure perceptible. Holding thrust removes the glide cue.
 
 Rescue implementation: `3bd180b` (`v0.8.0-rescue`). 74 regression checks, 19 rescue checks and three static route checks passed. These validate implementation boundaries, not subjective fun.
+
+
+### v0.8.1 rescue clarity follow-up
+The objective HUD and glide feedback now include Chinese text. The direction arrow selects the nearest unrescued baby, and reaching home early explicitly states the missing count. Followers face their direction of movement. 74 regression checks and 21 rescue checks passed; three static route checks passed. Graphical capture still exits at native startup in the current tool environment; no new visual pass is claimed.

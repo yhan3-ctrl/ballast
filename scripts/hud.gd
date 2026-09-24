@@ -6,7 +6,10 @@ const GOLD := Color("e8c38a")
 var font: Font
 
 func _ready() -> void:
-	font = ThemeDB.fallback_font
+	var readable := SystemFont.new()
+	readable.font_names = PackedStringArray(["Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", "Arial"])
+	readable.allow_system_fallback = true
+	font = readable
 
 func text(at: Vector2, value: String, size: int = 18, color: Color = INK) -> void:
 	draw_string(font, at, value, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
@@ -37,7 +40,7 @@ func _draw() -> void:
 	text(Vector2(1090, 784), "F1  Diagnostics", 13, MUTED)
 	if not world.test_room:
 		var count: int = world.rescued_babies.size()
-		text(Vector2(35, 135), "BABIES %d/3  /  %s" % [count, "BRING THEM HOME!" if count == 3 else "TOUCH A BABY TO RESCUE IT"], 19, GOLD)
+		text(Vector2(35, 135), "宝宝 %d/3  /  %s" % [count, "带它们回金色小屋 / GO HOME" if count == 3 else "碰到宝宝即可救援 / TOUCH TO RESCUE"], 19, GOLD)
 		var direction: Vector2 = (world.objective_position() - p.position).normalized()
 		var origin := Vector2(1180, 132)
 		draw_line(origin - direction * 14, origin + direction * 14, GOLD, 3, true)
@@ -45,7 +48,7 @@ func _draw() -> void:
 		draw_line(origin + direction * 14, origin + direction.rotated(-2.5) * 10, GOLD, 3, true)
 		text(Vector2(1010, 140), "HOME" if count == 3 else "NEXT BABY", 14, GOLD)
 	if p.flow_gliding:
-		text(Vector2(380, 730), "FLOW GLIDE / SAVING AIR / %.1f AIR PER SECOND" % p.drain_rate, 17, Color("a5fff1"))
+		text(Vector2(380, 730), "顺流滑行 · 正在省气 / GLIDING / %.1f AIR PER SECOND" % p.drain_rate, 17, Color("a5fff1"))
 	if world.rescue_notice_left > 0:
 		var reward := "+%d AIR" % roundi(world.rescue_air_gain) if world.rescue_air_gain > 0 else "A NEW FRIEND!"
 		text(Vector2(340, 265), "BABY RESCUED!  %s  /  %d OF 3" % [reward, world.rescued_babies.size()], 24, GOLD)

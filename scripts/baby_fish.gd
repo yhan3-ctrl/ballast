@@ -4,6 +4,7 @@ var clock: float = 0.0
 var number: int = 1
 var tint := Color("ffd28a")
 var origin := Vector2.ZERO
+var facing: float = 1.0
 
 func _ready() -> void:
 	origin = position
@@ -19,15 +20,17 @@ func _process(delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
+	draw_set_transform(Vector2.ZERO, 0, Vector2(facing, 1))
 	var wag := sin(clock * 7) * 5
 	draw_circle(Vector2.ZERO, 39 if not rescued else 22, Color(tint, 0.10))
 	draw_colored_polygon(PackedVector2Array([Vector2(-13, 0), Vector2(-30, -13 + wag), Vector2(-30, 13 + wag)]), tint.darkened(0.15))
-	draw_set_transform(Vector2.ZERO, 0, Vector2(1.25, 0.85))
+	draw_set_transform(Vector2.ZERO, 0, Vector2(1.25 * facing, 0.85))
 	draw_circle(Vector2.ZERO, 17, tint)
-	draw_set_transform(Vector2.ZERO)
+	draw_set_transform(Vector2.ZERO, 0, Vector2(facing, 1))
 	draw_circle(Vector2(10, -5), 6, Color("102c39"))
 	draw_circle(Vector2(12, -7), 2, Color.WHITE)
 	draw_arc(Vector2(10, 3), 5, 0.1, 2.1, 10, Color("614b48"), 1.5, true)
+	draw_set_transform(Vector2.ZERO)
 	if not rescued:
 		draw_line(Vector2(0, -43), Vector2(0, -32), tint, 3, true)
 		draw_circle(Vector2(0, -26), 2, tint)

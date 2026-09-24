@@ -57,3 +57,7 @@ Three differentiated layouts and three original chapter arrangements. Start via 
 
 ### Rescue mode — v0.8.0
 **Touch three baby fish, let them follow, then bring them to the golden house.** No interaction key is required. Rescuing grants up to 25 air once; rescued babies remain with you after an anchor retry. The HUD always shows rescue progress and points toward the next missing baby/home. Pearls are optional. The old Glimmer observation gate has been removed. Relaxing input in a current activates glide feedback and shows actual air drain. Old unlocks are retained; rescue best times start separately.
+
+
+### v0.8.1 rescue clarity follow-up
+The objective HUD and glide feedback now include Chinese text. The direction arrow selects the nearest unrescued baby, and reaching home early explicitly states the missing count. Followers face their direction of movement. 74 regression checks and 21 rescue checks passed; three static route checks passed. Graphical capture still exits at native startup in the current tool environment; no new visual pass is claimed.

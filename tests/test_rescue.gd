@@ -22,6 +22,8 @@ func run() -> void:
 	world.player.position = world.exit_point
 	world._physics_process(0.0)
 	check(not world.finished, "reaching home without three babies does not win")
+	check(world.home_hint_left > 0 and world.notice_text.contains("3"), "home explains how many babies are missing")
+	check(world.objective_position() == world.babies[2].position, "objective points to nearest missing baby, including when backtracking")
 	var baby = world.babies[0]
 	world.player.position = baby.position
 	world.player.air = 40.0

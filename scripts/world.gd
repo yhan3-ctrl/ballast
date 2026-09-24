@@ -72,6 +72,7 @@ var follow_trail: Array[Vector2] = []
 var rescue_notice_left: float = 0.0
 var rescue_air_gain: float = 0.0
 var glide_cue_left: float = 0.0
+var home_hint_left: float = 0.0
 var score: int = 0
 var collected_pearls: int = 0
 var total_pearls: int = 0
@@ -327,6 +328,7 @@ func build_level() -> void:
 	rescued_babies.clear()
 	follow_trail.clear()
 	rescue_notice_left = 0.0
+	home_hint_left = 0.0
 	spawn_point = checkpoints[0].position
 	player.reset_at(spawn_point)
 	tutorial_origin = spawn_point
@@ -671,12 +673,18 @@ func try_rescue_baby(baby: Node2D) -> bool:
 	return true
 
 func objective_position() -> Vector2:
+	var closest := exit_point
+	var distance := INF
 	for baby in babies:
 		if not baby.rescued:
-			return baby.position
-	return exit_point
+			var candidate: float = player.position.distance_squared_to(baby.position)
+			if candidate < distance:
+				distance = candidate
+				closest = baby.position
+	return closest
 
 func update_rescue(delta: float) -> void:
+	home_hint_left = maxf(0.0, home_hint_left - delta)
 	rescue_notice_left = maxf(0.0, rescue_notice_left - delta)
 	glide_cue_left = maxf(0.0, glide_cue_left - delta)
 	for baby in babies:
@@ -687,7 +695,11 @@ func update_rescue(delta: float) -> void:
 			follow_trail.pop_back()
 	for i in range(rescued_babies.size()):
 		if not follow_trail.is_empty():
-			rescued_babies[i].position = follow_trail[mini((i + 1) * 12, follow_trail.size() - 1)]
+			var target: Vector2 = follow_trail[mini((i + 1) * 12, follow_trail.size() - 1)]
+			var dx: float = target.x - rescued_babies[i].position.x
+			if absf(dx) > 0.1:
+				rescued_babies[i].facing = signf(dx)
+			rescued_babies[i].position = target
 	if player.flow_gliding and glide_cue_left <= 0.0:
 		play_sound("glide")
 		glide_cue_left = 3.0
@@ -711,6 +723,9 @@ func _physics_process(delta: float) -> void:
 		request_respawn("Out of bounds")
 	if not exit_settled and not player.dying and not respawn_pending and player.position.distance_to(exit_point) < 65:
 		if not test_room and rescued_babies.size() < 3:
+			if home_hint_left <= 0:
+				notify("还差 %d 条宝宝！跟着箭头找它们 / FIND %d MORE BABIES" % [3 - rescued_babies.size(), 3 - rescued_babies.size()])
+				home_hint_left = 5.0
 			return
 		exit_settled = true
 		settle_segment("exit")
