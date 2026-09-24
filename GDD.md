@@ -381,3 +381,7 @@ Time is hidden from the normal gameplay HUD. Diagnostics retain live chapter tim
 This revision changes navigation and presentation, not the three level geometries. More distinct route challenges, actual rescue animations and external playtesting remain work to validate; introductory objectives refer to currently implemented exits.
 
 Implementation: `c73296b`, local tag `v0.6.0-chapter-map`. Automated checks: 74 passed; four exports passed, macOS map startup verified headlessly. No external human playtest claimed.
+
+
+### Event audio revision — 2026-09-23
+Original synthesized event audio now differentiates pearl pickup, air refill, banking, chapter completion, impact, drowning, return, lantern and heartbeat. A rising pitch marks pearl chains. Low air lowers the music by 8 dB to make the heartbeat easier to hear. Important impact/drowning/completion cues clear competing event voices. Other cues are limited to six concurrent voices with repeat cooldowns. Pausing, returning to map and effects mute clear active cues. Commercial song suggestions remain references only; no third-party recording was incorporated.

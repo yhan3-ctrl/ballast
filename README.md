@@ -45,3 +45,7 @@ M toggles music; N toggles effects. Losing focus pauses a running dive. F1 prese
 
 ### Chapter map (v0.6.0)
 Click an unlocked dive, read its objective/tips, then Start Challenge. Completing a chapter opens results and unlocks the next. Replay resets that chapter's attempt; R only retries the active anchor. Normal gameplay has no timer; results and F1 show time. Map best times appear after completion. Progress is game-local: `saves/progress.cfg` in source runs, Godot's app-specific user data in exports. Source save data is excluded from release packages.
+
+
+### Event audio (v0.6.1)
+Nine original synthesized event cues are reproducible with `python3 tools/generate_events.py`. They use no commercial samples. Pearl chains rise by up to four semitones; checkpoint, completion, vent, damage, drowning, return and lantern each have distinct cues. Low air/pause reduces background music by 8 dB. Effects have per-event levels, short cooldowns and at most six managed voices; mute stops active effects. Current background music remains the original generated track, not Labrinth or another commercial recording.

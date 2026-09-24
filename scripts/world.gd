@@ -52,6 +52,9 @@ var last_arrival: Dictionary = {}
 var level_started_at: float = 0.0
 var music_muted: bool = false
 var effects_muted: bool = false
+var event_players: Array[AudioStreamPlayer] = []
+var sound_last_ms: Dictionary = {}
+const EVENT_LEVELS = {"pearl": -14.0, "vent": -10.0, "checkpoint": -9.0, "complete": -8.0, "toggle": -18.0, "contact": -10.0, "drown": -11.0, "heartbeat": -15.0, "return": -13.0}
 var exit_settled: bool = false
 var chapter_menu
 var intro_chapter: int = -1
@@ -80,7 +83,7 @@ const AIR_BONUS_MULTIPLIER: int = 20
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	setup_input()
-	for sound in ["vent", "checkpoint", "toggle", "drown", "contact", "complete", "heartbeat", "pearl", "music"]:
+	for sound in ["vent", "checkpoint", "toggle", "drown", "contact", "complete", "heartbeat", "pearl", "return", "music"]:
 		var path: String = "res://assets/audio/" + sound + ".wav"
 		if ResourceLoader.exists(path):
 			sound_streams[sound] = load(path)
@@ -130,6 +133,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			music_player.volume_db = -80.0 if music_muted else -17.0
 	if event is InputEventKey and event.physical_keycode == KEY_N:
 		effects_muted = not effects_muted
+		if effects_muted:
+			stop_effects()
 	if menu or finished:
 		if event.is_action_pressed("pause"):
 			to_menu()
@@ -201,6 +206,7 @@ func start_chapter(index: int) -> bool:
 	return true
 
 func start_game(chapter: int = 0) -> void:
+	stop_effects()
 	set_paused(false)
 	menu = false
 	finished = false
@@ -231,8 +237,11 @@ func start_game(chapter: int = 0) -> void:
 func set_paused(value: bool) -> void:
 	paused = value
 	get_tree().paused = value
+	if value:
+		stop_effects()
 
 func to_menu() -> void:
+	stop_effects()
 	set_paused(false)
 	running = false
 	menu = true
@@ -560,7 +569,7 @@ func respawn() -> void:
 			creature.reset_creature()
 	player.reset_at(spawn_point)
 	respawn_pending = false
-	play_sound("contact")
+	play_sound("return")
 	notify("BACK AT ANCHOR  /  %s  /  %d PEARLS LOST" % [last_reason.to_upper(), lost_pearls])
 
 func complete_observation() -> void:
@@ -608,6 +617,13 @@ func _physics_process(delta: float) -> void:
 		chapter_menu.refresh()
 
 func _process(delta: float) -> void:
+	if is_instance_valid(music_player):
+		var target_db := -17.0
+		if paused or (is_instance_valid(player) and running and player.air < 25):
+			target_db = -25.0
+		if music_muted:
+			target_db = -80.0
+		music_player.volume_db = move_toward(music_player.volume_db, target_db, delta * 24.0)
 	if not paused:
 		visual_clock += delta
 		notice_left = maxf(0, notice_left - delta)
@@ -629,13 +645,36 @@ func notify(message: String) -> void:
 	notice_text = message
 	notice_left = 4.0
 
+func stop_effects() -> void:
+	for audio in event_players:
+		if is_instance_valid(audio):
+			audio.stop()
+			audio.queue_free()
+	event_players.clear()
+
 func play_sound(sound: String) -> void:
 	if effects_muted or not sound_streams.has(sound) or DisplayServer.get_name() == "headless":
 		return
+	var now := Time.get_ticks_msec()
+	var cooldown := 90 if sound == "pearl" else 140
+	if now - int(sound_last_ms.get(sound, -10000)) < cooldown:
+		return
+	sound_last_ms[sound] = now
+	event_players = event_players.filter(func(p): return is_instance_valid(p) and not p.is_queued_for_deletion())
+	if sound in ["contact", "drown", "complete"]:
+		stop_effects()
+	elif event_players.size() >= 6:
+		var oldest: AudioStreamPlayer = event_players.pop_front()
+		oldest.stop()
+		oldest.queue_free()
 	var audio := AudioStreamPlayer.new()
 	audio.stream = sound_streams[sound]
-	audio.volume_db = -12 if sound != "heartbeat" else -19
+	audio.volume_db = EVENT_LEVELS.get(sound, -12.0)
+	if sound == "pearl":
+		audio.pitch_scale = pow(2.0, mini(maxi(combo - 1, 0), 4) / 12.0)
+	audio.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(audio)
+	event_players.append(audio)
 	audio.finished.connect(audio.queue_free)
 	audio.play()
 

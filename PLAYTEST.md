@@ -90,3 +90,7 @@ Result: **61 checks, 0 failures**, implementation `6edef57`. Local macOS exporte
 
 ## 2026-09-23 — chapter flow automated regression
 74 checks passed, including locked launches, intro/results clock freeze, retry clock retention, fresh replay statistics, sequential unlock, best-time retention and save/load using an isolated test file. This is not a human playtest. Graphical capture failed at native application startup (exit 134) in this environment; mouse interaction and visual layout still require a graphical pass.
+
+
+## 2026-09-23 — audio engineering checks
+74 rule checks remain passing. All nine regenerated event WAV files are below full-scale peaks and have near-zero first/last samples. These checks do not validate subjective sound quality or the combined audible mix. Headphone/speaker audition remains pending.
