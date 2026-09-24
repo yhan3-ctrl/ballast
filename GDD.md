@@ -117,7 +117,7 @@ Remaining acceptance evidence: an unfamiliar player's complete three-chapter run
 
 
 ## Rescue redesign — 2026-09-24
-Direct player feedback: the exit was unclear, the old egg symbol was not recognizable, and traversal felt purposeless. The revised objective is explicit on the introduction and HUD: touch three baby fish and bring them to the golden house. A bilingual introduction explains contact rescue; no new action key is required. The HUD shows rescued count and a direction arrow to the next missing baby, or home when all are found. The arrow is a direction hint, not a collision-free navigation path.
+Direct player feedback: the exit was unclear, the old egg symbol was not recognizable, and traversal felt purposeless. The revised objective is explicit on the introduction and HUD: touch three baby fish and bring them to the golden house. An English introduction explains contact rescue; no new action key is required. The HUD shows rescued count and a direction arrow to the next missing baby, or home when all are found. The arrow is a direction hint, not a collision-free navigation path.
 
 Rescue requires proximity within 48 px and clear wall line of sight. Dead, paused or respawning players cannot rescue. Each baby awards up to 25 air only once per attempt, reports the actual gain and emits a celebratory cue. Rescued babies remain safe through retries; optional pearl banking still follows its existing risk rules. At home, fewer than three babies cannot complete the chapter; all three trigger settlement once, without any observation prerequisite. Existing chapter unlocks remain; old speed records are preserved separately and are not shown as rescue-mode records.
 
@@ -127,4 +127,4 @@ Rescue implementation: `3bd180b` (`v0.8.0-rescue`). 74 regression checks, 19 res
 
 
 ### v0.8.1 rescue clarity follow-up
-The objective HUD and glide feedback now include Chinese text. The direction arrow selects the nearest unrescued baby, and reaching home early explicitly states the missing count. Followers face their direction of movement. 74 regression checks and 21 rescue checks passed; three static route checks passed. Graphical capture still exits at native startup in the current tool environment; no new visual pass is claimed.
+All player-facing text remains English; Chinese UI text was removed at the creator's explicit request. The direction arrow selects the nearest unrescued baby, and reaching home early explicitly states the missing count. Followers face their direction of movement. 74 regression checks and 21 rescue checks passed; three static route checks passed. Graphical capture still exits at native startup in the current tool environment; no new visual pass is claimed.

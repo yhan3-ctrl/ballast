@@ -724,7 +724,7 @@ func _physics_process(delta: float) -> void:
 	if not exit_settled and not player.dying and not respawn_pending and player.position.distance_to(exit_point) < 65:
 		if not test_room and rescued_babies.size() < 3:
 			if home_hint_left <= 0:
-				notify("还差 %d 条宝宝！跟着箭头找它们 / FIND %d MORE BABIES" % [3 - rescued_babies.size(), 3 - rescued_babies.size()])
+				notify("FIND %d MORE BABIES / FOLLOW THE ARROW" % (3 - rescued_babies.size()))
 				home_hint_left = 5.0
 			return
 		exit_settled = true

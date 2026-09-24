@@ -66,7 +66,6 @@ func refresh() -> void:
 	elif world.intro_chapter >= 0:
 		var chapter: int = world.intro_chapter
 		label_at("%02d / %s" % [chapter + 1, TITLES[chapter]], Vector2(190, 175), Vector2(900, 65), 38)
-		label_at("通关秘籍：碰到小鱼宝宝，让它跟随你；带三条宝宝回金色小屋。", Vector2(190, 250), Vector2(880, 40), 21)
 		label_at(GOALS[chapter], Vector2(190, 300), Vector2(880, 80), 24)
 		label_at("TIPS\n" + TIPS[chapter], Vector2(190, 385), Vector2(880, 145), 21)
 		label_at("WASD  Swim     SPACE  Lantern     R  Retry     ESC  Pause", Vector2(190, 550), Vector2(900, 35), 18)
