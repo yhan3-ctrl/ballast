@@ -51,6 +51,7 @@ var segment_records: Array[Dictionary] = []
 var last_arrival: Dictionary = {}
 var level_started_at: float = 0.0
 var music_muted: bool = false
+var current_music_path: String = "res://assets/audio/music.wav"
 var effects_muted: bool = false
 var event_players: Array[AudioStreamPlayer] = []
 var sound_last_ms: Dictionary = {}
@@ -95,6 +96,7 @@ func _ready() -> void:
 			var loop_stream = sound_streams["music"].duplicate()
 			if loop_stream is AudioStreamWAV:
 				loop_stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+				loop_stream.loop_end = int(loop_stream.get_length() * loop_stream.mix_rate)
 			music_player.stream = loop_stream
 			music_player.play()
 	var layer := CanvasLayer.new()
@@ -160,6 +162,24 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		player.toggle_lantern()
 	elif event.is_action_pressed("restart"):
 		request_respawn("Manual restart")
+
+func select_chapter_music() -> void:
+	if not is_instance_valid(music_player):
+		return
+	var path := "res://assets/audio/music.wav" if menu else "res://assets/audio/music_%d.wav" % (level_index + 1)
+	if current_music_path == path and music_player.playing:
+		return
+	if not ResourceLoader.exists(path):
+		return
+	var stream = load(path).duplicate()
+	if stream is AudioStreamWAV:
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		stream.loop_begin = 0
+		stream.loop_end = int(stream.get_length() * stream.mix_rate)
+	current_music_path = path
+	music_player.stream = stream
+	music_player.volume_db = -80.0
+	music_player.play()
 
 func progress_path() -> String:
 	if not save_path_override.is_empty():
@@ -232,6 +252,7 @@ func start_game(chapter: int = 0) -> void:
 	level_started_at = 0.0
 	build_level()
 	running = true
+	select_chapter_music()
 	chapter_menu.refresh()
 
 func set_paused(value: bool) -> void:
@@ -252,6 +273,7 @@ func to_menu() -> void:
 		world_layer.queue_free()
 		world_layer = null
 	player = null
+	select_chapter_music()
 	if chapter_menu:
 		chapter_menu.refresh()
 
@@ -278,7 +300,7 @@ func build_level() -> void:
 	add_child(world_layer)
 	width = 3300.0 if test_room else 4800.0
 	ambience = CanvasModulate.new()
-	ambience.color = Color(0.22, 0.36, 0.41) if test_room or level_index == 0 else Color(0.055, 0.085, 0.13)
+	ambience.color = [Color(0.22, 0.36, 0.41), Color(0.08, 0.18, 0.12), Color(0.08, 0.075, 0.16)][0 if test_room else level_index]
 	world_layer.add_child(ambience)
 	add_wall(Rect2(-80, 80, width + 160, 70))
 	add_wall(Rect2(-80, 720, width + 160, 110))
@@ -304,7 +326,7 @@ func build_level() -> void:
 	camera.position_smoothing_enabled = false
 	world_layer.add_child(camera)
 	camera.make_current()
-	exit_point = Vector2(width - 140, 500)
+	exit_point = Vector2(width - 140, 270 if not test_room and level_index == 2 else 500)
 	notify("TEST DIVE  /  CORE + LIGHT LAB" if test_room else "%02d  /  %s" % [level_index + 1, title_names[level_index]])
 	queue_redraw()
 
@@ -358,24 +380,39 @@ func build_campaign_layout() -> void:
 				add_glimmer(Rect2(offset + 570, 170, 370, 200), seg, true)
 				add_sign(Vector2(offset + 620, 470), "WATCH IT RESPOND", "Light on: wait for approach.\nLight off: watch it return. Then the gate opens.")
 				observation_gate = add_wall(Rect2(offset + 1370, 150, 28, 570), true)
+		elif level_index == 1:
+			# Alternating islands make the optional upper route different in each room.
+			var island_y: float = [340.0, 400.0, 315.0][seg]
+			var island_width: float = [600.0, 460.0, 720.0][seg]
+			add_wall(Rect2(offset + 540, island_y, island_width, 120))
+			add_flow(Rect2(offset + 350, island_y + 145, 920, 110), Vector2.RIGHT, 320, "DRIFT")
+			add_flow(Rect2(offset + 1140, 195, 230, 100), Vector2.LEFT, 280, "PUSH")
+			add_vent(Vector2(offset + 760, 235), seg)
+			add_vent(Vector2(offset + 1370, 565), seg)
+			add_pearl_line(Vector2(offset + 650, 250), Vector2(115, 0), 6, seg)
+			add_pearl_line(Vector2(offset + 470, island_y + 175), Vector2(175, 0), 3, seg)
+			add_hazard(Rect2(offset + 1150, 665, 150, 55))
+			add_glimmer(Rect2(offset + 650, island_y + 145, 420, 700 - island_y - 145), seg)
+			add_sign(Vector2(offset + 210, 260), "PEARLS ABOVE / CURRENT BELOW", "")
 		else:
-			# Two routes: upper path demands ascent, lower path offers current assistance.
-			add_wall(Rect2(offset + 540, 340, 600, 120))
-			add_flow(Rect2(offset + 370, 500, 900, 125), Vector2.RIGHT, 320, "DRIFT")
-			add_flow(Rect2(offset + 1150, 195, 240, 120), Vector2.LEFT, 280, "PUSH")
-			add_vent(Vector2(offset + 720, 235), seg)
-			add_vent(Vector2(offset + 1270, 550), seg)
-			add_pearl_line(Vector2(offset + 420, 560), Vector2(150, 0), 3, seg)
-			add_pearl_line(Vector2(offset + 650, 250), Vector2(125, 0), 6, seg)
-			add_hazard(Rect2(offset + 1210, 665, 160, 55))
-			if level_index == 1:
-				add_glimmer(Rect2(offset + 670, 480, 450, 210), seg)
-				add_sign(Vector2(offset + 80, 230), "%02d / CHOOSE YOUR COST" % (seg + 1), "High route: spend air climbing.\nLow route: borrow the flow, travel dark near Glimmers.")
-			else:
-				add_glimmer(Rect2(offset + 970, 490, 410, 200), seg)
-				add_wall(Rect2(offset + 1390, 150, 60, 270))
-				add_wall(Rect2(offset + 1390, 550, 60, 170))
-				add_sign(Vector2(offset + 80, 230), "%02d / MAKE AN OPENING" % (seg + 1), "Draw the Glimmer away from the passage.\nGo dark, descend, and borrow the current.")
+			# First two chambers alternate low and high gates; finale climbs to the nest.
+			var gap_y: float = [440.0, 300.0, 440.0][seg]
+			add_wall(Rect2(offset + 860, 150, 100, gap_y - 150))
+			add_wall(Rect2(offset + 860, gap_y + 115, 100, 720 - gap_y - 115))
+			add_vent(Vector2(offset + 570, 540), seg)
+			add_glimmer(Rect2(offset + 560, gap_y + 15, 280, 90), seg)
+			add_flow(Rect2(offset + 970, gap_y + 10, 380, 95), Vector2.RIGHT, 420, "DRIFT")
+			add_pearl_line(Vector2(offset + 1020, gap_y + 45), Vector2(90, 0), 4, seg)
+			add_hazard(Rect2(offset + 1170, 665, 120, 55))
+			if seg == 1:
+				add_wall(Rect2(offset + 1230, 420, 100, 300))
+				add_vent(Vector2(offset + 1420, 320), seg)
+			if seg == 2:
+				add_wall(Rect2(offset + 1230, 410, 290, 310))
+				add_flow(Rect2(offset + 1060, 270, 150, 330), Vector2.UP, 280, "DRIFT")
+				add_vent(Vector2(offset + 1140, 360), seg)
+				add_pearl_line(Vector2(offset + 1270, 285), Vector2(85, 0), 3, seg)
+			add_sign(Vector2(offset + 250, 235), ["MAKE ROOM", "CHANGE DEPTH", "HOMEWARD"][seg], "")
 
 func add_wall(rect: Rect2, gate: bool = false) -> StaticBody2D:
 	var body := StaticBody2D.new()
@@ -501,7 +538,7 @@ func add_sign(point: Vector2, title: String, body: String) -> void:
 	signs.append({"point": point, "title": title, "body": body})
 	var label := Label.new()
 	label.position = point
-	label.text = title + "\n\n" + body
+	label.text = title + (("\n\n" + body) if test_room or title == "WATCH IT RESPOND" else "")
 	label.add_theme_font_size_override("font_size", 15)
 	label.add_theme_color_override("font_color", Color("a4c2c4"))
 	var mat := CanvasItemMaterial.new()

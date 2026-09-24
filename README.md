@@ -49,3 +49,7 @@ Click an unlocked dive, read its objective/tips, then Start Challenge. Completin
 
 ### Event audio (v0.6.1)
 Nine original synthesized event cues are reproducible with `python3 tools/generate_events.py`. They use no commercial samples. Pearl chains rise by up to four semitones; checkpoint, completion, vent, damage, drowning, return and lantern each have distinct cues. Low air/pause reduces background music by 8 dB. Effects have per-event levels, short cooldowns and at most six managed voices; mute stops active effects. Current background music remains the original generated track, not Labrinth or another commercial recording.
+
+
+### Current local candidate — v0.7.0
+Three differentiated layouts and three original chapter arrangements. Start via `project.godot` and F5, or the Mac archive under `builds/macos/`. Current behaviour and verification limitations are documented in `GDD.md` and `docs/FINAL-REVIEW.md`; older dated notes describe earlier iterations. No commercial song is included and no public release has been made.

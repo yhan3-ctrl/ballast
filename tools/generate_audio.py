@@ -29,9 +29,9 @@ def write_stereo(path: Path, left: list[float], right: list[float]) -> None:
         wav.writeframes(frames)
 
 
-def make_music() -> None:
+def make_music(chapter: int = 0) -> None:
     random.seed(224)
-    beat = 60.0 / 80.0
+    beat = 60.0 / [80.0, 76.0, 88.0, 96.0][chapter]
     bars = 16
     duration = bars * beat * 4.0
     count = int(duration * RATE)
@@ -54,7 +54,7 @@ def make_music() -> None:
             local = i / RATE - start
             phase = math.tau * freq * local
             if kind == "pad":
-                env = math.sin(math.pi * local / length) ** 1.4
+                env = max(0.0, math.sin(math.pi * local / length)) ** 1.4
                 value = (math.sin(phase) + 0.34 * math.sin(phase * 2.003) + 0.16 * math.sin(phase * 0.501)) * env
             elif kind == "pluck":
                 env = math.exp(-4.8 * local / length) * min(1.0, local * 80.0)
@@ -75,7 +75,7 @@ def make_music() -> None:
             midi = melody[(bar * 2 + step) % len(melody)]
             add_tone(start + step * beat * 2.0, beat * 1.7, note(midi), 0.12, -0.35 if step == 0 else 0.35, "pluck")
         for step in range(4):
-            add_tone(start + step * beat, beat * 0.42, note(chord[(step + 1) % 4] + 12), 0.035, 0.5 if step % 2 else -0.5, "pluck")
+            add_tone(start + step * beat, beat * 0.42, note(chord[(step + 1) % 4] + 12), 0.02 + chapter * 0.012, 0.5 if step % 2 else -0.5, "pluck")
 
     # Very quiet filtered-looking water texture, deterministic and original.
     drift = 0.0
@@ -85,7 +85,15 @@ def make_music() -> None:
         left[i] += drift * 0.018 * swell
         right[i] += drift * 0.014 * swell
 
-    write_stereo(AUDIO / "music.wav", left, right)
+    # Smooth seam: fade both ends to zero rather than cutting a sounding note.
+    fade = int(RATE * 0.12)
+    for i in range(fade):
+        gain = i / float(fade)
+        left[i] *= gain
+        right[i] *= gain
+        left[-1-i] *= gain
+        right[-1-i] *= gain
+    write_stereo(AUDIO / ("music.wav" if chapter == 0 else f"music_{chapter}.wav"), left, right)
 
 
 def make_pearl() -> None:
@@ -104,6 +112,6 @@ def make_pearl() -> None:
 
 if __name__ == "__main__":
     AUDIO.mkdir(parents=True, exist_ok=True)
-    make_music()
-    make_pearl()
-    print("Generated original Ballast music.wav and pearl.wav")
+    for chapter in range(4):
+        make_music(chapter)
+    print("Generated original map and three chapter arrangements; event cues use generate_events.py")

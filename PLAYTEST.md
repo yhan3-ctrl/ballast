@@ -94,3 +94,9 @@ Result: **61 checks, 0 failures**, implementation `6edef57`. Local macOS exporte
 
 ## 2026-09-23 — audio engineering checks
 74 rule checks remain passing. All nine regenerated event WAV files are below full-scale peaks and have near-zero first/last samples. These checks do not validate subjective sound quality or the combined audible mix. Headphone/speaker audition remains pending.
+
+
+## 2026-09-24 — final local revision
+Second-chapter island heights and widths now vary; third chapter uses alternating wall openings and an upward finish. Separate original arrangements distinguish chapters. The GDD was rewritten against current code, explicitly removing unimplemented escort claims and separating intended learning from verified outcomes.
+
+Rule suite: 74 checks passed. Static clearance checks: all 3 chapters' anchors, vents and exits reachable using an 18 px clearance grid after the observation gate is open. This does not include air expenditure, creature timing or player comprehension. Graphical editor was readable, but automated Run input did not produce a game window; no successful graphical playthrough is claimed.

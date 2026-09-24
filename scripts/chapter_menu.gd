@@ -1,7 +1,7 @@
 extends Control
 var world
 const TITLES = ["THE REEF", "THE KELP DRIFT", "THE TRENCH"]
-const GOALS = ["Reach the reef exit. Discover how light changes Glimmer's behaviour.", "Cross the kelp. Choose between a current-assisted route and pearl detours.", "Reach the deep-water exit. Combine light, currents and careful air use."]
+const GOALS = ["Reach the reef exit. Discover how light changes Glimmer's behaviour.", "Cross the kelp. Choose between a current-assisted route and pearl detours.", "Cross the narrow passes, then ride the rising current home."]
 const TIPS = [
 	"Vents restore 40 air. Stinging coral costs 25 air.\nPearls are only saved at a new anchor or the exit; retries lose unbanked pearls.",
 	"Glide with the current to save air; swimming against it costs more.\nLight attracts Glimmer. Darkness makes it return, but contact is still fatal.",
@@ -27,6 +27,14 @@ func button_at(value: String, pos: Vector2, callback: Callable, locked: bool = f
 	button.position = pos
 	button.size = Vector2(260, 64)
 	button.disabled = locked
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color("123740") if state == "normal" else Color("255764")
+		if state == "disabled": style.bg_color = Color("172831")
+		style.border_color = Color("77cbb6") if state != "disabled" else Color("34464c")
+		style.set_border_width_all(2 if state in ["hover", "focus"] else 1)
+		style.set_corner_radius_all(14)
+		button.add_theme_stylebox_override(state, style)
 	button.add_theme_font_size_override("font_size", 20)
 	button.pressed.connect(callback)
 	add_child(button)
@@ -42,7 +50,7 @@ func refresh() -> void:
 	if world.finished:
 		label_at("DIVE COMPLETE" if world.test_room else "CHAPTER %d COMPLETE" % (world.level_index + 1), Vector2(200, 170), Vector2(880, 70), 40)
 		label_at("TIME  %02d:%02d    RETRIES  %d\n\nPEARLS  %d / %d    SCORE  %d" % [int(world.elapsed) / 60, int(world.elapsed) % 60, world.deaths, world.collected_pearls, world.total_pearls, world.score], Vector2(200, 285), Vector2(880, 180), 26)
-		label_at("The next chapter is unlocked." if not world.test_room and world.level_index < 2 else "Journey complete. Replay any unlocked chapter from the map.", Vector2(200, 455), Vector2(880, 60))
+		label_at("Practice complete. Try the chapter map." if world.test_room else (["The reef is behind you. The kelp route is now open.", "The kelp is crossed. The trench route is now open.", "Home at last. Yuun and the little lights are safe."][world.level_index]), Vector2(200, 455), Vector2(880, 60))
 		button_at("MAP", Vector2(200, 560), world.to_menu)
 		button_at("PLAY AGAIN", Vector2(510, 560), func():
 			if world.test_room:
@@ -78,7 +86,24 @@ func _draw() -> void:
 	if not visible:
 		return
 	draw_rect(Rect2(0, 0, 1280, 800), Color("071923"))
+	if world.finished or world.intro_chapter >= 0:
+		draw_style_box(panel_style(), Rect2(150, 130, 980, 595))
+	else:
+		for i in range(3):
+			var center := Vector2(260 + i * 360, 335 + i * 85)
+			draw_circle(center, 105, [Color("123e4c"), Color("153b32"), Color("252940")][i])
+			for j in range(5):
+				var base := center + Vector2(-80 + j * 40, 38)
+				draw_polyline(PackedVector2Array([base, base + Vector2(-8, -65 - j * 5), base + Vector2(6, -100 - j * 3)]), Color(0.2, 0.55, 0.5, 0.25), 5, true)
 	for i in range(12):
 		draw_arc(Vector2(1050, 200), 150 + i * 45, 0, TAU, 100, Color(0.1, 0.35, 0.4, 0.2), 2)
 	if world.menu and world.intro_chapter < 0:
 		draw_polyline(PackedVector2Array([Vector2(260, 330), Vector2(620, 415), Vector2(980, 500)]), Color("497e83"), 5, true)
+
+func panel_style() -> StyleBoxFlat:
+	var panel := StyleBoxFlat.new()
+	panel.bg_color = Color("102d39")
+	panel.border_color = Color("416b71")
+	panel.set_border_width_all(2)
+	panel.set_corner_radius_all(24)
+	return panel

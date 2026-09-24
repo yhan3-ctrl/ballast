@@ -1,389 +1,115 @@
-# Ballast: Game Design Document
+# Ballast — Game Design Document
 
-**CSCI 5999B Project 1 (Graduate Section)** | Yu Han | Fall 2026
-Repository: `https://github.com/<your-account>/ballast` | Engine: Godot `4.7.2 stable` | Theme: Underwater
+**Creator:** Yu Han (CSCI 5999B)
+**Engine:** Godot 4.7.2 stable, 2D Compatibility renderer
+**Theme:** Underwater
+**Status:** Local release candidate; no public repository or release has been published.
 
-**Document status:** design draft, revision 3 (2026-09-21). Sections marked *Hypothesis* are design intent that has not yet been verified in play. Numeric values marked *placeholder* are starting points for calibration in the first test room, not measured results.
+## Concept, genre and background
 
-> 中文批注：灰色引用块是给你自己的说明，**提交前整段删除**。本版相对 v1 的改动记在 §12.3，改动理由都是设计评审得出的，不是试玩结果，文档里也照实这么写。
+Ballast is a short, single-player underwater traversal and resource-management game. The player is Yuun the Jadefin, a small jade-coloured lantern fish travelling through reef, kelp and trench environments. The name starts with Yu and ends with Han's n, with a doubled u echoing the creator's handle hnuu. The jade/fish association connects 玉 and 鱼.
 
----
+Egg-shaped lights mark each chapter's destination. The journey ends at an elevated home marker in the trench. This is an environmental premise, not an implemented escort system: eggs do not follow the player and have no health or AI.
 
-## 1. Overview
+## What the game teaches
 
-| Field | Value |
-|---|---|
-| Title | Ballast |
-| Genre | 2D physics puzzle-platformer, single player, level-based |
-| Engine | Godot `4.7.2 stable` |
-| Platforms | Windows (x86_64), macOS, Linux (x86_64) |
-| Players | 1 |
-| Target playtime | 6 to 8 minutes, to be confirmed by playtest |
-| Levels | 3 (one teaching level, two application levels) |
-| Pitch | A deep-sea anglerfish fry whose breath is both its engine and its life bar must descend a trench to recover a scattered clutch of eggs. |
+The main skill is allocating limited air between movement, illumination and optional rewards. Players learn to glide with currents, steer around coral, use light selectively around Glimmer, and decide when a pearl detour is worth its air cost. Movement is a simplified force-and-drag model, not a simulation of real buoyancy.
 
----
+The Reef introduces the controls and environmental rules, including a safe light-response exercise. The Kelp Drift applies the same rules to upper/lower route choices. The Trench combines constrained passages, changes in depth and a final upward current. Luring is available as a tactic; the current geometry does not prove every passage requires it. The intended learning and 5–10 minute first-play duration must still be checked with a new human player.
 
-## 2. Concept
-
-Ballast is built on one tension: **the resource that keeps you alive is the same resource that moves you**. Yuun controls depth by inflating and deflating a swim bladder, and both directions cost air. Air refills only at vents, and each vent works once. Every metre of travel is therefore a spending decision, and the shortest route is usually not the cheapest one.
-
-Two environmental systems modify that economy: **currents**, which make some directions nearly free and others expensive, and a **lantern**, which reveals obstacles in the dark but draws the attention of a light-sensitive creature.
-
-Deliberate scope decision: the game has three verbs and no unlockable abilities. Difficulty comes from new combinations of known rules, not from new rules.
-
----
-
-## 3. Background Information
-
-### 3.1 Fiction
-
-Yuun is a newly hatched jade-coloured anglerfish, also called the Jadefin. The name begins with `Yu` to follow creator Yu Han's English name order, takes its final `n` from Han, and keeps the doubled `u` as a visual echo of the creator's handle `hnuu`. It also connects the sounds of 玉 (jade) and 鱼 (fish) to the character's colour and form. A surge along the trench wall has scattered Yuun's siblings' eggs through three depth zones: the sunlit Reef, the mid-water Kelp Drift, and the lightless Trench. Yuun descends to bring them home. Delivered through the environment and one text card per level. No dialogue system.
-
-### 3.2 What the grader needs to know before playing
-
-- Keyboard only. No mouse input.
-- The bar at the top left is air. It is fuel and health at the same time.
-- Blue particle streams are currents. They are visible at all times, including in the dark.
-- The lantern is available from the first second and is never taken away.
-- There are no lives. Death returns Yuun to the last checkpoint with full air.
-- Pearls are optional and are not required to finish.
-
-### 3.3 Controls
+## Controls and chapter flow
 
 | Input | Action |
 |---|---|
-| `A` / `D` | Swim left / right |
-| `W` (hold) | Inflate: rise |
-| `S` (hold) | Deflate: sink |
-| `Space` | Toggle lantern |
-| `R` | Restart from last checkpoint |
-| `Esc` | Pause |
+| W / S | Upward / downward thrust |
+| A / D | Horizontal thrust |
+| Space | Lantern toggle |
+| R | Retry from the active anchor; unbanked rewards are lost |
+| Escape | Pause / resume; return from an introduction to the map |
+| Q while paused | Return to the map |
+| M / N | Toggle music / effects |
+| F1 | Developer diagnostics |
+| Mouse | Choose chapters and introduction/result buttons |
 
----
+The map initially unlocks only chapter 1. Finishing a chapter unlocks the next. Selecting an unlocked chapter opens its objective and two short tips. Start Challenge starts the attempt. Completion stops play and opens results with Map, Play Again and, when applicable, Next Chapter. Next Chapter opens its introduction first. Completed chapters remain replayable.
 
-## 4. What the Game Teaches
+Chapter time is hidden in normal play. Results and F1 show it. Time includes checkpoint retries, but excludes pause, map, introduction and results. Starting a whole chapter resets its score, pearls, retry count and time. Time gives no score and imposes no deadline. Personal best times appear on the map only after completion. Unlocks/best times persist in game-local save data; test dives cannot unlock campaign progress. Source saves are excluded from version control and exports.
 
-Ballast does not simulate real buoyancy physics. It uses a **simplified underwater movement model** in which vertical motion in either direction costs a shared resource. This is a designed rule, not a physical claim, and the learning it targets is not physics.
+## Mechanics and rules
 
-**Core learning: route planning under a depleting resource.** The player learns to read a room before spending: which currents are free transport and which are a tax, where the vents are, how much of the route can be done unlit, and whether the short expensive path or the long cheap path fits the air on hand.
+### Air and movement
 
-**Secondary learning: information has a price.** Lighting the lantern converts unknown terrain into known terrain, but it costs air and it changes how the environment responds. The player learns to buy information deliberately rather than continuously.
+Air begins at 100, never exceeds 100, and reaching zero begins a 1.5-second death sequence before respawn. Baseline drain is 0.5 air/second. Horizontal thrust adds 2.2, upward thrust 4, downward thrust 3, and a lit lantern 1.3. W and S together cancel vertical thrust but both costs are charged. Opposing PUSH/RIP currents doubles thrust cost, not baseline or lantern cost. Diagonal inputs apply both components and their respective costs. Drag is 3.5, thrust 470 with a small sustained-input boost; speed is capped at 235 px/second.
 
-**Intended behaviour change by level 3:** the lantern stops being a way to see and becomes a way to move something else. *Hypothesis, to be confirmed by playtest.*
+DRIFT carries the player, PUSH resists opposing movement, and RIP enforces at least 45 px/second along its direction while within its region. Currents remain visible without light. Walls are solid. Releasing movement saves thrust expenditure; it does not stop baseline air drain.
 
----
+### Vents, anchors and retry
 
-## 5. Genre
+Each vent adds 40 air once. Full-air contact does not consume it; overflow is discarded. A used vent resets when the player retries its segment. Re-entering a vent while air is below maximum is required after a full-air contact; remaining stationary on it is not a refill loop.
 
-2D puzzle-platformer with continuous physics-based movement. Single player against a game system. Level-based, checkpointed, optional collectibles, completion timer.
+Only a previously inactive forward anchor activates. Activation banks pending rewards, awards the remaining-air bonus, saves a spawn point and refills air. Re-crossing an activated anchor cannot refill air or score again. Each level exit settles rewards once using the same formula. Death or R restores full air, position and current-segment vents/creatures; pending pearls return to the room. Already banked pearls/points persist within the current chapter attempt. Retry count includes manual R. Dying players cannot collect vents/pearls or activate anchors/exits.
 
----
+### Light, Glimmer and coral
 
-## 6. Core Mechanics
+The lantern costs air and improves visibility of dim geometry, vents and creatures. Currents, signs and pearls remain readable without it; pearls deliberately glow as route cues. Background illumination differs by chapter and is not perfectly black.
 
-### 6.1 Buoyancy and air
+Glimmer has deterministic DRIFT, ATTRACTED and RETURN states. Light within 220 px attracts it only with an unobstructed ray to the player. New attraction has a 0.35-second visual warning. Chase speed is 265 px/second; drift/return speed is 120. Its movement and sight are blocked by walls, and its target is clamped to a home region. Turning off the light or leaving detection makes it return. Contact within 34 px is fatal for hostile specimens, subject to the player's brief invulnerability grace and clear line of sight. It is not an enemy the player can attack.
 
-`W` applies upward thrust, `S` applies downward thrust. Both accelerate rather than teleport, so inputs must be led. With no input Yuun drifts slightly downward.
+The mint-coloured Reef observation specimen is harmless. The exit gate requires at least 0.6 seconds of attraction, movement at least 30 px from its home, and an actual return home. Quick toggling cannot complete the observation. Completion remains learned after a retry in that chapter attempt.
 
-| Parameter | Placeholder value |
-|---|---|
-| Max air | 100 |
-| Rise | 4.0 air/sec |
-| Sink | 3.0 air/sec |
-| Horizontal swim | 2.2 air/sec |
-| Lantern lit | 1.3 air/sec |
-| Passive drain | 0.5 air/sec |
-| Against a current | cost x2 |
-| Low-air warning | at 25 |
-| Vent refill | +40, single use |
+Stinging coral removes 25 air, pushes the player away, and grants 0.9 seconds of damage immunity. A lethal hit records the coral cause. Respawn grants 0.7 seconds of grace. Low air adds a vignette and heartbeat, never a movement penalty. Death text identifies the cause.
 
-**Calibration target for the test room:** one challenge segment should take 20 to 40 seconds of travel and contain zero to two vents, so that a segment's air budget is `100 + 40n`. If the placeholder costs make segments shorter than that, the costs come down, not the level.
+### Pearls and score
 
-**Low air (below 25)** produces a vignette and a heartbeat audio layer only. It does **not** reduce movement speed. Rationale in §12.3.
+Pearls are optional. Each pickup gives pending points: 100 multiplied by a chain capped at x5. Another pickup within 3.5 seconds advances the chain; timeout, banking or retry resets it. Unbanked pearls/points are displayed separately from permanent rewards. The first pickup explicitly explains banking at the next anchor. Death/R removes those pending points and restores those pearls; it does not permit farming pearl points followed by a full-air retry bonus.
 
-**At zero air** Yuun enters a drowning state: control is released, a 1.5 second animation plays, then respawn (see §7.1).
+New anchors and the exit add `round(remaining_air) × 20` points before refill. The multiplier is provisional: alternate routes need measured air/reward comparisons, not an assumption that every route is balanced. Best chain can include a chain from a failed attempt; it is descriptive and awards no extra points.
 
-### 6.2 Currents
+## Three chapters
 
-Directional flow volumes rendered as particle streams. **Always visible, including with the lantern off**, because they are the information the player plans with and hiding them would make planning guesswork rather than judgement.
-
-Three strengths: drift (small assist), push (doubles cost against it), rip (cannot be moved against at all; must be entered and exited deliberately).
-
-### 6.3 Lantern
-
-Toggled, costs air while lit. The current procedural light has an approximately 240 px lit radius and a 60 px unlit aura. It improves visibility of geometry, vents and the light-sensitive creature. Pearls glow independently of the lantern as route cues. It does **not** reveal currents, which are already visible.
-
-### 6.4 Light-sensitive creature (Glimmer)
-
-One passive creature type, not an enemy AI. Three states:
-
-1. **Drift:** moves slowly along a fixed path inside a bounded area.
-2. **Attracted:** while a lit lantern is within `placeholder: 220 px`, moves toward it at a fixed speed.
-3. **Return:** when the lantern goes dark or leaves range, returns to the nearest point of its path and resumes drifting.
-
-Contact with Yuun returns Yuun to the last checkpoint. When attracted, a Glimmer moves slightly faster than Yuun's maximum swim speed, so the intended escape is to turn off the lantern rather than outrun it. The creature cannot be killed or damaged; solid walls block both its sight and movement. It has no search behaviour and no randomness.
-
-> 中文批注：这只生物是全局最大的实现风险，所以它被排到第二天验证，而不是最后。验收三条：引诱是否有趣、行为是否可预测、重置是否可靠。任何一条不过关，就把它退化成纯装饰（只在第一关出现供观察），三关改为纯洋流与气量解谜，同时删掉 §9 里依赖它的论据。
-
-### 6.5 Pearl trails and flow chains
-
-Pearls turn traversal into a readable short-term challenge without adding a new control. They are arranged along useful current lines and alternate routes. Collecting another pearl within 3.5 seconds raises the flow chain; a pearl awards `100 × min(chain, 5)` pending points. Pearls and their points remain **at risk** until the next forward checkpoint or level exit banks them. Death or `R` returns every at-risk pearl in the current segment to its original position and clears its pending points. Banked pearls persist. On the first pearl pickup, an independent six-second tutorial states `AT RISK — PEARLS BANK AT THE NEXT ANCHOR`; later pickup notices cannot overwrite it. Pearls never change air or movement, so the air economy remains intact while clean movement receives immediate sound, particle and score feedback.
-
----
-
-## 7. Rules
-
-Structured on the three levels defined in Salen and Zimmerman, *Rules of Play*.
-
-### 7.1 Operational Rules
-
-1. The player controls one character, Yuun, in continuous 2D space.
-2. `W` moves Yuun up, `S` moves Yuun down. Both consume air.
-3. `A` and `D` move Yuun horizontally and consume air at a lower rate.
-4. `Space` toggles the lantern, which consumes air while lit.
-5. Air decreases continuously and never regenerates except at a vent or a checkpoint.
-6. Touching a vent at less than full air restores up to 40, discards any overflow, and permanently consumes that vent for the current attempt.
-7. Touching a vent at full air does nothing and does not consume the vent.
-8. Only first activation of a new, forward checkpoint restores full air. Revisiting an activated arch does not refill air or move the active checkpoint backward.
-9. On death or on pressing `R`, Yuun returns to the active checkpoint with full air, and every vent and creature in the current segment is reset to its initial state.
-10. At zero air, Yuun loses control, drowns over 1.5 seconds, and respawns per rule 9. Air cannot be collected during the drowning animation.
-11. Contact with a hostile Glimmer starts Yuun's drowning sequence and then respawns Yuun per rule 9.
-12. Currents apply a constant force inside their volume. Rip currents cannot be moved against.
-13. A Glimmer drifts on a fixed path, moves toward a lit lantern within range, and returns to its path when the lantern is dark or out of range.
-14. A level ends when Yuun reaches the egg nest; the next level loads automatically.
-15. Pearls are optional. Pearls collected after the active checkpoint are at risk until the next forward checkpoint or level exit; death or `R` restores those pearls to the room and removes their pending points. Once banked, pearls persist through later deaths.
-16. Each pearl creates 100 pending points multiplied by the current flow chain, capped at x5. The chain resets after 3.5 seconds without a pearl or on death. Banking transfers pending pearl points into permanent score. Time, banked pearls, score and best chain are displayed at the end and have no mechanical effect.
-17. Red stinging coral removes 25 air and knocks Yuun away. A 0.9-second contact grace period prevents one collision from applying repeatedly. If the damage reaches zero air, the standard drowning and checkpoint reset sequence runs.
-18. First activation of a forward checkpoint, and each level exit once, converts remaining air into score at a provisional 20 points per rounded air unit. This multiplier puts a 30-air route difference near a 600-point pearl detour; F1 measurements must confirm the final value.
-
-### 7.2 Constitutive Rules
-
-The game is a constrained traversal problem on a 2D vector field. The state is:
-
-`S = (position, velocity, air, lantern_on, level_id, checkpoint_id, vents_used, glimmer_states, banked_pearls, pending_pearls, score, pending_score, elapsed_time)`
-
-- Motion is integrated, not set: each frame, `acceleration = player_thrust + field_force + drag`, and `velocity` follows from it. The player never commands a position directly, which is why inputs must be led.
-- Air is strictly decreasing except at discrete refill events (vents, checkpoints). A segment is solvable only if some path exists whose integrated cost is below the air available in that segment, so each segment is a bounded-budget path problem.
-- Because `vents_used`, `glimmer_states`, `pending_pearls` and `pending_score` reset with the checkpoint, each segment is an independent sub-problem with a fixed initial state. This is what makes repeated attempts comparable, makes the air budget designable, and prevents restart farming from combining both route rewards.
-- `lantern_on` appears in both the player's cost function and the Glimmer's transition condition. It is the only variable the player controls that is also an input to the environment's behaviour, which is the formal reason the lantern can be used as a tool and not only as a cost.
-
-### 7.3 Implicit Rules
-
-- The player will not edit project or save files to change air values.
-- A reported completion time refers to one continuous session.
-- Pausing stops play rather than serving as free observation time; the pause screen blurs the view for this reason.
-
-> 中文批注：v1 版本把"玩家不会赖在补气点刷气"写成隐含规则，那是拿规则分类掩盖经济漏洞。现在补气点一次性，这个漏洞在操作规则层面就关掉了，隐含规则只剩下真正属于游戏之外的假设。
-
----
-
-## 8. Level Design and Learning Progression
-
-### 8.1 Structure
-
-| Level | Learning task | Target length |
+| Chapter | Layout and learning role | Identity |
 |---|---|---|
-| L1 The Reef: understand the cost | Learn buoyancy, with and against current, the lantern, vents, checkpoints. Actively practise the Glimmer's light reaction in a safe enclosure. | ~2 min |
-| L2 The Kelp Drift: choose the route | Every segment offers a short expensive path and a longer path that borrows a current. At least one segment must be crossed with the lantern off because a Glimmer patrols it. | ~2.5 min |
-| L3 The Trench: change the conditions | Dark by default. Use the lantern to draw a Glimmer off a corridor, go dark, then take the corridor using a current. No new rules are introduced. | ~3 min |
+| Reef | Broad slalom, vents, current exercises, coral avoidance, safe light observation with exit gate | Blue-green, slower original arrangement |
+| Kelp Drift | Three islands with different heights/widths; upper pearl detours and lower current-assisted routes near Glimmer | Green, stronger rhythmic original arrangement |
+| Trench | Low/high/low wall openings, Glimmer near approach routes, changes of depth and final upward flow to the elevated destination | Violet, fastest original arrangement |
 
-### 8.2 Taught use versus reused use
+Each chapter has three anchor segments. The map, introduction and result screen separate chapters. Scene text is shortened to landmarks; the observation retains its brief actionable instruction. There is no countdown, combat, random search AI, breakable wall or moving-door system.
 
-This table is the design contract for the rubric line "learn in one level, utilize in the next for all abilities."
+## Design schemas
 
-| Ability | Taught in L1 | Reused in L2 | Recombined in L3 |
-|---|---|---|---|
-| Buoyancy and air budget | Rise and sink through a shaft; watch the meter fall; find the vent | Choose between two routes with different air costs | Budget an entire dark segment before lighting the lantern once |
-| Current | Ride a drift across a gap that cannot be crossed unaided; feel the doubled cost going back | Take the longer current-assisted route as the cheap option | Use the current to cross the corridor cleared of its Glimmer |
-| Lantern | Reveal a dark alcove containing the exit; then, at a safe enclosure, light it and watch a Glimmer approach, darken it and watch the Glimmer return | Travel past a Glimmer with the lantern off, using memorised geometry | Light it deliberately to pull the Glimmer away from a passage |
-| Hazard reading | Avoid a labelled red coral strip in still water | Avoid coral while choosing between two current-assisted routes | Account for coral knockback while timing a Glimmer lure |
+### Information
 
-**L1's Glimmer enclosure is an active exercise, not a cutscene:** the exit does not open until the player has lit and darkened the lantern once inside the observation chamber, so the reaction cannot be walked past unnoticed.
+**Definition:** Decisions depend on what players can perceive and learn. **Implementation:** currents and glowing pearls provide persistent route cues, while illumination improves nearby terrain/creature visibility and simultaneously attracts Glimmer. **Decision:** spend air and risk attention for a better view, or travel using known terrain. **Evidence:** lantern state, light radius, sight checks and chapter layouts implement the tradeoff. Whether new players use it as intended remains a human-playtest hypothesis.
 
-### 8.3 Pacing rule (anti-filler)
+### Uncertainty
 
-Every chamber must introduce a use, test a use, or combine two uses. No corridor longer than one screen may exist without a decision in it. A room that fails this test is cut rather than decorated. *To be audited against the first full playthrough recording.*
+**Definition:** Outcomes can be uncertain because knowledge or execution is incomplete. **Implementation:** Glimmer rules are deterministic; the uncertainty is the player's incomplete view and ability to time/control movement under an air budget. Decorative randomness has no gameplay effect. **Decision:** explore an optional route, commit from memory, or take a familiar current. **Evidence:** repeated inputs and known creature rules are learnable; this is not a claim of random enemy behaviour.
 
----
+### Cybernetic systems
 
-## 9. Design Schemas (Graduate Requirement)
+**Definition:** A feedback loop observes state, compares it with a goal and acts to change the state. **Implementation:** player air is observed through the meter and low-air cues; the player compares it with perceived route cost/survival needs, then changes thrust, light or route. The resulting air curve closes the loop. Thresholds alone are not claimed to constitute the complete controller. **Decision:** respond to low air by reducing expenditure or seeking a vent. **Evidence:** drain, HUD warning and refill rules are implemented. Stabilisation depends on a suitable player response; the design does not guarantee a successful recovery and avoids low-air slowdown that would amplify failure.
 
-Three schemas from *Rules of Play*, chosen because they describe the systems this game actually contains. Each is written as definition, implementation, player decision, and evidence.
+## Presentation and audio
 
-### 9.1 Games as Systems of Information
+Yuun has procedural idle/swim/death animation, a lantern and an H-shaped jade marking. Glimmer pulses and moves its tentacles, changes colour when attracted, and displays a brief warning ring. Water particles, kelp silhouettes, fish schools, pickup bursts and movement trails supply motion.
 
-**Definition.** How information is distributed, revealed and withheld, and how that distribution shapes decisions.
+All audio is original procedural synthesis. Three chapter arrangements share a musical theme with differing tempos and rhythmic emphasis. Events distinguish pearls, vents, banking, completion, impact, drowning, return, lantern and heartbeat. Low air and pause reduce music by 8 dB. Per-event cooldowns, voice limits and priority for major cues limit masking. Commercial song recordings are not included. Numerical audio checks do not substitute for a listening pass.
 
-**Implementation.** Four categories are deliberately separated: geometry and vents are dim outside the lantern; currents are always known; the Glimmer's path is discoverable but its current position outside the lit radius is not; pearls glow even in darkness to advertise optional routes. No ability is unlocked, so progression is entirely progression in what the player knows.
+## Iteration evidence
 
-**Player decision.** Whether to buy information now or commit from memory. Lighting the lantern spends air and, near a Glimmer, spends safety. Going dark spends certainty. This is the decision the game asks most often.
-
-**Evidence.** L2's Glimmer corridor: the geometry is learnable in one lit pass, after which the segment is cheaper to run dark. The player's second attempt should visibly differ from the first.
-
-### 9.2 Games as Systems of Uncertainty
-
-**Definition.** Outcomes the player cannot fully predict at the moment of committing. Salen and Zimmerman are explicit that this does not require randomness.
-
-**Implementation.** There is no random number generation affecting play. Uncertainty is produced by limited information and by execution: the Glimmer's position inside unlit space is unknown until the lantern is lit or contact occurs, and the outcome of a route depends on whether the player's timing and thrust control match their plan. In Epstein's terms the player operates under **risk** rather than pure uncertainty: the structure is fully knowable and skill reliably reduces exposure.
-
-**Player decision.** Whether the remaining air justifies committing to a route whose midpoint is unobserved.
-
-**Evidence.** Deterministic systems, non-deterministic outcomes: *hypothesis, to be tested by whether two playtesters take measurably different routes through the same L2 segment.*
-
-### 9.3 Games as Cybernetic Systems
-
-**Definition.** A sensor, a comparator and an activator arranged so that the system's output feeds back into its own input. Salen and Zimmerman's model runs game state to scoring function to controller to game mechanical bias and back to game state, and the player is inside that loop.
-
-**Implementation, as a closed loop rather than a component list:**
-
-| Stage | In Ballast |
-|---|---|
-| Game state | Position, air, lantern state, segment |
-| Sensor (scoring function) | Continuous air reading |
-| Comparator (controller) | Thresholds at 25 and 0 |
-| Activator (mechanical bias) | Vignette and heartbeat at 25; loss of control and respawn at 0 |
-| **Back into game state** | The warning changes what the player does: darken the lantern, stop climbing, reroute to a vent, or accept the death and restart the segment cheaply. That choice changes the air curve, which the sensor reads next frame. |
-
-The loop closes **through the player**, which is why it is a cybernetic system and not just a status bar.
-
-**Direction of feedback, stated explicitly.** The warning branch is informational and intended to be stabilising. The respawn branch is a hard reset to a known good state, which caps the cost of failure and is also stabilising. The design deliberately contains **no** amplifying branch, because the obvious candidate (slowing the player at low air) would make failure accelerate failure. See §12.3.
-
-**Evidence needed.** Whether players actually change behaviour at the warning, or ignore it and drown, is a playtest question. `TODO: record it.`
-
-> 中文批注：Conflict 和 Emergent 两个 schema 本版不写。不是因为不成立，而是因为这一版的实现还给不出"具体规则 + 实现行为 + 如何影响决策"三件套的完整证据。如果试玩中真的出现了值得分析的涌现行为，再补 Emergent，届时用真实观察来写。
-
----
-
-## 10. Fun Checklist (Koster)
-
-| Element | How Ballast addresses it |
-|---|---|
-| Preparation | Surveying a room with the lantern before spending air |
-| Sense of space | Three depth zones; vertical descent as the through-line |
-| Solid core mechanic | Spend air to move; everything else modifies that |
-| Range of challenges | Same rules, varied parameters: current strength, vent spacing, light level, Glimmer placement |
-| Range of abilities required | L2 and L3 segments are designed to need more than one; *to be audited, not asserted* |
-| Skill required | Leading inputs, judging drift, committing to a route with a known budget |
-| Variable feedback | Pearls, elapsed time, air remaining at the nest |
-| Mastery problem | Skilled players finish with air to spare and can attempt all-pearl runs |
-| Failure has a cost | Lost time and replay of the current segment |
-
----
-
-## 11. Art and Audio Requirements
-
-**Animations:** Yuun idle, swim, rise, sink, drown; Glimmer drift and attracted. Loop counts are a scope choice, not an assignment requirement; AnimatedSprite2D loops are sufficient.
-
-**Audio events (the assignment names pickups, attacks and damage as examples):** pearl pickup, vent refill, lantern toggle, low-air heartbeat, drowning, Glimmer contact, checkpoint activated, level complete, ambient bed. Ambient music is optional and does not substitute for event audio.
-
-The current prototype uses original procedural graphics, original generated event sounds and an original 48-second looping underwater theme. The music generator and note sequence are stored in `tools/generate_audio.py` as provenance. No third-party art or audio is included. Any later third-party asset must be credited with its licence in README before release.
-
----
-
-## 12. Iteration and Playtesting
-
-> 中文批注：评分表这一项要求"描述的改动和 git push 对应"。每一行都要能指回一个 commit 或 tag，开发过程中随手填。
-
-### 12.1 Playtest protocol
-
-Each human round will use the controls card only, without verbal guidance. Record the number of testers, time per segment, deaths per checkpoint, the first moment of confusion, whether the player reacted to the low-air warning, and whether the alternate route was found unprompted. Automated rule checks are recorded separately and are not presented as human playtests.
-
-**Rule-breaking pass (Rules of Play, ch. on breaking the rules).** Each round must also include deliberate abuse: hold `W` and `S` together; touch a vent at exactly full air; touch a vent during the drowning animation; die on the same frame as touching a checkpoint; pause during a current; die and confirm that vents and Glimmers in the segment reset; enter and leave a rip current repeatedly; stand still with the lantern lit next to a Glimmer.
-
-### 12.2 Iteration log
-
-| Version | Date | Commits / tag | What changed | Why |
-|---|---|---|---|---|
-| v0.1-prototype | 2026-09-20 | `881832c` | Playable test room plus first three-level blockout: buoyancy, air, drift and rip currents, one-use vents, forward checkpoints, respawn, lantern, Glimmer, animation, event audio and diagnostics | Verify the complete rule loop early; automated boundary checks passed, while human clarity and timing tests remain pending |
-| v0.2-fun-pass | 2026-09-20 | `78c4961` | Added an explicit hold-key tutorial, current-aligned pearl trails, timed flow-chain scoring, movement trails, pickup bursts, background schools and rays, an original looping theme, and a distinct pearl sound | Respond to the first direct player reaction that the rule prototype was unclear, static and not yet fun; preserve the air economy while adding short-term goals and feedback |
-| v0.3-danger-pass | 2026-09-20 | `1c40cc4` | Rebalanced a continuously swimming air tank to roughly 40–55 seconds; added labelled stinging coral with air damage and knockback; made hostile Glimmer contact use the visible drowning sequence; added a dangerous final test-room exercise | Direct play feedback showed that the safe prototype felt like consequence-free swimming, so failure had to become visible, attributable and avoidable |
-| v0.4-budget-pass | 2026-09-21 | `022ba4a` | Named the jade-coloured player Yuun; reduced continuous horizontal endurance from roughly 54 to 37 seconds; made Glimmer faster than Yuun; reduced coral damage to 25; weighted more pearls toward the expensive route; added checkpoint air-efficiency scoring | Make air and route choice constrain play without adding another control or punishing one mistake; reward both efficient travel and deliberate pearl risk |
-| v0.5-reward-integrity | 2026-09-21 | `115040b` | Made segment pearls and flow-chain points pending until the next checkpoint or exit; restart now restores at-risk pearls and clears pending score; raised the provisional air bonus from x8 to x20; exposed banked and at-risk rewards separately in the HUD | A rule-breaking review found that permanent pearls plus free full-air restart let players collect both route rewards, eliminating the intended tradeoff |
-| v0.5.1-tutorial | 2026-09-21 | `ebf46b7` | Added an independent six-second first-pearl tutorial explaining that at-risk pearls bank at the next anchor; expanded the external playtest form to record route air, death causes, unprompted Glimmer learning, reward-rule comprehension, and fun/frustration | `AT RISK` and `BANKED` were new rules whose labels alone might not satisfy the requirement that a first-time player understand without asking |
-| v1.0 | `TODO` | `TODO` | Art, animation, audio, three-platform export | Release |
-
-Local revision `v0.5.2-fairness` / implementation commit `6edef57`: wall-aware Glimmer, completed-return tutorial, consistent exit rewards, arrival telemetry and pause/audio controls. Automated regression: 61 checks passed; external playtest pending.
-
-### 12.3 Design decisions recorded before implementation (2026-09-20 review)
-
-These are design-review outcomes, not playtest results, and are labelled as such.
-
-1. **Rejected: speed penalty at low air.** It would form an amplifying loop (less air, slower movement, longer travel, less air) that makes failure accelerate failure. The warning is now informational only.
-2. **Rejected: extra vents spawned after repeated deaths.** A dynamic difficulty adjustment is defensible, but it adds a system that would have to be explained, tuned and playtested, and its fairness is exactly the case Salen and Zimmerman flag as feeling like cheating. Cut for scope.
-3. **Changed: vents are single use.** Repeatable vents made waiting at a vent a viable strategy, which risks the "noticeable filler" failure and makes segment air budgets uncomputable.
-4. **Changed: currents are always visible.** The earlier draft had them visible in one section and lantern-dependent in another. Planning information should not be hidden; the lantern reveals obstacles instead.
-5. **Cut: cycling clam gates, creature-triggered rock breaking, creatures carried by currents, timed final ascent, randomised creature search.** Each was a named mechanic with no defined rules, and each represented real implementation work that the schedule does not support.
-6. **Added: the L1 observation chamber gates its exit** on the player toggling the lantern, because a demonstration the player can walk past does not satisfy "learn in one level, use in the next".
-
-### 12.4 Emergent rule interaction found in design review (2026-09-21)
-
-The first efficiency-score implementation combined three individually reasonable rules: pearls persisted through death, restart restored full air, and checkpoint score depended on remaining air. Together they created an unintended dominant strategy: collect every expensive-route pearl, restart for full air, then take the efficient route and receive both rewards. The fix makes segment pearls and their score pending until the next checkpoint or exit; restart returns them to the room. An automated regression test deliberately collects a pearl, restarts, and verifies that the pearl returns while permanent score remains unchanged. This is a real emergent interaction discovered by attempting to break the rules, not a hypothetical example.
-
----
-
-## 13. Build and Run Instructions
-
-Built with Godot `4.7.2 stable`. Releases are attached to the GitHub Releases page.
-
-- **Windows (x86_64):** download `ballast-windows-x86_64.zip`, extract, run `Ballast.exe`. If SmartScreen appears, choose More info then Run anyway.
-- **Linux (x86_64):** download `ballast-linux-x86_64.zip`, extract, then `chmod +x Ballast.x86_64 && ./Ballast.x86_64`.
-- **macOS:** download `ballast-macos.zip` and extract. The app is unsigned. Right-click the app and choose Open, or run `xattr -dr com.apple.quarantine Ballast.app` first.
-
-From source: clone the repository, open `project.godot` in Godot `4.7.2 stable`, then Project > Export with matching export templates installed.
-
----
-
-## 14. Rubric Self-Check (internal)
-
-| Rubric line | Where satisfied | Done |
+| Implementation commit | Change | Reason |
 |---|---|---|
-| Playable from provided release | §13; tested on a machine that is not mine | [ ] |
-| 2D and made in Godot | §1 | [ ] |
-| Progression in learning | §8.1, §8.2; all three abilities taught in L1, reused in L2, recombined in L3 | [ ] |
-| Substantial, 5 to 10 min, no filler | §8.1, §8.3; measured, not assumed | [ ] |
-| Fun | §10 | [ ] |
-| What the game teaches | §4 | [ ] |
-| Core mechanics and how to play | §3.3, §6 | [ ] |
-| Defined rules | §7, all three levels | [ ] |
-| Concept, genre, background described and implemented | §2, §3, §5 | [ ] |
-| Iteration described and matching git history | §12 | [ ] |
-| Grad: schemas explicit | §9 | [ ] |
-| Grad: third level | §8.1 | [ ] |
-| Grad: animation and event audio | §11 | [ ] |
-| Repo public, `cwwalterOleMiss` invited | `TODO` | [ ] |
-| Blackboard: report and repo link | `TODO` | [ ] |
+| `022ba4a` | Air budget, Yuun identity, chase speed, coral damage and air scoring | Make route decisions and danger matter |
+| `115040b` | Pending pearl banking and retry reset | Fix pearl farming combined with full-air efficiency scoring |
+| `ebf46b7` | First-pearl rule hint | Explain the new at-risk reward contract |
+| `6edef57` | Wall-aware Glimmer, actual return observation, exit settlement and telemetry | Correct fairness and consistency defects |
+| `c73296b` | Map, locks, introductions, results and saved best times | Make chapter boundaries explicit and remove live time pressure |
+| `8735460` | Original event cues and controlled mixing | Differentiate consequences without audio clutter |
 
----
+The current final-pass commit is recorded in `docs/FINAL-REVIEW.md`. These are local implementation/design-review iterations, not fabricated human playtests or GitHub pushes. `PLAYTEST.md` distinguishes automated checks from human observations.
 
-## 15. Known Issues and Future Work
+## Verification and submission status
 
-- The three level layouts are a first playable blockout and have not yet been validated for a 5–10 minute completion time.
-- External human playtesting has not yet been completed; clarity and fun remain unverified.
-- Windows and Linux packages have been created but not launched on their destination operating systems.
-- Procedural art has received an initial feedback pass, but final visual polish still depends on human playtest observations.
+Rule regressions cover economy, banking/retry integrity, Glimmer wall interactions, observation completion, pause, chapter locks, timing and save/load. Static route checks include the player's clearance to anchors, vents and exits after the observation gate opens. They do not prove difficulty, fun, dynamic puzzle success or duration.
 
-
-### Local fairness and measurement revision (2026-09-22)
-
-Glimmer checks line of sight against solid walls and has a 20 px collision body. New attraction has a 0.35 second visible warning; chase speed remains 265 px/s, while drift and return move at 120 px/s. Safe specimens are mint-coloured. The observation gate requires at least 0.6 seconds of attraction, at least 30 px displacement from home, and an actual return home after the lantern is switched off. A quick toggle does not complete it. The third chapter's creature homes were moved out of rock geometry.
-
-Anchors and level exits share pearl and air settlement. Each arrival/retry records chapter, segment, attempt duration, pre-refill air, pending pearl count/points, air bonus and retry reason to `BALLAST_TELEMETRY` in the runtime output. F1 retains the latest arrival's air/time. Records describe gameplay events, not proof of human playtesting; route choice still needs an observer. Level durations are individual rather than cumulative, including the final chapter.
-
-Focus loss pauses active play. M toggles music and N toggles effects for the current session; pause shows controls. Death text names the cause. Exported content still needs human visual/audio and Windows/Linux launch checks. Route balance, 5–10 minute duration and whether L3 meaningfully requires luring remain hypotheses, not validated rubric claims.
-
-
-### Chapter map revision — 2026-09-23
-The map exposes three chapter buttons; chapters 2 and 3 unlock only after the previous chapter is completed. Each chapter opens an introduction with its current objective and two short tips. Chapter 1 explains pearl banking before first exposure. Starting the challenge creates a fresh chapter attempt. Exits stop at a result screen (map, replay, next chapter); next chapter opens its introduction, never starts silently. Test dives do not unlock campaign chapters or save best times.
-
-Time is hidden from the normal gameplay HUD. Diagnostics retain live chapter time; results show elapsed time including retries. Pauses, introductions, map and results add no time. Whole-chapter replay resets attempt statistics; checkpoint retry preserves time. Fastest chapter times appear on the map only after completion and do not affect points or unlocks. Unlocks and fastest times persist locally; source runs store `saves/progress.cfg`, exports use the application's `user://progress.cfg`. Save data is excluded from Git and exports. Layout learning remains in the levels; the large startup movement overlay is restricted to the test room.
-
-This revision changes navigation and presentation, not the three level geometries. More distinct route challenges, actual rescue animations and external playtesting remain work to validate; introductory objectives refer to currently implemented exits.
-
-Implementation: `c73296b`, local tag `v0.6.0-chapter-map`. Automated checks: 74 passed; four exports passed, macOS map startup verified headlessly. No external human playtest claimed.
-
-
-### Event audio revision — 2026-09-23
-Original synthesized event audio now differentiates pearl pickup, air refill, banking, chapter completion, impact, drowning, return, lantern and heartbeat. A rising pitch marks pearl chains. Low air lowers the music by 8 dB to make the heartbeat easier to hear. Important impact/drowning/completion cues clear competing event voices. Other cues are limited to six concurrent voices with repeat cooldowns. Pausing, returning to map and effects mute clear active cues. Commercial song suggestions remain references only; no third-party recording was incorporated.
-
-Audio implementation commit: `8735460`, local tag `v0.6.1-audio`. All changes and generated assets remain local.
+Remaining acceptance evidence: an unfamiliar player's complete three-chapter run with timing/confusion/death notes, audible/visual review, and actual Windows/Linux launches. Public GitHub repository/release and Blackboard submission remain unperformed because only local work has been authorised. The instructor collaborator invitation is recommended in the assignment, not mandatory. Builds and their exact verification status are listed in `docs/BUILD-VERIFICATION.md`.
