@@ -3,9 +3,9 @@ var world
 const TITLES = ["THE REEF", "THE KELP DRIFT", "THE TRENCH"]
 const GOALS = ["TOUCH 3 BABY FISH. They follow you. Bring them to the golden house to win.", "Rescue 3 babies along the upper and lower routes. Bring them to the golden house.", "Find 3 babies in the trench. Ride the rising current and bring them home."]
 const TIPS = [
-	"Touch a baby: +25 air! Rescued babies stay with you after a retry.\nVents give +40 air. Coral costs 25. Pearls are optional and bank at anchors.",
-	"Glide with the current to save air; swimming against it costs more.\nLight attracts Glimmer. Darkness makes it return, but contact is still fatal.",
-	"Use light to draw Glimmer away, then turn it off before passing.\nAir also drains while idle: plan at the pause screen if you need time."
+	"Touch babies: +25 air. Escort them home. Each has 2 health dots.\nSPACE shields nearby babies, but attracts Glimmer to YOU. Red pulses hurt: wait until dim.",
+	"Light shields babies within the golden ring; rocks block protection.\nGlimmer hunts unprotected followers. A baby losing both dots sends everyone to the anchor.",
+	"Weave through high and low gates. Wait for anemones to stop flashing.\nKeep babies close and light their shield near danger. Coral costs you 25 air."
 ]
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

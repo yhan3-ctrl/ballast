@@ -64,3 +64,6 @@ All player-facing text remains English; Chinese UI text was removed at the creat
 
 ### v0.8.2 readability update
 More alternating coral creates weaving opportunities. Rock outlines and hostile warning icons stay visible with the lantern off. Upper/lower route labels clarify chapter-two forks. Hostile Glimmer contact causes a retry; coral removes 25 air. All player-facing text remains English.
+
+### v0.9.0 escort rules
+Babies have two health dots. SPACE shields followers within 180 px and clear sight, but attracts Glimmer to you. In darkness, hostile Glimmer can pursue nearby followers. Coral and pulse anemones also hurt unprotected babies. Losing both dots retries the family at the current anchor, preserving rescues and restoring health. Pulses show PASS NOW, WAIT..., then PULSE!; player pulse damage is 20 air. Chapter three adds alternating rock baffles.

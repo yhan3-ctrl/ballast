@@ -1,10 +1,10 @@
-# Build verification — v0.8.2
+# Build verification — v0.9.0
 
-Four exports succeeded and all four delivery archives passed CRC checks. 74 rule checks, 21 rescue checks and three coral-avoiding static route checks passed. These do not prove air budgets, human usability or enjoyment. Graphical/audio and Windows/Linux runtime verification remain pending.
+Four exports succeeded; delivery archives passed CRC checks. 74 rule, 21 rescue and 15 escort checks pass, plus three static coral-avoiding routes. Human difficulty, air budgets, graphical/audio quality and Windows/Linux runtime remain unverified.
 
 | Archive | SHA-256 |
 |---|---|
-| builds/Ballast-windows-x86_64.zip | 45db665af18f7c898fc2d43971c771afda6049e968ba8b4cf83f191f3af442e7 |
-| builds/Ballast-windows-x86_32.zip | a514f8604675e43fb8363843a6a47a217e1a343874b393add07e9744ac4a4fde |
-| builds/Ballast-linux-x86_64.zip | 26b0176c0acaac3d40d54b6691f842a8f4dbcaab5986d5d384a706e97744ec07 |
-| builds/macos/Ballast-macos-universal.zip | 40c0b655f7b8ea36417bb5458120bac9952d5d752be8b3ecdad1df2356cab5fe |
+| builds/Ballast-windows-x86_64.zip | 55d1f6fbc1b99d457373182c991a864b0ee30eab8b5fed01115e44e4f6fab051 |
+| builds/Ballast-windows-x86_32.zip | 526938c0e6d6452cb888db8ed36da615a54e08965ee07520d2cedccb07d38f05 |
+| builds/Ballast-linux-x86_64.zip | 3eb98afe8581073dca492f4a2b88c9b2c8474d7436519998433ccc06d0db1194 |
+| builds/macos/Ballast-macos-universal.zip | 3af37f0f5841e13d2304f0fb965f4574170c76c1c430fe9718141cb78ad2a945 |

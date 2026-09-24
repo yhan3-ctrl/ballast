@@ -432,7 +432,9 @@ func build_campaign_layout() -> void:
 			add_glimmer(Rect2(offset + 650, island_y + 145, 420, 700 - island_y - 145), seg)
 			add_sign(Vector2(offset + 210, 260), "UPPER ROUTE  ^  /  LOWER ROUTE  v", "")
 		else:
-			# First two chambers alternate low and high gates; finale climbs to the nest.
+			# Alternating baffles force a change of depth before each narrow gate.
+			add_wall(Rect2(offset + 390, 150, 90, 285 if seg != 1 else 170))
+			add_wall(Rect2(offset + 620, 555 if seg != 1 else 460, 80, 165 if seg != 1 else 260))
 			var gap_y: float = [440.0, 300.0, 440.0][seg]
 			add_wall(Rect2(offset + 860, 150, 100, gap_y - 150))
 			add_wall(Rect2(offset + 860, gap_y + 115, 100, 720 - gap_y - 115))
@@ -451,7 +453,12 @@ func build_campaign_layout() -> void:
 				add_flow(Rect2(offset + 1060, 270, 150, 330), Vector2.UP, 280, "DRIFT")
 				add_vent(Vector2(offset + 1140, 360), seg)
 				add_pearl_line(Vector2(offset + 1270, 285), Vector2(85, 0), 3, seg)
-			add_sign(Vector2(offset + 250, 235), ["MAKE ROOM", "CHANGE DEPTH", "HOMEWARD"][seg], "")
+			add_sign(Vector2(offset + 200, 220), ["ESCORT THROUGH THE GATES", "WAIT FOR THE PULSE", "KEEP THE FAMILY CLOSE"][seg], "SPACE: shield nearby babies. Light draws Glimmer to YOU.")
+		if level_index > 0 or seg == 1:
+			var pulse = preload("res://scripts/pulse_anemone.gd").new()
+			pulse.world = self
+			pulse.position = Vector2(offset + 1450, 520 if level_index < 2 else 350)
+			world_layer.add_child(pulse)
 
 func add_wall(rect: Rect2, gate: bool = false) -> StaticBody2D:
 	var body := StaticBody2D.new()
@@ -646,10 +653,16 @@ func respawn() -> void:
 	for creature in creatures:
 		if creature.segment == active_checkpoint:
 			creature.reset_creature()
+	for pulse in get_tree().get_nodes_in_group("pulse_anemones"):
+		pulse.clock = 0.0
+		pulse.hit_cooldown = 0.0
 	player.reset_at(spawn_point)
 	follow_trail.clear()
 	for baby in rescued_babies:
 		baby.position = spawn_point
+		baby.health = 2
+		baby.hurt_cooldown = 2.0
+		baby.protected = false
 	respawn_pending = false
 	play_sound("return")
 	notify("BACK AT ANCHOR  /  %s  /  %d PEARLS LOST" % [last_reason.to_upper(), lost_pearls])
@@ -693,6 +706,24 @@ func objective_position() -> Vector2:
 				closest = baby.position
 	return closest
 
+func baby_is_protected(baby: Node2D) -> bool:
+	return player.lantern_on and player.position.distance_to(baby.position) <= 180 and sight_clear(player.position, baby.position)
+
+func sight_clear(from: Vector2, to: Vector2) -> bool:
+	return get_world_2d().direct_space_state.intersect_ray(PhysicsRayQueryParameters2D.create(from, to, 1)).is_empty()
+
+func hurt_baby(baby: Node2D) -> bool:
+	if not running or paused or finished or player.dying or respawn_pending or not baby.rescued or baby.hurt_cooldown > 0 or baby_is_protected(baby):
+		return false
+	baby.health -= 1
+	baby.hurt_cooldown = 2.0
+	spawn_burst(baby.position, Color("ff6b78"), 14)
+	play_sound("contact")
+	notify("BABY HURT! SPACE: LIGHT SHIELDS NEARBY BABIES")
+	if baby.health <= 0:
+		request_respawn("Baby needs recovery")
+	return true
+
 func update_rescue(delta: float) -> void:
 	home_hint_left = maxf(0.0, home_hint_left - delta)
 	rescue_notice_left = maxf(0.0, rescue_notice_left - delta)
@@ -710,6 +741,15 @@ func update_rescue(delta: float) -> void:
 			if absf(dx) > 0.1:
 				rescued_babies[i].facing = signf(dx)
 			rescued_babies[i].position = target
+	for baby in rescued_babies:
+		baby.hurt_cooldown = maxf(0.0, baby.hurt_cooldown - delta)
+		baby.protected = baby_is_protected(baby)
+		for creature in creatures:
+			if not creature.harmless and creature.position.distance_to(baby.position) < 34 and sight_clear(creature.position, baby.position):
+				hurt_baby(baby)
+		for hazard in hazards:
+			if hazard.bounds.has_point(baby.position):
+				hurt_baby(baby)
 	if player.flow_gliding and glide_cue_left <= 0.0:
 		play_sound("glide")
 		glide_cue_left = 3.0

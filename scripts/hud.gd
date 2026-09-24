@@ -28,7 +28,7 @@ func _draw() -> void:
 	draw_rect(Rect2(330, 43, 280 * p.air / 100.0, 12), Color("ed9d82") if p.air < 25 else Color("91d7c0"))
 	text(Vector2(625, 56), "%03d" % ceili(p.air), 22)
 	text(Vector2(330, 80), "LOW AIR  /  SEEK A VENT" if p.air < 25 else "FUEL + LIFE  /  VENTS +40", 11, GOLD if p.air < 25 else MUTED)
-	text(Vector2(780, 35), "LANTERN " + ("ON" if p.lantern_on else "OFF"), 14, GOLD if p.lantern_on else MUTED)
+	text(Vector2(780, 35), "BABY SHIELD " + ("ON" if p.lantern_on else "OFF"), 14, GOLD if p.lantern_on else MUTED)
 	text(Vector2(780, 63), "ANCHOR %02d" % (world.active_checkpoint + 1), 14)
 	text(Vector2(1080, 64), "RETRIES %02d" % world.deaths, 12, MUTED)
 	text(Vector2(780, 87), "BANKED %02d  AT RISK %02d  SCORE %05d (+%d)" % [world.collected_pearls, world.pending_pearls.size(), world.score, world.pending_score], 11, GOLD)

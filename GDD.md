@@ -9,7 +9,7 @@
 
 Ballast is a short, single-player underwater traversal and resource-management game. The player is Yuun the Jadefin, a small jade-coloured lantern fish travelling through reef, kelp and trench environments. The name starts with Yu and ends with Han's n, with a doubled u echoing the creator's handle hnuu. The jade/fish association connects 玉 and 鱼.
 
-Each chapter contains three clearly drawn baby fish. Touching one rescues it automatically, restores up to 25 air once, and makes it follow Yuun. Bring all three to the visible golden house to finish. Followers are cosmetic companions without separate health or collision; they use the player's recorded trail. Rescue progress survives checkpoint retries but resets on a fresh chapter attempt.
+Each chapter contains three clearly drawn baby fish. Touching one rescues it automatically, restores up to 25 air once, and makes it follow Yuun. Bring all three to the visible golden house to finish. Followers use the player's recorded trail and have two health points. Coral, hostile Glimmer contact and anemone pulses remove one health, followed by two seconds of immunity. Zero health sends the family to the current anchor with restored health; rescue rewards cannot be collected again. Rescue progress survives checkpoint retries but resets on a fresh chapter attempt.
 
 ## What the game teaches
 
@@ -51,9 +51,9 @@ Only a previously inactive forward anchor activates. Activation banks pending re
 
 ### Light, Glimmer and coral
 
-The lantern costs air and improves visibility of dim geometry, vents and creatures. Rock outlines and hostile warning icons remain visible without light. Currents, signs and pearls remain readable without it; pearls deliberately glow as route cues. Background illumination differs by chapter and is not perfectly black.
+The lantern also shields rescued babies within 180 px and unobstructed wall line of sight. Individual gold rings confirm protection; the large ring indicates range, not protection through walls. It costs air and improves visibility of dim geometry, vents and creatures. Rock outlines and hostile warning icons remain visible without light. Currents, signs and pearls remain readable without it; pearls deliberately glow as route cues. Background illumination differs by chapter and is not perfectly black.
 
-Glimmer has deterministic DRIFT, ATTRACTED and RETURN states. Light within 220 px attracts it only with an unobstructed ray to the player. New attraction has a 0.35-second visual warning. Chase speed is 265 px/second; drift/return speed is 120. Its movement and sight are blocked by walls, and its target is clamped to a home region. Turning off the light or leaving detection makes it return. Contact within 34 px is fatal for hostile specimens, subject to the player's brief invulnerability grace and clear line of sight. It is not an enemy the player can attack.
+Glimmer has deterministic DRIFT, ATTRACTED and RETURN states. Light within 220 px attracts it only with an unobstructed ray to the player. New attraction has a 0.35-second visual warning. Chase speed is 265 px/second; drift/return speed is 120. Its movement and sight are blocked by walls, and its target is clamped to a home region. Without a lit player target, hostile specimens pursue an unprotected rescued baby within 200 px and clear sight at 170 px/second; otherwise they return. Player light attraction has priority. Contact within 34 px is fatal for hostile specimens, subject to the player's brief invulnerability grace and clear line of sight. It is not an enemy the player can attack.
 
 The mint-coloured Reef observation specimen is harmless. Observing attraction and return can trigger a learning acknowledgement, but no door or completion condition depends on it. The former observation gate was removed after the player could not understand why the exit was blocked.
 
@@ -131,3 +131,6 @@ All player-facing text remains English; Chinese UI text was removed at the creat
 
 ### v0.8.2 — obstacle and route readability
 Creator feedback requested more weaving and clearer dangers. Added alternating ceiling/floor coral and upper/lower route obstacles, brighter rock outlines, explicit fork labels, and hostile Glimmer spikes, slanted eyes, fangs and an always-visible warning icon. Safe observation creatures retain round eyes. Damage rules are unchanged. Static clearance checks now avoid inflated coral bounds as well as rocks; all three chapters pass. This proves geometric reachability, not air-budget feasibility or human difficulty.
+
+### v0.9.0 — active escort and timed obstacles
+Creator feedback: chapter three felt easier than chapter two, followers faced no danger, and light had little purpose. Third-chapter baffles now require repeated depth changes. Pulse anemones run a five-second cycle: 2.5 seconds safe, one second warning, then 1.5 seconds active. A pulse deals 20 player air damage with knockback and a 1.5-second local cooldown, or one baby health without a lantern shield. Walls block pulses. Retry resets all pulses to their safe phase and restores followers with two seconds of grace. Waiting, steering and light timing replace arbitrary score penalties. Difficulty progression and actual escort enjoyment remain hypotheses pending human play.

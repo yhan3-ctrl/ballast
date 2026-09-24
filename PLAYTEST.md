@@ -113,3 +113,6 @@ All player-facing text remains English; Chinese UI text was removed at the creat
 
 ### v0.8.2 — creator feedback: obstacles and readability
 Yu Han requested more red obstacles for weaving, more threatening jellyfish, and clearer rocks/forks. Added alternating coral and persistent rock outlines; hostile creatures now have distinct spikes/eyes/fangs/warning icons. First placement blocked clearance to a chapter-two baby and was moved before delivery. 74 rule checks, 21 rescue checks and all three coral-avoiding static route checks pass. No new human playthrough or graphical/audio validation is claimed.
+
+### v0.9.0 — creator feedback, not an external playtest
+Yu Han reported the third chapter felt easier than the second, too few threats, invulnerable followers and little incentive to use light. Implemented alternating trench baffles, timed anemones, two-hit follower health, lantern protection and follower-seeking Glimmer. 15 new escort checks cover grace, shielding, range, wall occlusion, pause/death rejection, recovery and pulse phases. Existing 95 rule checks and three static routes pass. These tests do not establish air feasibility, complete follower safety, timing difficulty or enjoyment. A fresh human run is required.

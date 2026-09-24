@@ -67,6 +67,14 @@ func _physics_process(delta: float) -> void:
 	elif state == State.ATTRACTED:
 		state = State.RETURN
 		attraction_time = 0.0
+	var prey = null
+	if not detect and not harmless:
+		var nearest := 200.0
+		for baby in world.rescued_babies:
+			var distance: float = position.distance_to(baby.position)
+			if distance < nearest and not world.baby_is_protected(baby) and has_sight_to(baby.position):
+				nearest = distance
+				prey = baby
 	var target := home
 	match state:
 		State.DRIFT:
@@ -79,9 +87,11 @@ func _physics_process(delta: float) -> void:
 				saw_return = saw_attraction
 				state = State.DRIFT
 				phase = 0.0
+	if prey != null:
+		target = prey.position
 	target = target.clamp(bounds.position + Vector2(20, 20), bounds.end - Vector2(20, 20))
 	alert_left = maxf(0.0, alert_left - delta)
-	var step_speed := speed if state == State.ATTRACTED else 120.0
+	var step_speed := speed if state == State.ATTRACTED else (170.0 if prey != null else 120.0)
 	if alert_left <= 0.0:
 		move_and_collide(position.direction_to(target) * minf(step_speed * delta, position.distance_to(target)))
 	if not harmless and p.invulnerable_left <= 0 and position.distance_to(p.position) < 34 and has_sight_to(p.global_position):
