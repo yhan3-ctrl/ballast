@@ -35,6 +35,20 @@ func _draw() -> void:
 	draw_rect(Rect2(0, 758, 1280, 42), Color("071923"))
 	text(Vector2(35, 784), "W/S  Rise / sink     A/D  Swim     SPACE  Light     R  Retry     ESC  Pause", 14, MUTED)
 	text(Vector2(1090, 784), "F1  Diagnostics", 13, MUTED)
+	if not world.test_room:
+		var count: int = world.rescued_babies.size()
+		text(Vector2(35, 135), "BABIES %d/3  /  %s" % [count, "BRING THEM HOME!" if count == 3 else "TOUCH A BABY TO RESCUE IT"], 19, GOLD)
+		var direction: Vector2 = (world.objective_position() - p.position).normalized()
+		var origin := Vector2(1180, 132)
+		draw_line(origin - direction * 14, origin + direction * 14, GOLD, 3, true)
+		draw_line(origin + direction * 14, origin + direction.rotated(2.5) * 10, GOLD, 3, true)
+		draw_line(origin + direction * 14, origin + direction.rotated(-2.5) * 10, GOLD, 3, true)
+		text(Vector2(1010, 140), "HOME" if count == 3 else "NEXT BABY", 14, GOLD)
+	if p.flow_gliding:
+		text(Vector2(380, 730), "FLOW GLIDE / SAVING AIR / %.1f AIR PER SECOND" % p.drain_rate, 17, Color("a5fff1"))
+	if world.rescue_notice_left > 0:
+		var reward := "+%d AIR" % roundi(world.rescue_air_gain) if world.rescue_air_gain > 0 else "A NEW FRIEND!"
+		text(Vector2(340, 265), "BABY RESCUED!  %s  /  %d OF 3" % [reward, world.rescued_babies.size()], 24, GOLD)
 	if world.combo > 1 and world.combo_left > 0:
 		var scale := 1.0 + minf(world.combo_left, 0.25) * 0.8
 		text(Vector2(1050, 145), "FLOW CHAIN  x%d" % world.combo, int(21 * scale), GOLD)
@@ -49,11 +63,11 @@ func _draw() -> void:
 			draw_rect(Rect2(i * 5, 105 + i * 5, 1280 - i * 10, 651 - i * 10), Color(0.64, 0.16, 0.13, opacity), false, 7)
 	if world.notice_left > 0:
 		var size: Vector2 = font.get_string_size(world.notice_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
-		draw_rect(Rect2((1280 - size.x) / 2 - 22, 116, size.x + 44, 42), Color(0.025, 0.08, 0.11, 0.94))
-		text(Vector2((1280 - size.x) / 2, 143), world.notice_text, 16, GOLD)
+		draw_rect(Rect2((1280 - size.x) / 2 - 22, 155, size.x + 44, 42), Color(0.025, 0.08, 0.11, 0.94))
+		text(Vector2((1280 - size.x) / 2, 182), world.notice_text, 16, GOLD)
 	if world.pearl_tutorial_left > 0:
-		draw_rect(Rect2(369, 170, 542, 46), Color(0.025, 0.08, 0.11, 0.96))
-		text(Vector2(406, 199), "AT RISK  —  PEARLS BANK AT THE NEXT ANCHOR", 16, GOLD)
+		draw_rect(Rect2(369, 202, 542, 46), Color(0.025, 0.08, 0.11, 0.96))
+		text(Vector2(406, 231), "AT RISK  —  PEARLS BANK AT THE NEXT ANCHOR", 16, GOLD)
 	if p.dying:
 		text(Vector2(487, 395), p.death_reason.to_upper(), 32, GOLD)
 		text(Vector2(476, 432), "Returning to your last anchor...", 18)

@@ -27,6 +27,7 @@ var invulnerable_left: float = 0.0
 var trail_clock: float = 0.0
 var swim_burst: float = 0.0
 var in_current: bool = false
+var flow_gliding: bool = false
 var death_reason: String = "Air exhausted"
 
 func _ready() -> void:
@@ -112,6 +113,7 @@ func _physics_process(delta: float) -> void:
 					opposing = true
 				if flow.kind == "RIP":
 					rip_dir = flow.flow_direction
+	flow_gliding = in_current and direction.is_zero_approx() and not up_held and not down_held and velocity.dot(force) > 100.0
 	drain_rate = calculate_drain(direction, up_held, down_held, opposing)
 	air = maxf(0.0, air - drain_rate * delta)
 	if air <= 0.0:
@@ -129,7 +131,7 @@ func _physics_process(delta: float) -> void:
 		if along < 45.0:
 			velocity += rip_dir * (45.0 - along)
 	move_and_slide()
-	if is_instance_valid(world) and velocity.length() > 90.0 and trail_clock >= 0.09:
+	if is_instance_valid(world) and velocity.length() > 90.0 and trail_clock >= (0.035 if flow_gliding else 0.09):
 		trail_clock = 0.0
 		world.spawn_trail(global_position - velocity.normalized() * 20.0, -velocity.normalized() * 18.0)
 	if absf(direction.x) > 0.01:
@@ -170,6 +172,7 @@ func begin_drowning(reason: String = "Air exhausted") -> void:
 	if dying:
 		return
 	death_reason = reason
+	flow_gliding = false
 	dying = true
 	death_left = 1.5
 	lantern_on = false
@@ -184,6 +187,7 @@ func reset_at(point: Vector2) -> void:
 	rotation = 0
 	air = MAX_AIR
 	drain_rate = 0.0
+	flow_gliding = false
 	dying = false
 	lantern_on = false
 	death_left = 0.0
@@ -209,6 +213,8 @@ func _draw() -> void:
 	draw_line(Vector2(0, -12), Vector2(4, -33), Color("9de4d0"), 2, true)
 	draw_line(Vector2(4, -33), Vector2(19, -32 + wiggle), Color("9de4d0"), 2, true)
 	draw_circle(Vector2(20, -30 + wiggle), 6 if lantern_on else 3, Color("ffe1a3") if lantern_on else Color("6b9299"))
+	if flow_gliding:
+		draw_arc(Vector2.ZERO, 30, 0.6, 5.7, 32, Color("a5fff1"), 2.5, true)
 	if velocity.length() > 80.0:
 		for i in range(3):
 			draw_circle(Vector2(-35 - i * 11, 8 + sin(clock * 5 + i) * 8), 3.5 - i * 0.6, Color(0.55, 0.92, 0.9, 0.45), false, 1.4, true)

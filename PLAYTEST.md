@@ -100,3 +100,7 @@ Result: **61 checks, 0 failures**, implementation `6edef57`. Local macOS exporte
 Second-chapter island heights and widths now vary; third chapter uses alternating wall openings and an upward finish. Separate original arrangements distinguish chapters. The GDD was rewritten against current code, explicitly removing unimplemented escort claims and separating intended learning from verified outcomes.
 
 Rule suite: 74 checks passed. Static clearance checks: all 3 chapters' anchors, vents and exits reachable using an 18 px clearance grid after the observation gate is open. This does not include air expenditure, creature timing or player comprehension. Graphical editor was readable, but automated Run input did not produce a game window; no successful graphical playthrough is claimed.
+
+
+## 2026-09-24 — direct creator feedback and rescue redesign
+Tester: creator Yu Han, screenshots and comments during play, not an independent outside tester. Reported: could not identify the old egg/exit symbol, did not understand how a chapter completes, and felt they were only swimming while losing resources. No session duration or death count inferred. Response: visible baby fish/contact rescue, a golden home, persistent goal/count/direction, +25-air rescue reward, persistent rescue progress across retries, removal of the observation gate, and stronger glide feedback. New feedback requires a fresh human run; do not mark the usability issue resolved solely from tests.

@@ -1,9 +1,9 @@
 extends Control
 var world
 const TITLES = ["THE REEF", "THE KELP DRIFT", "THE TRENCH"]
-const GOALS = ["Reach the reef exit. Discover how light changes Glimmer's behaviour.", "Cross the kelp. Choose between a current-assisted route and pearl detours.", "Cross the narrow passes, then ride the rising current home."]
+const GOALS = ["TOUCH 3 BABY FISH. They follow you. Bring them to the golden house to win.", "Rescue 3 babies along the upper and lower routes. Bring them to the golden house.", "Find 3 babies in the trench. Ride the rising current and bring them home."]
 const TIPS = [
-	"Vents restore 40 air. Stinging coral costs 25 air.\nPearls are only saved at a new anchor or the exit; retries lose unbanked pearls.",
+	"Touch a baby: +25 air! Rescued babies stay with you after a retry.\nVents give +40 air. Coral costs 25. Pearls are optional and bank at anchors.",
 	"Glide with the current to save air; swimming against it costs more.\nLight attracts Glimmer. Darkness makes it return, but contact is still fatal.",
 	"Use light to draw Glimmer away, then turn it off before passing.\nAir also drains while idle: plan at the pause screen if you need time."
 ]
@@ -18,6 +18,10 @@ func label_at(value: String, pos: Vector2, size: Vector2, font_size: int = 22) -
 	label.size = size
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size", font_size)
+	var ui_font := SystemFont.new()
+	ui_font.font_names = PackedStringArray(["Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", "Arial"])
+	ui_font.allow_system_fallback = true
+	label.add_theme_font_override("font", ui_font)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(label)
 
@@ -48,9 +52,9 @@ func refresh() -> void:
 	if not visible:
 		return
 	if world.finished:
-		label_at("DIVE COMPLETE" if world.test_room else "CHAPTER %d COMPLETE" % (world.level_index + 1), Vector2(200, 170), Vector2(880, 70), 40)
+		label_at("DIVE COMPLETE" if world.test_room else "ALL 3 BABIES ARE HOME!", Vector2(200, 170), Vector2(880, 70), 40)
 		label_at("TIME  %02d:%02d    RETRIES  %d\n\nPEARLS  %d / %d    SCORE  %d" % [int(world.elapsed) / 60, int(world.elapsed) % 60, world.deaths, world.collected_pearls, world.total_pearls, world.score], Vector2(200, 285), Vector2(880, 180), 26)
-		label_at("Practice complete. Try the chapter map." if world.test_room else (["The reef is behind you. The kelp route is now open.", "The kelp is crossed. The trench route is now open.", "Home at last. Yuun and the little lights are safe."][world.level_index]), Vector2(200, 455), Vector2(880, 60))
+		label_at("Practice complete. Try the chapter map." if world.test_room else (["Three little fish are safe. The kelp route is now open.", "Three more fish are safe. The trench route is now open.", "Home at last. Yuun and the little lights are safe."][world.level_index]), Vector2(200, 455), Vector2(880, 60))
 		button_at("MAP", Vector2(200, 560), world.to_menu)
 		button_at("PLAY AGAIN", Vector2(510, 560), func():
 			if world.test_room:
@@ -62,7 +66,8 @@ func refresh() -> void:
 	elif world.intro_chapter >= 0:
 		var chapter: int = world.intro_chapter
 		label_at("%02d / %s" % [chapter + 1, TITLES[chapter]], Vector2(190, 175), Vector2(900, 65), 38)
-		label_at(GOALS[chapter], Vector2(190, 275), Vector2(880, 80), 25)
+		label_at("通关秘籍：碰到小鱼宝宝，让它跟随你；带三条宝宝回金色小屋。", Vector2(190, 250), Vector2(880, 40), 21)
+		label_at(GOALS[chapter], Vector2(190, 300), Vector2(880, 80), 24)
 		label_at("TIPS\n" + TIPS[chapter], Vector2(190, 385), Vector2(880, 145), 21)
 		label_at("WASD  Swim     SPACE  Lantern     R  Retry     ESC  Pause", Vector2(190, 550), Vector2(900, 35), 18)
 		button_at("BACK TO MAP", Vector2(190, 620), world.to_menu)
@@ -95,6 +100,13 @@ func _draw() -> void:
 			for j in range(5):
 				var base := center + Vector2(-80 + j * 40, 38)
 				draw_polyline(PackedVector2Array([base, base + Vector2(-8, -65 - j * 5), base + Vector2(6, -100 - j * 3)]), Color(0.2, 0.55, 0.5, 0.25), 5, true)
+	if world.finished and not world.test_room:
+		for i in range(3):
+			var point := Vector2(300 + i * 85, 252)
+			var color: Color = [Color("ffd28a"), Color("ffaaa5"), Color("bcaeff")][i]
+			draw_circle(point, 16, color)
+			draw_colored_polygon(PackedVector2Array([point + Vector2(-12, 0), point + Vector2(-30, -12), point + Vector2(-30, 12)]), color)
+			draw_circle(point + Vector2(7, -4), 4, Color("102c39"))
 	for i in range(12):
 		draw_arc(Vector2(1050, 200), 150 + i * 45, 0, TAU, 100, Color(0.1, 0.35, 0.4, 0.2), 2)
 	if world.menu and world.intro_chapter < 0:

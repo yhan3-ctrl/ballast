@@ -39,6 +39,7 @@ func run() -> void:
 		var points: Array = []
 		for cp in world.checkpoints: points.append(cp.position)
 		for vent in world.vents: points.append(vent.position)
+		for baby in world.babies: points.append(baby.position)
 		points.append(world.exit_point)
 		var clear := true
 		for point in points:

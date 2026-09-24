@@ -221,6 +221,9 @@ func run_all() -> void:
 	world.respawn()
 	check(near(world.elapsed, 45.0), "checkpoint retry retains chapter elapsed time")
 	world.observation_complete = true
+	for baby in world.babies:
+		baby.rescued = true
+		world.rescued_babies.append(baby)
 	world.player.position = world.exit_point
 	world._physics_process(0.0)
 	check(world.finished and world.level_index == 0 and not world.running, "chapter exit waits at settlement instead of auto-advancing")
@@ -232,12 +235,18 @@ func run_all() -> void:
 	check(world.score == 0 and world.deaths == 0 and near(world.elapsed, 0.0), "whole-chapter replay resets attempt statistics")
 	world.elapsed = 60.0
 	world.observation_complete = true
+	for baby in world.babies:
+		baby.rescued = true
+		world.rescued_babies.append(baby)
 	world.player.position = world.exit_point
 	world._physics_process(0.0)
 	check(near(world.best_times[0], 45.0), "slower replay preserves personal best")
 	world.open_chapter(1)
 	world.start_chapter(1)
 	world.elapsed = 52.0
+	for baby in world.babies:
+		baby.rescued = true
+		world.rescued_babies.append(baby)
 	world.player.position = world.exit_point
 	world._physics_process(0.0)
 	check(world.unlocked_chapter == 2 and near(world.best_times[1], 52.0), "chapter two completion unlocks chapter three")

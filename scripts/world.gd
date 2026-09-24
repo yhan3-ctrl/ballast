@@ -1,5 +1,7 @@
 extends Node2D
 
+const BabyFish = preload("res://scripts/baby_fish.gd")
+const Home = preload("res://scripts/home.gd")
 const Player = preload("res://scripts/player.gd")
 const Flow = preload("res://scripts/current_area.gd")
 const Vent = preload("res://scripts/vent.gd")
@@ -55,7 +57,7 @@ var current_music_path: String = "res://assets/audio/music.wav"
 var effects_muted: bool = false
 var event_players: Array[AudioStreamPlayer] = []
 var sound_last_ms: Dictionary = {}
-const EVENT_LEVELS = {"pearl": -14.0, "vent": -10.0, "checkpoint": -9.0, "complete": -8.0, "toggle": -18.0, "contact": -10.0, "drown": -11.0, "heartbeat": -15.0, "return": -13.0}
+const EVENT_LEVELS = {"pearl": -14.0, "vent": -10.0, "checkpoint": -9.0, "complete": -8.0, "toggle": -18.0, "contact": -10.0, "drown": -11.0, "heartbeat": -15.0, "return": -13.0, "rescue": -8.0, "glide": -19.0}
 var exit_settled: bool = false
 var chapter_menu
 var intro_chapter: int = -1
@@ -64,6 +66,12 @@ var best_times: Array = [0.0, 0.0, 0.0]
 var save_warning: String = ""
 var save_enabled: bool = true
 var save_path_override: String = ""
+var babies: Array = []
+var rescued_babies: Array = []
+var follow_trail: Array[Vector2] = []
+var rescue_notice_left: float = 0.0
+var rescue_air_gain: float = 0.0
+var glide_cue_left: float = 0.0
 var score: int = 0
 var collected_pearls: int = 0
 var total_pearls: int = 0
@@ -84,7 +92,7 @@ const AIR_BONUS_MULTIPLIER: int = 20
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	setup_input()
-	for sound in ["vent", "checkpoint", "toggle", "drown", "contact", "complete", "heartbeat", "pearl", "return", "music"]:
+	for sound in ["vent", "checkpoint", "toggle", "drown", "contact", "complete", "heartbeat", "pearl", "return", "rescue", "glide", "music"]:
 		var path: String = "res://assets/audio/" + sound + ".wav"
 		if ResourceLoader.exists(path):
 			sound_streams[sound] = load(path)
@@ -194,7 +202,7 @@ func load_progress() -> void:
 		return
 	unlocked_chapter = clampi(int(config.get_value("progress", "unlocked", 0)), 0, 2)
 	for i in range(3):
-		var value = config.get_value("times", str(i), 0.0)
+		var value = config.get_value("rescue_times", str(i), 0.0)
 		if (value is float or value is int) and is_finite(float(value)) and float(value) > 0:
 			best_times[i] = float(value)
 
@@ -204,9 +212,10 @@ func save_progress() -> void:
 	var path := progress_path()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(path.get_base_dir()))
 	var config := ConfigFile.new()
+	config.load(path)
 	config.set_value("progress", "unlocked", unlocked_chapter)
 	for i in range(3):
-		config.set_value("times", str(i), best_times[i])
+		config.set_value("rescue_times", str(i), best_times[i])
 	if config.save(path) != OK:
 		save_warning = "Progress could not be saved; this session remains playable."
 
@@ -314,6 +323,10 @@ func build_level() -> void:
 	player = Player.new()
 	player.world = self
 	world_layer.add_child(player)
+	babies.clear()
+	rescued_babies.clear()
+	follow_trail.clear()
+	rescue_notice_left = 0.0
 	spawn_point = checkpoints[0].position
 	player.reset_at(spawn_point)
 	tutorial_origin = spawn_point
@@ -327,6 +340,23 @@ func build_level() -> void:
 	world_layer.add_child(camera)
 	camera.make_current()
 	exit_point = Vector2(width - 140, 270 if not test_room and level_index == 2 else 500)
+	var home_marker = Home.new()
+	home_marker.world = self
+	home_marker.position = exit_point
+	world_layer.add_child(home_marker)
+	if not test_room:
+		var locations: Array = [
+			[Vector2(360, 510), Vector2(2400, 285), Vector2(4150, 300)],
+			[Vector2(790, 245), Vector2(2310, 615), Vector2(4210, 245)],
+			[Vector2(720, 510), Vector2(2700, 345), Vector2(4530, 290)]
+		]
+		for point in locations[level_index]:
+			var baby = BabyFish.new()
+			baby.position = point
+			baby.number = babies.size() + 1
+			baby.tint = [Color("ffd28a"), Color("ffaaa5"), Color("bcaeff")][babies.size()]
+			world_layer.add_child(baby)
+			babies.append(baby)
 	notify("TEST DIVE  /  CORE + LIGHT LAB" if test_room else "%02d  /  %s" % [level_index + 1, title_names[level_index]])
 	queue_redraw()
 
@@ -378,8 +408,8 @@ func build_campaign_layout() -> void:
 			else:
 				add_sign(Vector2(offset + 90, 235), "03 / LIGHT CHANGES THINGS", "SPACE: lantern on / off. Approach the enclosure.\nLight attracts the Glimmer; darkness releases it.")
 				add_glimmer(Rect2(offset + 570, 170, 370, 200), seg, true)
-				add_sign(Vector2(offset + 620, 470), "WATCH IT RESPOND", "Light on: wait for approach.\nLight off: watch it return. Then the gate opens.")
-				observation_gate = add_wall(Rect2(offset + 1370, 150, 28, 570), true)
+				add_sign(Vector2(offset + 620, 470), "WATCH IT RESPOND", "Light brings it closer.\nDarkness lets it return. This one is friendly.")
+				# The exit is now gated by visible rescue progress, not a hidden observation flag.
 		elif level_index == 1:
 			# Alternating islands make the optional upper route different in each room.
 			var island_y: float = [340.0, 400.0, 315.0][seg]
@@ -605,6 +635,9 @@ func respawn() -> void:
 		if creature.segment == active_checkpoint:
 			creature.reset_creature()
 	player.reset_at(spawn_point)
+	follow_trail.clear()
+	for baby in rescued_babies:
+		baby.position = spawn_point
 	respawn_pending = false
 	play_sound("return")
 	notify("BACK AT ANCHOR  /  %s  /  %d PEARLS LOST" % [last_reason.to_upper(), lost_pearls])
@@ -619,9 +652,50 @@ func complete_observation() -> void:
 	notify("LIGHT DRAWS THEM IN. DARKNESS LETS THEM GO.")
 	play_sound("checkpoint")
 
+func try_rescue_baby(baby: Node2D) -> bool:
+	if not running or paused or player.dying or respawn_pending or baby not in babies or baby.rescued:
+		return false
+	if player.position.distance_to(baby.position) > 48:
+		return false
+	var query := PhysicsRayQueryParameters2D.create(player.global_position, baby.global_position, 1)
+	if not get_world_2d().direct_space_state.intersect_ray(query).is_empty():
+		return false
+	baby.rescued = true
+	rescued_babies.append(baby)
+	var before: float = player.air
+	player.refill(25.0)
+	rescue_air_gain = player.air - before
+	rescue_notice_left = 3.0
+	spawn_burst(baby.position, baby.tint, 24)
+	play_sound("rescue")
+	return true
+
+func objective_position() -> Vector2:
+	for baby in babies:
+		if not baby.rescued:
+			return baby.position
+	return exit_point
+
+func update_rescue(delta: float) -> void:
+	rescue_notice_left = maxf(0.0, rescue_notice_left - delta)
+	glide_cue_left = maxf(0.0, glide_cue_left - delta)
+	for baby in babies:
+		try_rescue_baby(baby)
+	if follow_trail.is_empty() or follow_trail[0].distance_to(player.position) >= 4:
+		follow_trail.push_front(player.position)
+		if follow_trail.size() > 110:
+			follow_trail.pop_back()
+	for i in range(rescued_babies.size()):
+		if not follow_trail.is_empty():
+			rescued_babies[i].position = follow_trail[mini((i + 1) * 12, follow_trail.size() - 1)]
+	if player.flow_gliding and glide_cue_left <= 0.0:
+		play_sound("glide")
+		glide_cue_left = 3.0
+
 func _physics_process(delta: float) -> void:
 	if not running or paused or finished or not is_instance_valid(player):
 		return
+	update_rescue(delta)
 	elapsed += delta
 	segment_time += delta
 	if tutorial_active and player.position.distance_to(tutorial_origin) > 65.0:
@@ -636,7 +710,7 @@ func _physics_process(delta: float) -> void:
 	if player.position.y > 900 or player.position.x < -150:
 		request_respawn("Out of bounds")
 	if not exit_settled and not player.dying and not respawn_pending and player.position.distance_to(exit_point) < 65:
-		if level_index == 0 and not test_room and not observation_complete:
+		if not test_room and rescued_babies.size() < 3:
 			return
 		exit_settled = true
 		settle_segment("exit")
@@ -738,11 +812,6 @@ func _draw() -> void:
 		for j in range(8):
 			points.append(Vector2(x + sin(visual_clock * 0.7 + j * 0.5 + i) * j * 2, 720 - j * (8 + i % 6)))
 		draw_polyline(points, Color("163d43"), 5, true)
-	var pulse: float = sin(visual_clock * 2) * 3
-	draw_arc(exit_point, 48 + pulse, 0, TAU, 50, Color("e7c486"), 2, true)
-	for i in range(3):
-		draw_circle(exit_point + Vector2((i - 1) * 23, -8 if i == 1 else 6), 13, Color("e9d6ae"))
-		draw_circle(exit_point + Vector2((i - 1) * 23 + 3, -11 if i == 1 else 3), 4, Color("fff1ce"))
 	for particle in fx_particles:
 		var alpha: float = particle.life / particle.max_life
 		draw_circle(particle.position, particle.size * (0.5 + alpha * 0.5), Color(particle.color, alpha * 0.8), false, 1.5, true)

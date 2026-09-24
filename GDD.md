@@ -9,13 +9,13 @@
 
 Ballast is a short, single-player underwater traversal and resource-management game. The player is Yuun the Jadefin, a small jade-coloured lantern fish travelling through reef, kelp and trench environments. The name starts with Yu and ends with Han's n, with a doubled u echoing the creator's handle hnuu. The jade/fish association connects 玉 and 鱼.
 
-Egg-shaped lights mark each chapter's destination. The journey ends at an elevated home marker in the trench. This is an environmental premise, not an implemented escort system: eggs do not follow the player and have no health or AI.
+Each chapter contains three clearly drawn baby fish. Touching one rescues it automatically, restores up to 25 air once, and makes it follow Yuun. Bring all three to the visible golden house to finish. Followers are cosmetic companions without separate health or collision; they use the player's recorded trail. Rescue progress survives checkpoint retries but resets on a fresh chapter attempt.
 
 ## What the game teaches
 
 The main skill is allocating limited air between movement, illumination and optional rewards. Players learn to glide with currents, steer around coral, use light selectively around Glimmer, and decide when a pearl detour is worth its air cost. Movement is a simplified force-and-drag model, not a simulation of real buoyancy.
 
-The Reef introduces the controls and environmental rules, including a safe light-response exercise. The Kelp Drift applies the same rules to upper/lower route choices. The Trench combines constrained passages, changes in depth and a final upward current. Luring is available as a tactic; the current geometry does not prove every passage requires it. The intended learning and 5–10 minute first-play duration must still be checked with a new human player.
+The Reef introduces the controls and environmental rules, including a safe optional light-response example. The Kelp Drift applies the same rules to upper/lower route choices. The Trench combines constrained passages, changes in depth and a final upward current. Luring is available as a tactic; the current geometry does not prove every passage requires it. The intended learning and 5–10 minute first-play duration must still be checked with a new human player.
 
 ## Controls and chapter flow
 
@@ -55,7 +55,7 @@ The lantern costs air and improves visibility of dim geometry, vents and creatur
 
 Glimmer has deterministic DRIFT, ATTRACTED and RETURN states. Light within 220 px attracts it only with an unobstructed ray to the player. New attraction has a 0.35-second visual warning. Chase speed is 265 px/second; drift/return speed is 120. Its movement and sight are blocked by walls, and its target is clamped to a home region. Turning off the light or leaving detection makes it return. Contact within 34 px is fatal for hostile specimens, subject to the player's brief invulnerability grace and clear line of sight. It is not an enemy the player can attack.
 
-The mint-coloured Reef observation specimen is harmless. The exit gate requires at least 0.6 seconds of attraction, movement at least 30 px from its home, and an actual return home. Quick toggling cannot complete the observation. Completion remains learned after a retry in that chapter attempt.
+The mint-coloured Reef observation specimen is harmless. Observing attraction and return can trigger a learning acknowledgement, but no door or completion condition depends on it. The former observation gate was removed after the player could not understand why the exit was blocked.
 
 Stinging coral removes 25 air, pushes the player away, and grants 0.9 seconds of damage immunity. A lethal hit records the coral cause. Respawn grants 0.7 seconds of grace. Low air adds a vignette and heartbeat, never a movement penalty. Death text identifies the cause.
 
@@ -69,7 +69,7 @@ New anchors and the exit add `round(remaining_air) × 20` points before refill. 
 
 | Chapter | Layout and learning role | Identity |
 |---|---|---|
-| Reef | Broad slalom, vents, current exercises, coral avoidance, safe light observation with exit gate | Blue-green, slower original arrangement |
+| Reef | Broad slalom, vents, current exercises, coral avoidance, safe optional light observation, three baby rescues | Blue-green, slower original arrangement |
 | Kelp Drift | Three islands with different heights/widths; upper pearl detours and lower current-assisted routes near Glimmer | Green, stronger rhythmic original arrangement |
 | Trench | Low/high/low wall openings, Glimmer near approach routes, changes of depth and final upward flow to the elevated destination | Violet, fastest original arrangement |
 
@@ -104,12 +104,21 @@ All audio is original procedural synthesis. Three chapter arrangements share a m
 | `ebf46b7` | First-pearl rule hint | Explain the new at-risk reward contract |
 | `6edef57` | Wall-aware Glimmer, actual return observation, exit settlement and telemetry | Correct fairness and consistency defects |
 | `c73296b` | Map, locks, introductions, results and saved best times | Make chapter boundaries explicit and remove live time pressure |
+| `a1f1572` | Varied chapter geometry and original arrangements | Distinguish the three chapters |
 | `8735460` | Original event cues and controlled mixing | Differentiate consequences without audio clutter |
 
 The current final-pass commit is recorded in `docs/FINAL-REVIEW.md`. These are local implementation/design-review iterations, not fabricated human playtests or GitHub pushes. `PLAYTEST.md` distinguishes automated checks from human observations.
 
 ## Verification and submission status
 
-Rule regressions cover economy, banking/retry integrity, Glimmer wall interactions, observation completion, pause, chapter locks, timing and save/load. Static route checks include the player's clearance to anchors, vents and exits after the observation gate opens. They do not prove difficulty, fun, dynamic puzzle success or duration.
+Rule regressions cover economy, banking/retry integrity, Glimmer wall interactions, observation completion, pause, chapter locks, timing and save/load. Static route checks include the player's clearance to anchors, vents and exits including all three baby locations. They do not prove difficulty, fun, dynamic puzzle success or duration.
 
 Remaining acceptance evidence: an unfamiliar player's complete three-chapter run with timing/confusion/death notes, audible/visual review, and actual Windows/Linux launches. Public GitHub repository/release and Blackboard submission remain unperformed because only local work has been authorised. The instructor collaborator invitation is recommended in the assignment, not mandatory. Builds and their exact verification status are listed in `docs/BUILD-VERIFICATION.md`.
+
+
+## Rescue redesign — 2026-09-24
+Direct player feedback: the exit was unclear, the old egg symbol was not recognizable, and traversal felt purposeless. The revised objective is explicit on the introduction and HUD: touch three baby fish and bring them to the golden house. A bilingual introduction explains contact rescue; no new action key is required. The HUD shows rescued count and a direction arrow to the next missing baby, or home when all are found. The arrow is a direction hint, not a collision-free navigation path.
+
+Rescue requires proximity within 48 px and clear wall line of sight. Dead, paused or respawning players cannot rescue. Each baby awards up to 25 air only once per attempt, reports the actual gain and emits a celebratory cue. Rescued babies remain safe through retries; optional pearl banking still follows its existing risk rules. At home, fewer than three babies cannot complete the chapter; all three trigger settlement once, without any observation prerequisite. Existing chapter unlocks remain; old speed records are preserved separately and are not shown as rescue-mode records.
+
+Hands-off motion with a current now produces a brighter wake, a visible ring, a short sound and a live drain indicator. It does not secretly increase force or award free air: the positive feedback makes the existing reduced thrust expenditure perceptible. Holding thrust removes the glide cue.
