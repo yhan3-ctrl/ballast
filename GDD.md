@@ -385,3 +385,5 @@ Implementation: `c73296b`, local tag `v0.6.0-chapter-map`. Automated checks: 74 
 
 ### Event audio revision — 2026-09-23
 Original synthesized event audio now differentiates pearl pickup, air refill, banking, chapter completion, impact, drowning, return, lantern and heartbeat. A rising pitch marks pearl chains. Low air lowers the music by 8 dB to make the heartbeat easier to hear. Important impact/drowning/completion cues clear competing event voices. Other cues are limited to six concurrent voices with repeat cooldowns. Pausing, returning to map and effects mute clear active cues. Commercial song suggestions remain references only; no third-party recording was incorporated.
+
+Audio implementation commit: `8735460`, local tag `v0.6.1-audio`. All changes and generated assets remain local.
