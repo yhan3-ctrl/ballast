@@ -110,3 +110,6 @@ Rescue regression result: **74 existing checks + 19 rescue checks passed**. Adde
 
 ### v0.8.1 rescue clarity follow-up
 All player-facing text remains English; Chinese UI text was removed at the creator's explicit request. The direction arrow selects the nearest unrescued baby, and reaching home early explicitly states the missing count. Followers face their direction of movement. 74 regression checks and 21 rescue checks passed; three static route checks passed. Graphical capture still exits at native startup in the current tool environment; no new visual pass is claimed.
+
+### v0.8.2 — creator feedback: obstacles and readability
+Yu Han requested more red obstacles for weaving, more threatening jellyfish, and clearer rocks/forks. Added alternating coral and persistent rock outlines; hostile creatures now have distinct spikes/eyes/fangs/warning icons. First placement blocked clearance to a chapter-two baby and was moved before delivery. 74 rule checks, 21 rescue checks and all three coral-avoiding static route checks pass. No new human playthrough or graphical/audio validation is claimed.

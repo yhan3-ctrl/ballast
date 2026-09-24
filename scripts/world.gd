@@ -400,6 +400,8 @@ func build_campaign_layout() -> void:
 			add_flow(Rect2(offset + 680, 230, 360, 130), Vector2.RIGHT, 310 if seg < 2 else 700, "DRIFT" if seg < 2 else "RIP")
 			add_pearl_line(Vector2(offset + 700, 290), Vector2(78, 0), 4, seg)
 			add_hazard(Rect2(offset + 1180, 665, 150, 55))
+			add_hazard(Rect2(offset + 660, 150, 65, 65))
+			add_hazard(Rect2(offset + 940, 360, 65, 145))
 			if seg == 0:
 				add_sign(Vector2(115, 230), "01 / A BREATH IS A CHOICE", "W / S rise & sink. A / D swim.\nFind a vent before your air runs out.")
 				add_sign(Vector2(740, 635), "ONE BREATH, ONCE", "Vents give +40 air. Spent vents reset on death.")
@@ -424,8 +426,11 @@ func build_campaign_layout() -> void:
 			add_pearl_line(Vector2(offset + 650, 250), Vector2(115, 0), 6, seg)
 			add_pearl_line(Vector2(offset + 470, island_y + 175), Vector2(175, 0), 3, seg)
 			add_hazard(Rect2(offset + 1150, 665, 150, 55))
+			add_hazard(Rect2(offset + 590, 150, 65, 60))
+			add_hazard(Rect2(offset + 1100, island_y - 55, 65, 55))
+			add_hazard(Rect2(offset + 560, 650, 65, 70))
 			add_glimmer(Rect2(offset + 650, island_y + 145, 420, 700 - island_y - 145), seg)
-			add_sign(Vector2(offset + 210, 260), "PEARLS ABOVE / CURRENT BELOW", "")
+			add_sign(Vector2(offset + 210, 260), "UPPER ROUTE  ^  /  LOWER ROUTE  v", "")
 		else:
 			# First two chambers alternate low and high gates; finale climbs to the nest.
 			var gap_y: float = [440.0, 300.0, 440.0][seg]
@@ -436,6 +441,8 @@ func build_campaign_layout() -> void:
 			add_flow(Rect2(offset + 970, gap_y + 10, 380, 95), Vector2.RIGHT, 420, "DRIFT")
 			add_pearl_line(Vector2(offset + 1020, gap_y + 45), Vector2(90, 0), 4, seg)
 			add_hazard(Rect2(offset + 1170, 665, 120, 55))
+			add_hazard(Rect2(offset + 310, 150, 65, 220))
+			add_hazard(Rect2(offset + 455, 585, 65, 135))
 			if seg == 1:
 				add_wall(Rect2(offset + 1230, 420, 100, 300))
 				add_vent(Vector2(offset + 1420, 320), seg)
@@ -457,12 +464,15 @@ func add_wall(rect: Rect2, gate: bool = false) -> StaticBody2D:
 	body.add_child(collision)
 	var poly := Polygon2D.new()
 	poly.polygon = PackedVector2Array([Vector2.ZERO, Vector2(rect.size.x, 0), rect.size, Vector2(0, rect.size.y)])
-	poly.color = Color("316c70") if gate else Color("163743")
+	poly.color = Color("316c70") if gate else Color("34515e")
 	body.add_child(poly)
 	var edge := Line2D.new()
 	edge.points = PackedVector2Array([Vector2.ZERO, Vector2(rect.size.x, 0), rect.size, Vector2(0, rect.size.y), Vector2.ZERO])
-	edge.width = 2
-	edge.default_color = Color("80c6bf") if gate else Color("376371")
+	edge.width = 3
+	edge.default_color = Color("80c6bf") if gate else Color("71999f")
+	var outline_material := CanvasItemMaterial.new()
+	outline_material.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	edge.material = outline_material
 	body.add_child(edge)
 	var occluder := LightOccluder2D.new()
 	var polygon := OccluderPolygon2D.new()

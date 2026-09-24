@@ -18,10 +18,6 @@ func label_at(value: String, pos: Vector2, size: Vector2, font_size: int = 22) -
 	label.size = size
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size", font_size)
-	var ui_font := SystemFont.new()
-	ui_font.font_names = PackedStringArray(["Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", "Arial"])
-	ui_font.allow_system_fallback = true
-	label.add_theme_font_override("font", ui_font)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(label)
 

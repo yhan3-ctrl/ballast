@@ -7,6 +7,9 @@ func clear_at(world, point: Vector2) -> bool:
 	for wall in world.walls:
 		if wall.grow(18).has_point(point):
 			return false
+	for hazard in world.hazards:
+		if hazard.bounds.grow(18).has_point(point):
+			return false
 	return true
 func reachable(world, start: Vector2, target: Vector2) -> bool:
 	var origin := Vector2i(roundi(start.x / 20), roundi(start.y / 20))

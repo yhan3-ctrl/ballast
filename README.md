@@ -61,3 +61,6 @@ Three differentiated layouts and three original chapter arrangements. Start via 
 
 ### v0.8.1 rescue clarity follow-up
 All player-facing text remains English; Chinese UI text was removed at the creator's explicit request. The direction arrow selects the nearest unrescued baby, and reaching home early explicitly states the missing count. Followers face their direction of movement. 74 regression checks and 21 rescue checks passed; three static route checks passed. Graphical capture still exits at native startup in the current tool environment; no new visual pass is claimed.
+
+### v0.8.2 readability update
+More alternating coral creates weaving opportunities. Rock outlines and hostile warning icons stay visible with the lantern off. Upper/lower route labels clarify chapter-two forks. Hostile Glimmer contact causes a retry; coral removes 25 air. All player-facing text remains English.

@@ -18,6 +18,10 @@ var attraction_time: float = 0.0
 var alert_left: float = 0.0
 
 func _ready() -> void:
+	var warning := Node2D.new()
+	warning.set_script(preload("res://scripts/danger_marker.gd"))
+	warning.visible = not harmless
+	add_child(warning)
 	collision_layer = 0
 	collision_mask = 1
 	var collider := CollisionShape2D.new()
@@ -87,7 +91,7 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	var c := Color("f3aa98") if state == State.ATTRACTED else (Color("91d7c0") if harmless else Color("b7a7ec"))
+	var c := Color("f3aa98") if state == State.ATTRACTED else (Color("91d7c0") if harmless else Color("d7658b"))
 	if alert_left > 0.0:
 		draw_arc(Vector2.ZERO, 33, 0, TAU, 32, Color("ffd191"), 3.0, true)
 	var pulse: float = 1.0 + sin(clock * 3.5) * 0.06
@@ -97,5 +101,13 @@ func _draw() -> void:
 		var x: float = -14 + i * 7
 		var line := PackedVector2Array([Vector2(x, 7), Vector2(x + sin(clock * 4 + i) * 5, 18), Vector2(x + sin(clock * 4 + i + 1) * 5, 30)])
 		draw_polyline(line, Color(c, 0.85), 2, true)
-	draw_circle(Vector2(-7, -3), 2.5, Color("283048"))
-	draw_circle(Vector2(7, -3), 2.5, Color("283048"))
+	if harmless:
+		draw_circle(Vector2(-7, -3), 2.5, Color("283048"))
+		draw_circle(Vector2(7, -3), 2.5, Color("283048"))
+	else:
+		for side in [-1.0, 1.0]:
+			draw_colored_polygon(PackedVector2Array([Vector2(side * 10, -16), Vector2(side * 23, -30), Vector2(side * 20, -3)]), Color("e7879d"))
+			draw_line(Vector2(side * 4, -1), Vector2(side * 13, -7), Color("fff0b8"), 4, true)
+			draw_colored_polygon(PackedVector2Array([Vector2(side * 3, 8), Vector2(side * 6, 16), Vector2(side * 9, 8)]), Color("fff0b8"))
+		draw_arc(Vector2.ZERO, 35, 0, TAU, 40, Color(1, 0.3, 0.4, 0.35), 2, true)
+		draw_string(ThemeDB.fallback_font, Vector2(-41, -39), "DANGER", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("ff9b96"))

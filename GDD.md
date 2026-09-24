@@ -51,7 +51,7 @@ Only a previously inactive forward anchor activates. Activation banks pending re
 
 ### Light, Glimmer and coral
 
-The lantern costs air and improves visibility of dim geometry, vents and creatures. Currents, signs and pearls remain readable without it; pearls deliberately glow as route cues. Background illumination differs by chapter and is not perfectly black.
+The lantern costs air and improves visibility of dim geometry, vents and creatures. Rock outlines and hostile warning icons remain visible without light. Currents, signs and pearls remain readable without it; pearls deliberately glow as route cues. Background illumination differs by chapter and is not perfectly black.
 
 Glimmer has deterministic DRIFT, ATTRACTED and RETURN states. Light within 220 px attracts it only with an unobstructed ray to the player. New attraction has a 0.35-second visual warning. Chase speed is 265 px/second; drift/return speed is 120. Its movement and sight are blocked by walls, and its target is clamped to a home region. Turning off the light or leaving detection makes it return. Contact within 34 px is fatal for hostile specimens, subject to the player's brief invulnerability grace and clear line of sight. It is not an enemy the player can attack.
 
@@ -128,3 +128,6 @@ Rescue implementation: `3bd180b` (`v0.8.0-rescue`). 74 regression checks, 19 res
 
 ### v0.8.1 rescue clarity follow-up
 All player-facing text remains English; Chinese UI text was removed at the creator's explicit request. The direction arrow selects the nearest unrescued baby, and reaching home early explicitly states the missing count. Followers face their direction of movement. 74 regression checks and 21 rescue checks passed; three static route checks passed. Graphical capture still exits at native startup in the current tool environment; no new visual pass is claimed.
+
+### v0.8.2 — obstacle and route readability
+Creator feedback requested more weaving and clearer dangers. Added alternating ceiling/floor coral and upper/lower route obstacles, brighter rock outlines, explicit fork labels, and hostile Glimmer spikes, slanted eyes, fangs and an always-visible warning icon. Safe observation creatures retain round eyes. Damage rules are unchanged. Static clearance checks now avoid inflated coral bounds as well as rocks; all three chapters pass. This proves geometric reachability, not air-budget feasibility or human difficulty.

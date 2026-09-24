@@ -6,10 +6,7 @@ const GOLD := Color("e8c38a")
 var font: Font
 
 func _ready() -> void:
-	var readable := SystemFont.new()
-	readable.font_names = PackedStringArray(["Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", "Arial"])
-	readable.allow_system_fallback = true
-	font = readable
+	font = ThemeDB.fallback_font
 
 func text(at: Vector2, value: String, size: int = 18, color: Color = INK) -> void:
 	draw_string(font, at, value, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
