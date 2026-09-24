@@ -122,3 +122,5 @@ Direct player feedback: the exit was unclear, the old egg symbol was not recogni
 Rescue requires proximity within 48 px and clear wall line of sight. Dead, paused or respawning players cannot rescue. Each baby awards up to 25 air only once per attempt, reports the actual gain and emits a celebratory cue. Rescued babies remain safe through retries; optional pearl banking still follows its existing risk rules. At home, fewer than three babies cannot complete the chapter; all three trigger settlement once, without any observation prerequisite. Existing chapter unlocks remain; old speed records are preserved separately and are not shown as rescue-mode records.
 
 Hands-off motion with a current now produces a brighter wake, a visible ring, a short sound and a live drain indicator. It does not secretly increase force or award free air: the positive feedback makes the existing reduced thrust expenditure perceptible. Holding thrust removes the glide cue.
+
+Rescue implementation: `3bd180b` (`v0.8.0-rescue`). 74 regression checks, 19 rescue checks and three static route checks passed. These validate implementation boundaries, not subjective fun.
