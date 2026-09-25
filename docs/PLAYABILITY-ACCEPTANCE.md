@@ -1,13 +1,4 @@
-# Build verification — v0.9.1
-
-Four exports succeeded; archives passed CRC checks. Graphical/audio and Windows/Linux runtime checks remain unverified.
-
-| Archive | SHA-256 |
-|---|---|
-| builds/Ballast-windows-x86_64.zip | bcb330eb7d7ea4ac54624b03ffce11971285815845654535d2dd9f4f2d82fe8b |
-| builds/Ballast-windows-x86_32.zip | e93076a0ec7a4ebc170d64c6ef1809c1dc9b0078e433ce064640ba2f3c831d9f |
-| builds/Ballast-linux-x86_64.zip | eb644b9a94448658a9a28a208000e6943e483f0838c04ab463762560c171949f |
-| builds/macos/Ballast-macos-universal.zip | 9e2173fba94eb213e285d4aa20afee98ac878cc10282475d772e36eea7556a7a |
+# Playability acceptance — v0.9.1
 
 ## v0.9.1 final automated verification
 126 rule checks passed (74 regression, 21 rescue, 12 escort, 8 integrated charge, 8 isolated charge, 3 zero-pearl victory). Three static routes passed, including pulse separation from vents/home.
@@ -21,3 +12,5 @@ Scripted physical traversal uses real player physics, air, enemies, follower dam
 | Trench | 136.77 | 55.83 | 0 | 0 |
 
 Total 403.5 seconds. This proves a tested route exists, not human first-play duration, universal route safety or fun. Earlier failed controller runs exposed a pulse/exit overlap, a vent inside a pulse zone and repeated attacks before Glimmer returned home. Those were corrected. Shorter follower spacing and 1.2-second warning improve the available dodge window.
+
+Pending: human graphical playthrough, understanding of light bait and charge lines, audio audition and native Windows/Linux launch.

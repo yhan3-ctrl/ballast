@@ -212,8 +212,6 @@ func _draw() -> void:
 	draw_arc(Vector2(1, 2), 11, 0.5, 2.5, 16, Color("52aaa3"), 2, true)
 	draw_line(Vector2(0, -12), Vector2(4, -33), Color("9de4d0"), 2, true)
 	draw_line(Vector2(4, -33), Vector2(19, -32 + wiggle), Color("9de4d0"), 2, true)
-	if lantern_on:
-		draw_arc(Vector2.ZERO, 180, 0, TAU, 64, Color(1.0, 0.86, 0.5, 0.28), 2, true)
 	draw_circle(Vector2(20, -30 + wiggle), 6 if lantern_on else 3, Color("ffe1a3") if lantern_on else Color("6b9299"))
 	if flow_gliding:
 		draw_arc(Vector2.ZERO, 30, 0.6, 5.7, 32, Color("a5fff1"), 2.5, true)

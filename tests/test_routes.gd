@@ -49,6 +49,11 @@ func run() -> void:
 			if not clear_at(world, point) or not reachable(world, world.spawn_point, point):
 				clear = false
 				print("UNREACHABLE ", chapter + 1, " ", point)
+		for pulse in get_nodes_in_group("pulse_anemones"):
+			if pulse.position.distance_to(world.exit_point) < 78:
+				clear = false
+			for vent in world.vents:
+				if pulse.position.distance_to(vent.position) < 78: clear = false
 		if not clear: failures += 1
 		print("CHAPTER ", chapter + 1, " static anchor/vent/exit clearance: ", clear)
 	world.free()

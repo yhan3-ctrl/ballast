@@ -20,7 +20,7 @@ func _physics_process(delta: float) -> void:
 			hit_cooldown = 1.5
 		for baby in world.rescued_babies:
 			if position.distance_to(baby.position) < 72 and world.sight_clear(position, baby.position):
-				world.hurt_baby(baby)
+				world.hurt_baby(baby, "Anemone pulse")
 	queue_redraw()
 func _draw() -> void:
 	var phase := fmod(clock, 5.0)

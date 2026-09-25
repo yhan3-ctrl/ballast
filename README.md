@@ -65,5 +65,5 @@ All player-facing text remains English; Chinese UI text was removed at the creat
 ### v0.8.2 readability update
 More alternating coral creates weaving opportunities. Rock outlines and hostile warning icons stay visible with the lantern off. Upper/lower route labels clarify chapter-two forks. Hostile Glimmer contact causes a retry; coral removes 25 air. All player-facing text remains English.
 
-### v0.9.0 escort rules
-Babies have two health dots. SPACE shields followers within 180 px and clear sight, but attracts Glimmer to you. In darkness, hostile Glimmer can pursue nearby followers. Coral and pulse anemones also hurt unprotected babies. Losing both dots retries the family at the current anchor, preserving rescues and restoring health. Pulses show PASS NOW, WAIT..., then PULSE!; player pulse damage is 20 air. Chapter three adds alternating rock baffles.
+### v0.9.1 — readable charge attacks
+Babies have two health dots. Light illuminates and baits Glimmer; it does not shield anyone. Hostile Glimmer marks a fixed line for 1.2 seconds, charges along it, then rests harmlessly for 1.3 seconds. A charge costs Yuun 30 air or a baby one health. Ordinary patrol/recovery contact is harmless. Coral and pulse anemones still damage the family. Losing both baby dots retries at the anchor, preserving rescues and restoring health. Pearls only award optional score; they are not a victory requirement or air source.

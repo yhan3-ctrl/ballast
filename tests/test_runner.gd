@@ -140,10 +140,12 @@ func run_all() -> void:
 	var hostile_glimmer = world.creatures.filter(func(c): return not c.harmless)[0]
 	world.player.invulnerable_left = 0.0
 	hostile_glimmer.position = world.player.position
+	hostile_glimmer.state = hostile_glimmer.State.DASH
+	hostile_glimmer.charge_end = hostile_glimmer.position + Vector2(60, 0)
 	hostile_glimmer._physics_process(0.01)
-	check(world.player.dying, "hostile Glimmer contact starts the drowning state")
-	check(world.player.death_reason == "Glimmer contact", "Glimmer death records a clear cause")
-	check(hostile_glimmer.speed > 235.0, "Glimmer chase speed exceeds player top speed")
+	check(not world.player.dying and world.player.air == 70, "charge deals 30 air rather than instant death")
+	check(world.player.invulnerable_left > 0, "charge grants player hit grace")
+	check(hostile_glimmer.speed > 235.0, "burst speed exceeds player speed only during a fixed charge")
 	check(ResourceLoader.exists("res://assets/audio/music.wav"), "original music asset is present")
 	check(ResourceLoader.exists("res://assets/audio/pearl.wav"), "pearl event sound is present")
 	# Synchronize the physics server before testing actual walls and ray queries.

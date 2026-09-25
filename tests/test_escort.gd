@@ -24,13 +24,10 @@ func run() -> void:
 	check(not world.hurt_baby(baby) and baby.health == 1, "repeated contact during grace does not stack")
 	baby.hurt_cooldown = 0
 	world.player.lantern_on = true
-	check(world.baby_is_protected(baby), "nearby baby shielded by light")
-	check(not world.hurt_baby(baby), "shield blocks damage")
-	world.player.position += Vector2(-200, 0)
-	check(not world.baby_is_protected(baby), "distant baby outside shield")
-	world.player.position = Vector2(500, 250)
-	baby.position = Vector2(630, 250)
-	check(not world.baby_is_protected(baby), "rock blocks shield even within range")
+	check(world.hurt_baby(baby) and baby.health == 0, "light does not grant immunity")
+	await process_frame
+	baby.health = 1
+	baby.hurt_cooldown = 0
 	world.player.lantern_on = false
 	world.set_paused(true)
 	check(not world.hurt_baby(baby), "pause blocks baby damage")

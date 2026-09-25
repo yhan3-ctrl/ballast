@@ -1,7 +1,6 @@
 extends Node2D
 var health: int = 2
 var hurt_cooldown: float = 0.0
-var protected: bool = false
 var rescued: bool = false
 var clock: float = 0.0
 var number: int = 1
@@ -37,9 +36,7 @@ func _draw() -> void:
 	if rescued:
 		for i in range(2):
 			draw_circle(Vector2(-7 + i * 14, -30), 4, Color("ff8c9c") if i < health else Color("493340"))
-		if protected:
-			draw_arc(Vector2.ZERO, 29, 0, TAU, 32, Color("ffe6a3"), 2, true)
-		elif hurt_cooldown > 0:
+		if hurt_cooldown > 0:
 			draw_arc(Vector2.ZERO, 27, 0, TAU, 32, Color("ff6b78"), 2, true)
 	if not rescued:
 		draw_line(Vector2(0, -43), Vector2(0, -32), tint, 3, true)
