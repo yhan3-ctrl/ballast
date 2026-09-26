@@ -23,4 +23,8 @@ Total 403.18 simulated seconds, approximately 6:43. This supports zero-pearl fea
 | builds/v1.0.0/Ballast-windows-x86_64.zip | 53a909311bf749f53998c83e5ac752d7c54caaefb8706ed0e75ee21c86e387ea |
 | builds/v1.0.0/Ballast-windows-x86_32.zip | a76abf3c5e710c94341a7744dd06ed82d00749807dd81b06c615f15266009ab3 |
 | builds/v1.0.0/Ballast-linux-x86_64.zip | c2927d3778c4250d79efe6fea14b2946b566c2f83c6ceca6847663ac66caea05 |
-| builds/v1.0.0/macos/Ballast-macos-universal.zip | f6c3799f7cdff90575306fe96c0c3a52ae83766b3993b58dacd6faeb0ff1d440 |
+| builds/v1.0.0/macos/Ballast-macos-universal.zip | eac806cf726a8aaf3f34fcdf29bef2d8d828e2b0ce515b1d5a2da8c5b6464483 |
+
+## macOS packaging repair, 2026-09-26
+
+The original exported app retained an invalid template signature. The macOS archive was replaced with an ad-hoc signed package. Strict codesign verification passes after fresh extraction in a local temporary directory, and the repaired app opened its graphical chapter introduction. This is not Apple notarization or a complete graphical/audio playthrough. Cloud-backed project folders were observed to add FinderInfo metadata that interferes with signature checks; signing and verification are performed outside them. Windows/Linux packages are unchanged.

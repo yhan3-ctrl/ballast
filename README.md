@@ -12,6 +12,12 @@ A surge scattered the young. Rescue three baby fish in each dive and bring them 
 
 Use the archive matching your operating system and extract it completely. Windows: launch `Ballast.exe`. Linux: launch `Ballast.x86_64` (set executable permission if your extractor does not preserve it). macOS: open `Ballast.app`. These student builds are not commercially signed/notarized; native platform acceptance is listed in `docs/BUILD-VERIFICATION.md`.
 
+### macOS first launch
+
+The macOS archive was repaired on 2026-09-26: the exported template's invalid signature was replaced with an ad-hoc signature, and a fresh extraction passes strict codesign verification. Download the updated archive and extract a fresh copy in Downloads or another local folder. The repaired app has opened its graphical introduction locally.
+
+It is not Apple-notarized or Developer ID-signed. If macOS says the developer cannot be verified, follow Apple's per-app procedure in System Settings > Privacy & Security > Open Anyway after attempting to open Ballast. This is different from a broken signature. Do not disable system-wide security. See https://support.apple.com/102445.
+
 For source: import `project.godot` into Godot 4.7.2 and click Run Project. Choose Dive 1, then Start Challenge. Finishing unlocks the next chapter; cleared chapters can be replayed.
 
 ## Controls
