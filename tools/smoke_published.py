@@ -34,15 +34,34 @@ else:
     binary = next(extract.rglob('Ballast.exe' if os.name == 'nt' else 'Ballast.x86_64'))
     if os.name != 'nt':
         binary.chmod(binary.stat().st_mode | 0o111)
-result = subprocess.run([str(binary), '--headless', '--quit-after', '180', '--log-file', str(out / 'game.log')], cwd=extract, capture_output=True, text=True, timeout=90)
-text = result.stdout + result.stderr
-(out / 'console.txt').write_text(text, encoding='utf-8')
-(out / 'result.json').write_text(json.dumps({'asset': asset_name, 'sha256': digest, 'platform': sys.platform, 'exit_code': result.returncode, 'test': '180-frame native headless startup; no graphical/audio/Gatekeeper acceptance claimed'}, indent=2), encoding='utf-8')
-print(text)
-assert result.returncode == 0, 'Game process failed'
-assert 'SCRIPT ERROR' not in text and 'Parse Error' not in text, 'Godot script error'
-print('PASS: native headless startup of published package; graphical playtest still required.')
+harness = Path('tools/smoke_campaign.gd').resolve()
+env = dict(os.environ, BALLAST_SMOKE_OUTPUT=str(out))
+results = []
+for mode in ['headless', 'graphical']:
+    command = [str(binary), '--script', str(harness), '--log-file', str(out / (mode + '.log'))]
+    if mode == 'headless':
+        command.append('--headless')
+    elif sys.platform.startswith('linux'):
+        command = ['xvfb-run', '-a'] + command
+        env['LIBGL_ALWAYS_SOFTWARE'] = '1'
+    try:
+        process = subprocess.run(command, cwd=extract, env=env, capture_output=True, text=True, timeout=90)
+        text = process.stdout + process.stderr
+        if (out / (mode + '.log')).exists():
+            text += (out / (mode + '.log')).read_text(encoding='utf-8', errors='replace')
+        passed = process.returncode == 0 and all('CAMPAIGN_SMOKE_PASS level=' + str(n) in text for n in [1, 2, 3]) and 'SCRIPT ERROR' not in text and 'Parse Error' not in text
+        results.append({'mode': mode, 'exit_code': process.returncode, 'passed': passed})
+    except subprocess.TimeoutExpired as error:
+        text = 'TIMEOUT: ' + str(error)
+        results.append({'mode': mode, 'passed': False, 'error': 'timeout'})
+    (out / (mode + '-console.txt')).write_text(text, encoding='utf-8')
+    print(mode, results[-1])
+    print(text[-5000:])
+(out / 'result.json').write_text(json.dumps({'asset': asset_name, 'sha256': digest, 'platform': sys.platform, 'results': results, 'limits': 'Three-level initialization/physics/rendering smoke test, not full playthrough, audio listening or downloaded-app security acceptance.'}, indent=2), encoding='utf-8')
 archive.unlink()
-# Upload logs only, not copies of the game binaries.
 import shutil
 shutil.rmtree(extract)
+assert results[0]['passed'], 'Native campaign startup failed'
+if sys.platform.startswith('linux'):
+    assert results[1]['passed'], 'Linux virtual-display rendering failed'
+print('Native campaign startup passed; see separate graphical result and limits.')

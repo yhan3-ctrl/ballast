@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/release-smoke.yml'
       - 'tools/smoke_published.py'
+      - 'tools/smoke_campaign.gd'
 permissions:
   contents: read
 jobs:
@@ -28,6 +29,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install virtual display for Linux rendering
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri
       - name: Download, verify and start published game
         run: python tools/smoke_published.py "${{ matrix.asset }}"
       - uses: actions/upload-artifact@v4
