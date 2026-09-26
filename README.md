@@ -47,4 +47,4 @@ For source: import `project.godot` into Godot 4.7.2 and click Run Project. Choos
 
 ## Credits
 
-Ballast was developed through iterative design and playtesting led by Yu Han. The game uses procedural artwork, synthesized event audio and original synthesized music. No commercial recordings or third-party art are included. Reproducible audio sources are in `tools/generate_audio.py` and `tools/generate_events.py`. Automated tests are documented separately from human playtests.
+Ballast was developed through iterative design and playtesting led by Yu Han. The game uses procedural artwork, synthesized event audio and original synthesized music. No commercial recordings or third-party art are included. Reproducible audio sources are in `tools/generate_audio.py` and `tools/generate_events.py`. 
