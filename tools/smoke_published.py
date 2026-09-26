@@ -11,7 +11,10 @@ import zipfile
 asset_name = sys.argv[1]
 out = Path('smoke-output').resolve()
 out.mkdir(exist_ok=True)
-request = urllib.request.Request('https://api.github.com/repos/yhan3-ctrl/ballast/releases/tags/v1.0.0', headers={'User-Agent': 'Ballast-package-check'})
+headers = {'User-Agent': 'Ballast-package-check'}
+if os.environ.get('GITHUB_TOKEN'):
+    headers['Authorization'] = 'Bearer ' + os.environ['GITHUB_TOKEN']
+request = urllib.request.Request('https://api.github.com/repos/yhan3-ctrl/ballast/releases/tags/v1.0.0', headers=headers)
 with urllib.request.urlopen(request, timeout=60) as response:
     release = json.load(response)
 asset = next(a for a in release['assets'] if a['name'] == asset_name)
