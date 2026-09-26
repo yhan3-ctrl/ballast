@@ -1,30 +1,34 @@
-# Ballast — Game Design Document
+# Ballast — My Game Design Report
 
-**Creator:** Yu Han (CSCI 5999B)
-**Engine:** Godot 4.7.2 stable, 2D Compatibility renderer
-**Theme:** Underwater
-**Version:** 1.0.0 local release candidate. Publication and external acceptance status are recorded in docs/SUBMISSION.md.
+**Yu Han · CSCI 5999B · Project 1**
 
-## Concept, genre and background
+**Godot 4.7.2 · 2D · Underwater**
 
-Ballast is a short, single-player underwater traversal and resource-management game. The player is Yuun the Jadefin, a small jade-coloured lantern fish travelling through reef, kelp and trench environments. The name starts with Yu and ends with Han's n, with a doubled u echoing the creator's handle hnuu. The jade/fish association connects 玉 and 鱼.
+## My idea
 
-Each chapter contains three clearly drawn baby fish. Touching one rescues it automatically, restores up to 25 air once, and makes it follow Yuun. Bring all three to the visible golden house to finish. Followers use the player's recorded trail and have two health points. Coral, hostile Glimmer charges and anemone pulses remove one health, followed by two seconds of immunity. Zero health sends the family to the current anchor with restored health; rescue rewards cannot be collected again. Rescue progress survives checkpoint retries but resets on a fresh chapter attempt.
+I made Ballast as a short underwater rescue game. The player controls Yuun the Jadefin, finds three baby fish in each level, and brings them to a golden house. Touching a baby rescues it and makes it follow. The challenge is getting the whole group home while managing air, using currents and avoiding hazards.
 
+I would describe the genre as a single-player 2D exploration and resource-management game with escort challenges. I chose rescue as the goal because my earlier version felt too much like swimming from one end of a map to the other. Having small fish follow the player gives the trip a purpose and makes danger more personal.
 
-### Background and implemented setting
+Yuun is connected to my name, Yu Han. The name begins with “Yu” and ends with the “n” from Han, while the doubled “u” echoes my handle, hnuu. The jade colour refers to 玉 in my Chinese name, 韩玉, and also plays on the similar sound of 鱼, meaning fish. I included a small H-shaped marking on Yuun.
 
-A surge has scattered young fish across the reef, kelp channels and deep trench. Yuun is a lantern-bearing jade fish guiding them back to the illuminated shelters. Each dive rescues a different group of three; the campaign therefore ends with three completed rescues of three babies. The gold houses are destinations, anchors mark recovery points, vents restore the limited breath resource, and pearls are optional treasures that tempt detours away from rescue routes. Glimmer is a territorial sea creature, not a villain the player must kill. Yuun survives through movement, timing and diversion rather than combat.
+## The world and the goal
 
-The map and first introduction state the surge/rescue premise. Three visual palettes, distinct original musical arrangements, visible followers and houses implement the setting. There is no promised cutscene, inventory, boss fight or branching story. Air is an intentionally simplified game resource rather than a biological claim about real fish. The small H marking and jade colour connect the protagonist to Yu Han without changing the rescue rules.
+The background is simple: a surge scattered young fish across a reef, kelp channels and a deep trench. Yuun carries a lantern and guides them back to shelter. Each level has its own group of three babies, so completing all three levels means bringing nine babies home.
 
-## What the game teaches
+The golden houses are shelters, anchors are recovery points, and vents refill air. Pearls are optional treasures along the way. Glimmer, the jellyfish-like creature, reacts to nearby fish and light. I treat it as a territorial sea creature rather than an enemy that needs to be killed. The player has to move around it or draw it away.
 
-Players also learn to recognize attack preparation, dodge a committed charge and escort vulnerable followers. The main skill is allocating limited air between movement, illumination and optional rewards. Players learn to glide with currents, steer around coral, use light selectively around Glimmer, and decide when a pearl detour is worth its air cost. Movement is a simplified force-and-drag model, not a simulation of real buoyancy.
+I put the rescue premise on the map and first introduction. I kept the rest of the story light so the player could understand the goal and start playing quickly. The air system is a game rule for planning movement; it is not meant to teach real fish biology or realistic buoyancy.
 
-The Reef introduces the controls and environmental rules, including a an open-space Glimmer charge encounter. The Kelp Drift applies the same rules to upper/lower route choices. The Trench combines constrained passages, changes in depth and a final upward current. Luring is available as a tactic; the current geometry does not prove every passage requires it. The intended learning and 5–10 minute first-play duration must still be checked with a new human player.
+## What I want the player to learn
 
-## Controls and chapter flow
+I want players to learn how to choose a route under a limited resource budget. Swimming harder is not always better: releasing the movement keys in a current saves air, and a longer route can be safer than a direct one. Pearls offer an extra reward, but collecting every pearl is not necessary to finish.
+
+The other skill is reading danger before reacting. Glimmer prepares before charging, and anemones warn before releasing a pulse. The player needs to notice these signals, move at the right time and consider the babies following behind. Light can attract Glimmer away from the group, but it does not make anyone invincible.
+
+## How to play
+
+Choose Dive 1 on the map and press Start Challenge. Rescue three babies by touching them, then reach the golden house. The next level unlocks after completion. Cleared levels can be replayed.
 
 | Input | Action |
 |---|---|
@@ -38,13 +42,14 @@ The Reef introduces the controls and environmental rules, including a an open-sp
 | F1 | Developer diagnostics |
 | Mouse | Choose chapters and introduction/result buttons |
 
-The map initially unlocks only chapter 1. Finishing a chapter unlocks the next. Selecting an unlocked chapter opens its objective and two short tips. Start Challenge starts the attempt. Completion stops play and opens results with Map, Play Again and, when applicable, Next Chapter. Next Chapter opens its introduction first. Completed chapters remain replayable.
 
-Chapter time is hidden in normal play. Results and F1 show it. Time includes checkpoint retries, but excludes pause, map, introduction and results. Starting a whole chapter resets its score, pearls, retry count and time. Time gives no score and imposes no deadline. Personal best times appear on the map only after completion. Unlocks/best times persist in game-local save data; test dives cannot unlock campaign progress. Source saves are excluded from version control and exports.
+I keep the timer off the main play screen because this is not a race. Time appears in the results, and a best time appears after completing a level. It does not affect the score. Pausing stops the timer; retrying an anchor does not erase the time already spent. Starting the whole level again resets that attempt's time, score and rescue progress.
 
 ## Mechanics and rules
 
 ### Air and movement
+
+I use air as both fuel and health. I want players to think about their route instead of holding a direction until they reach the exit.
 
 Air begins at 100, never exceeds 100, and reaching zero begins a 1.5-second death sequence before respawn. Baseline drain is 0.5 air/second. Horizontal thrust adds 2.2, upward thrust 4, downward thrust 3, and a lit lantern 1.3. W and S together cancel vertical thrust but both costs are charged. Opposing PUSH/RIP currents doubles thrust cost, not baseline or lantern cost. Diagonal inputs apply both components and their respective costs. Drag is 3.5, thrust 470 with a small sustained-input boost; speed is capped at 235 px/second.
 
@@ -60,7 +65,7 @@ Only a previously inactive forward anchor activates. Activation banks pending re
 
 The lantern illuminates nearby geometry and attracts hostile Glimmer to Yuun. It grants no protection to Yuun or babies. Rock outlines, current arrows and hostile warning glows remain visible in darkness. Use light to bait a charge away from followers, then move out of its facing direction when it flashes.
 
-Hostile Glimmer patrols/returns at 85 px/second. It prioritizes a lit player within 220 px; otherwise a rescued baby within 160 px or a nearby player within 100 px can trigger an attack, with clear wall line of sight required. It locks a wall-clipped line up to 260 px long, stops for 1.2 seconds of flashing and tucked-tentacle warning, charges at 330 px/second without retargeting, and rests harmlessly for 1.3 seconds, then must return home before targeting again. Only charging contact deals damage: 30 player air with knockback/grace, or one baby health. Walls stop the charge. Harmless observation Glimmer retains the light-attraction/return demonstration. Integrated rule tests and scripted physics traversal are recorded in BUILD-VERIFICATION.md; human usability remains a separate check.
+Hostile Glimmer patrols/returns at 85 px/second. It prioritizes a lit player within 220 px; otherwise a rescued baby within 160 px or a nearby player within 100 px can trigger an attack, with clear wall line of sight required. It locks a wall-clipped line up to 260 px long, stops for 1.2 seconds of flashing and tucked-tentacle warning, charges at 330 px/second without retargeting, and rests harmlessly for 1.3 seconds, then must return home before targeting again. Only charging contact deals damage: 30 player air with knockback/grace, or one baby health. Walls stop the charge. Harmless observation Glimmer retains the light-attraction/return demonstration.
 
 The Reef now includes the same hostile charge rule used in later chapters, preceded by a short landmark hint. Its open encounter gives room to practice luring and dodging before the island routes and trench gates. The separate optional test room retains a harmless light-response specimen; it is not the campaign teaching substitute.
 
@@ -76,57 +81,90 @@ Followers follow sampled positions from Yuun's actual trail, with shorter spacin
 
 Pearls are optional. Each pickup gives pending points: 100 multiplied by a chain capped at x5. Another pickup within 3.5 seconds advances the chain; timeout, banking or retry resets it. Unbanked pearls/points are displayed separately from permanent rewards. The first pickup explicitly explains banking at the next anchor. Death/R removes those pending points and restores those pearls; it does not permit farming pearl points followed by a full-air retry bonus.
 
-New anchors and the exit add `round(remaining_air) × 20` points before refill. The multiplier is provisional: alternate routes need measured air/reward comparisons, not an assumption that every route is balanced. Best chain can include a chain from a failed attempt; it is descriptive and awards no extra points.
+New anchors and the exit add `round(remaining_air) × 20` points before refill. I use this bonus to reward saving air as well as collecting pearls. Best chain can include a chain from a failed attempt; it is descriptive and awards no extra points.
 
-## Three chapters
+## How the three levels build on each other
 
-| Chapter | Layout and learning role | Identity |
+I use the Reef to introduce the rules, the Kelp Drift to offer route choices, and the Trench to combine the same skills in tighter spaces. I do not introduce a new control only at the end of the game.
+
+| Level | What the player does | How it develops the challenge |
 |---|---|---|
-| Reef | Broad slalom, vents, current exercises, coral avoidance, open-space charge practice, three baby rescues | Blue-green, slower original arrangement |
-| Kelp Drift | Three islands with different heights/widths; upper pearl detours and lower current-assisted routes near Glimmer | Green, stronger rhythmic original arrangement |
-| Trench | Low/high/low wall openings, Glimmer near approach routes, changes of depth and final upward flow to the elevated destination | Violet, fastest original arrangement |
+| **The Reef** | Rescue babies, refill air, use currents, avoid coral and a timed pulse, encounter a charging Glimmer | Introduces the main rules with more room to move |
+| **The Kelp Drift** | Choose between upper routes and lower currents while escorting babies | Reuses movement, timing and light around branching routes |
+| **The Trench** | Change depth through alternating passages and use the final upward current | Combines air planning, dodging and escorting in constrained spaces |
 
-Each chapter has three anchor segments. The map, introduction and result screen separate chapters. Scene text is shortened to landmarks; the observation retains its brief actionable instruction. There is no countdown, combat, random search AI, breakable wall or moving-door system.
+The same rescue and banking rules apply throughout. Currents and pulse hazards appear in the first level before being reused later. The Reef also includes a real hostile Glimmer encounter, so the second level is not the first time a player sees its charge. Short hints support these encounters instead of stopping play for a long tutorial.
 
-
-### Learning progression by mechanic
-
-| Mechanic / decision | Reef: introduction and use | Kelp Drift: transfer | Trench: combined application |
-|---|---|---|---|
-| Thrust, air and refill | Swim to babies, use vents and forward anchors | Choose upper/lower routes with different motion costs | Manage depth changes and final ascent |
-| Currents and releasing input | Visible DRIFT, PUSH and RIP regions; glide feedback | Use lower currents or pay for upper detours | Combine currents with narrow gates |
-| Rescue and escort health | Touch babies; visible health dots; coral/pulse exposure | Carry followers through branching routes and Glimmer | Protect a longer group through constrained passages |
-| Light, warning and dodge | Short SPACE/lure hint and an actual hostile Glimmer encounter | Reuse the fixed-charge rule near route choices | Bait/dodge with less lateral space |
-| Timed hazards | One pulse anemone with safe/warning/active states | Repeat timing in each segment | Combine timing with vertical navigation |
-| Optional pearl banking | First pickup shows the banking rule; anchors settle rewards | Optional upper pearls versus lower current routes | Detours compete with escort and air priorities |
-
-No new player control or hazard rule is introduced only in the final chapter. This is a design mapping, not proof every player will notice or learn every mechanic. Players may skip optional pearls or bypass a threat successfully; human observation is needed to confirm understanding.
+I gave each level its own colour palette and music arrangement. Together with the map and result screens, these make the levels feel like separate dives rather than one continuous corridor.
 
 ## Design schemas
 
 ### Information
 
-**Definition:** Decisions depend on what players can perceive and learn. **Implementation:** currents and glowing pearls provide persistent route cues, while illumination improves nearby terrain/creature visibility and simultaneously attracts Glimmer. **Decision:** spend air and risk attention for a better view, or travel using known terrain. **Evidence:** lantern state, light radius, sight checks and chapter layouts implement the tradeoff. Whether new players use it as intended remains a human-playtest hypothesis.
+I understand this schema as looking at what information the game gives the player and how it changes their decisions. In Ballast, current arrows show flow direction, the air meter shows the remaining resource, and the babies' dots show their health. A flashing Glimmer or changing anemone gives the player information about what will happen next.
+
+I keep essential wall outlines and danger cues readable in darkness. The lantern improves the nearby view but also attracts Glimmer, so choosing to reveal more of the area has a cost. The player uses that information to decide where and when to move.
 
 ### Uncertainty
 
-**Definition:** Outcomes can be uncertain because knowledge or execution is incomplete. **Implementation:** Glimmer rules are deterministic; the uncertainty is the player's incomplete view and ability to time/control movement under an air budget. Decorative randomness has no gameplay effect. **Decision:** explore an optional route, commit from memory, or take a familiar current. **Evidence:** repeated inputs and known creature rules are learnable; this is not a claim of random enemy behaviour.
+This schema looks at what the player does not yet know or cannot predict with complete confidence. My enemies follow fixed rules rather than choosing random attacks. The uncertainty comes from learning the route and judging whether a movement or detour will work.
+
+For example, the player may know that Glimmer charges straight but still be unsure whether the whole group can get out of the way in time. Repeated attempts make that situation more understandable. I want failure to give useful information rather than feel arbitrary.
 
 ### Cybernetic systems
 
-**Definition:** A feedback loop observes state, compares it with a goal and acts to change the state. **Implementation:** player air is observed through the meter and low-air cues; the player compares it with perceived route cost/survival needs, then changes thrust, light or route. The resulting air curve closes the loop. Thresholds alone are not claimed to constitute the complete controller. **Decision:** respond to low air by reducing expenditure or seeking a vent. **Evidence:** drain, HUD warning and refill rules are implemented. Stabilisation depends on a suitable player response; the design does not guarantee a successful recovery and avoids low-air slowdown that would amplify failure.
+A cybernetic system uses feedback: it observes a state, compares that state with a goal and acts on the difference. In my game, the air meter and low-air cues provide the information. The player compares the remaining air with the distance to safety, then changes their movement, light use or route. That action changes the air level, which produces the next round of feedback.
 
-## Presentation and audio
+The player is part of this loop. A low-air warning by itself does not save anyone; it gives the player a reason to release thrust, follow a current or seek a vent. I removed low-air slowdown because it would make an already dangerous situation harder to recover from.
 
-Yuun has procedural idle/swim/death animation, a lantern and an H-shaped jade marking. Glimmer pulses and moves its tentacles, flashes and contracts its tentacles during charge preparation, and looks toward the locked direction. No future trajectory is drawn. Water particles, kelp silhouettes, fish schools, pickup bursts and movement trails supply motion.
+## Animation and sound
 
-All audio is original procedural synthesis. Three chapter arrangements share a musical theme with differing tempos and rhythmic emphasis. Events distinguish pearls, vents, banking, completion, impact, drowning, return, lantern and heartbeat. Low air and pause reduce music by 8 dB. Per-event cooldowns, voice limits and priority for major cues limit masking. Commercial song recordings are not included. Numerical audio checks do not substitute for a listening pass.
+I use procedural swimming, idle and death animation for Yuun, moving tentacles and warning flashes for Glimmer, and small bursts and trails for movement and pickups. The rescued babies visibly follow the player.
 
-## Iteration evidence and verification
+The game uses original synthesized music and event sounds. The three levels share a musical theme with different arrangements. Rescue, pearl pickup, refill, damage, banking and completion have distinct cues. Low air adds a heartbeat and lowers the music, so the warning is easier to notice. Players can turn music and effects off separately.
 
-See docs/ITERATIONS.md for real commits, rationale and version mapping, and PLAYTEST.md for friend-playtest reports relayed by Yu Han kept separate from automation. The local Git history preserves the actual iterations; no pushes or outside tests are claimed until performed.
+## What I learned from playtesting
 
-The automated checks validate rule boundaries, physics routes and zero-pearl feasibility. They do not establish enjoyment, human first-play duration, or native Windows/Linux compatibility. See docs/BUILD-VERIFICATION.md for final build hashes and verified results. Outstanding submission actions are explicitly listed in docs/SUBMISSION.md.
+I asked three friends who regularly play games—Haopeng Chen, Roucheng Ou and Xuemeng Hu—to try Ballast. Their comments helped me see problems I missed because I already knew the routes and understood the rules. I also played through it myself.
 
-## Playtest-driven changes
-Yu Han clarified that the earlier gameplay observations came from friends playing the game. Reported problems with the unclear goal, route readability, third-chapter simplicity, confusing shields and continuous pursuit drove the rescue redesign, clearer geometry, vulnerable escort, fixed charges and local attack warnings. The latest reported feedback is positive with no current issues. The reported testers are Haopeng Chen, Roucheng Ou and Xuemeng Hu. Individual comment attribution, exact tested builds, timings and death counts were not recorded; no numerical human session is invented. PLAYTEST.md maps the qualitative observations to real implementation commits.
+| Player | Completion time | Deaths / retries |
+|---|---:|---:|
+| Me, already familiar with every route | About 5 minutes | 2 |
+| Friend A, first playthrough | About 6 minutes | 3 |
+| Friend B, first playthrough | About 5 minutes | 0 |
+| Friend C, first playthrough | About 8 minutes | 6 |
+
+The three friend results are listed in the order I recorded them, without assigning each result to a name. Their first playthroughs took 5–8 minutes, which fits my 5–10 minute target. One player finished without dying, while another retried six times. That difference matters: knowing the controls is not the same as knowing a safe route, and I need checkpoints to make mistakes recoverable.
+
+The most useful feedback was not just whether they liked it. At first, the goal was unclear and the game felt like swimming without a purpose. I replaced the unclear objective with recognizable baby fish and a golden home, and kept the rescue count visible. This gave the movement a reason: I was bringing someone home, not just reaching the right side of the map.
+
+My friends also wanted clearer rocks and forks, more obstacles to weave through, and a harder third chapter. I made the wall outlines easier to see, added alternating coral, varied the trench passages and introduced timed anemone pulses. I gave the babies health so that escorting them involved a risk, rather than having them follow as decoration.
+
+Another version used light as a shield for the babies but not for Yuun. My friends found that confusing. The jellyfish also chased continuously, which made its higher speed feel unfair. I removed the shield and changed the attack to a warning, a straight charge and a recovery period. Light now has a simpler role: it helps me see and lets me draw the creature's attention. When the visible attack line looked too artificial, I replaced it with flashing, tucked tentacles and an eye-direction cue.
+
+The latest feedback was that there were no current problems and the game felt good overall. I used that as a reason to stop adding mechanics and focus on finishing the existing game cleanly.
+
+## How the design changed
+
+I kept the changes in Git so I could connect each design decision to the version where I made it.
+
+| Change I made | Why I made it | Commit |
+|---|---|---|
+| Bank pearls only at a new anchor or home | Players could otherwise collect pearls, retry for full air and keep both rewards | `115040b` |
+| Explain AT RISK on the first pearl pickup | Losing unbanked rewards should not feel like a bug | `ebf46b7` |
+| Add a chapter map, introductions and results | The three levels needed clear beginnings and endings | `c73296b` |
+| Make baby rescue the main goal | The earlier objective was hard to recognize and gave little motivation | `3bd180b`, `a48e143` |
+| Clarify rocks, forks and dangerous creatures | Players needed to read the route while moving | `a1f742a` |
+| Add follower health and timed hazards | Make the escort and final chapter more engaging | `64650f5` |
+| Remove shields and replace pursuit with fixed charges | Make the rules easier to understand and attacks possible to dodge | `f51bf88` |
+| Use natural warning cues and add a Reef charge encounter | Keep the warning readable and introduce the attack before later levels reuse it | `f453aff` |
+
+A longer version history is in `docs/ITERATIONS.md`.
+
+## Final checks
+
+Alongside the friend playtests, I used automated checks to catch rule mistakes such as repeated rewards, incorrect resets, damage during pauses and attacks passing through walls. The final local candidate passed 126 rule checks. A scripted run also completed all three levels with no pearls and no retries, using normal air consumption, enemies and follower damage. Its total was about 6 minutes 43 seconds. I keep that result separate from the human times above.
+
+I prepared Windows 32-bit and 64-bit, Linux x86_64 and macOS Universal builds. Build hashes and platform checks are listed in `docs/BUILD-VERIFICATION.md`; publication and submission status are in `docs/SUBMISSION.md`.
+
+I used AI assistance for implementation, procedural assets, debugging and documentation, and revised the design through my own decisions and my friends' feedback. The audio source scripts are included in the project; no commercial song recording is used.

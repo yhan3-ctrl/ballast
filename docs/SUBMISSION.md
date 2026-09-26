@@ -13,6 +13,8 @@ Author: Yu Han — CSCI 5999B. Report: GDD.md, with PLAYTEST.md and docs/ITERATI
 - Publish matching final archives in a GitHub Release.
 - Instructor collaborator invitation is optional; no invitation is sent without authorization.
 - Submit report plus repository link to Blackboard. No Blackboard submission is claimed.
-- Native Windows/Linux launch and timed unfamiliar-player run remain unverified.
+- Native Windows/Linux launch remains unverified.
+
+Human timing is now supplied by Yu Han: the designer took about 5 minutes with 2 retries; three regular-gamer friends on first playthrough took about 6/5/8 minutes with 3/0/6 deaths or retries. See PLAYTEST.md.
 
 Do not equate successful export with launch on the instructor's hardware. Do not use automated steering duration as a human playtest time.

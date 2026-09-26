@@ -14,7 +14,7 @@ Three scripted physical traversals passed with actual air, collisions, active en
 | Kelp Drift | 147.18 s | 0 | 0 |
 | Trench | 136.77 s | 0 | 0 |
 
-Total 403.18 simulated seconds, approximately 6:43. This supports zero-pearl feasibility and a substantial route, not a measured human first-play duration. Qualitative friend feedback is documented in PLAYTEST.md.
+Total 403.18 simulated seconds, approximately 6:43. This supports zero-pearl feasibility and a substantial route, not a measured human first-play duration. Friend feedback and subsequently supplied human timings (6/5/8 minutes, 3/0/6 deaths or retries) are documented in PLAYTEST.md.
 
 ## Final archives
 
