@@ -1,0 +1,37 @@
+name: Test published desktop packages
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/release-smoke.yml'
+      - 'tools/smoke_published.py'
+permissions:
+  contents: read
+jobs:
+  startup:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            asset: Ballast-windows-x86_64.zip
+          - os: windows-latest
+            asset: Ballast-windows-x86_32.zip
+          - os: ubuntu-22.04
+            asset: Ballast-linux-x86_64.zip
+          - os: macos-14
+            asset: Ballast-macos-universal.zip
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download, verify and start published game
+        run: python tools/smoke_published.py "${{ matrix.asset }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: startup-${{ matrix.os }}-${{ matrix.asset }}
+          path: smoke-output/
