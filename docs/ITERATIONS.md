@@ -18,4 +18,4 @@ These are actual local implementation commits. Push/publication status belongs i
 | 64650f5 | Follower health, pulse hazards, temporary shield design | Add escort stakes and obstacle timing |
 | f51bf88 | Fixed charge, remove shields, verify zero-pearl paths | Reported confusion about protection and continuous pursuit |
 
-Final revision: replace trajectory graphics with natural local warning; add a real Reef charge encounter before later reuse; unify current documentation and package versions. Its implementation commit is added after verification.
+| f453aff | Natural local warning, actual Reef charge practice, unified final report and verified 1.0.0 packages | Complete learning transfer and remove contradictory submission text |
