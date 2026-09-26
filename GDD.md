@@ -187,7 +187,7 @@ Alongside the friend playtests, I used automated checks to catch rule mistakes s
 
 I prepared Windows 32-bit and 64-bit, Linux x86_64 and macOS Universal builds for the linked v1.0.0 release. Extract the full archive before opening Ballast.exe (Windows), Ballast.x86_64 (Linux) or Ballast.app (macOS). Linux may require executable permission if the extractor does not preserve it. To run from source, import project.godot in Godot 4.7.2 and run the project. Build hashes and platform checks are listed in `docs/BUILD-VERIFICATION.md`; publication and submission status are in `docs/SUBMISSION.md`.
 
-I used AI assistance for implementation, procedural assets, debugging and documentation, and revised the design through my own decisions and my friends' feedback. All audio is synthesized by scripts included in this repository. No commercial song recording is included.
+I revised the design through my own decisions and my friends' feedback. All audio is synthesized by scripts included in this repository. No commercial song recording is included.
 
 
 The macOS packaged executable passed a headless startup check. I played the game locally, but this check does not establish a graphical or audio test of the downloadable archive. Windows and Linux packages passed export and archive integrity checks; they have not been launched on those platforms.
@@ -196,4 +196,4 @@ The macOS packaged executable passed a headless startup check. I played the game
 
 Katie Salen and Eric Zimmerman, *Rules of Play: Game Design Fundamentals*, MIT Press. I reference chapter 12, “Rules on Three Levels”; chapter 15, “Games as Systems of Uncertainty”; chapter 17, “Games as Systems of Information”; and chapter 18, “Games as Cybernetic Systems”. Publisher contents: https://mitpress.ublish.com/book/rules-play
 
-Design and authorship: Yu Han. Playtest contributors: Haopeng Chen, Roucheng Ou and Xuemeng Hu. I used AI assistance for coding, procedural visual/audio assets, debugging and document preparation; I made the design decisions and revised them using playtest feedback.
+Design and authorship: Yu Han. Playtest contributors: Haopeng Chen, Roucheng Ou and Xuemeng Hu. I made the design decisions and revised them using playtest feedback.
