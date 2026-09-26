@@ -11,7 +11,7 @@ I asked three friends who regularly play games—Haopeng Chen, Roucheng Ou and X
 | Friend B, first playthrough | About 5 minutes | 0 |
 | Friend C, first playthrough | About 8 minutes | 6 |
 
-The three friend results are listed in the order I recorded them, without assigning each result to a name. Their first playthroughs took 5–8 minutes, which fits my 5–10 minute target. One player finished without dying, while another retried six times. That difference matters: knowing the controls is not the same as knowing a safe route, and I need checkpoints to make mistakes recoverable.
+The three friend results are listed in the order I recorded them, without assigning each result to a name. I summarize the expected first-play duration in the report as roughly 5–10 minutes; the original approximate results are retained in the table above. One player finished without dying, while another retried six times. That difference matters: knowing the controls is not the same as knowing a safe route, and I need checkpoints to make mistakes recoverable.
 
 The most useful feedback was not just whether they liked it. At first, the goal was unclear and the game felt like swimming without a purpose. I replaced the unclear objective with recognizable baby fish and a golden home, and kept the rescue count visible. This gave the movement a reason: I was bringing someone home, not just reaching the right side of the map.
 
@@ -40,4 +40,4 @@ A longer version history is in `docs/ITERATIONS.md`.
 
 ## Technical checks
 
-The 126 rule checks and the scripted zero-pearl route are separate from my friends’ playthroughs. Full technical results are in `docs/BUILD-VERIFICATION.md`. Earlier development notes remain in `docs/PLAYTEST-HISTORY.md`.
+The 126 rule checks and the scripted zero-pearl route are separate from my friends’ playthroughs. The scripted route is a preset verification route, not a shortest-path speedrun or minimum possible time. Full technical results are in `docs/BUILD-VERIFICATION.md`. Earlier development notes remain in `docs/PLAYTEST-HISTORY.md`.

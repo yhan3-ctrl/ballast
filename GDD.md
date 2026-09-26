@@ -127,14 +127,7 @@ The game uses original synthesized music and event sounds. The three levels shar
 
 I asked three friends who regularly play games—Haopeng Chen, Roucheng Ou and Xuemeng Hu—to try Ballast. Their comments helped me see problems I missed because I already knew the routes and understood the rules. I also played through it myself.
 
-| Player | Completion time | Deaths / retries |
-|---|---:|---:|
-| Me, already familiar with every route | About 5 minutes | 2 |
-| Friend A, first playthrough | About 6 minutes | 3 |
-| Friend B, first playthrough | About 5 minutes | 0 |
-| Friend C, first playthrough | About 8 minutes | 6 |
-
-The three friend results are listed in the order I recorded them, without assigning each result to a name. Their first playthroughs took 5–8 minutes, which fits my 5–10 minute target. One player finished without dying, while another retried six times. That difference matters: knowing the controls is not the same as knowing a safe route, and I need checkpoints to make mistakes recoverable.
+Based on my friends' first playthroughs, I would describe the game as taking roughly **5–10 minutes** to complete. Their reported retry counts ranged from zero to six. That difference matters: knowing the controls is not the same as knowing a safe route, and I need checkpoints to make mistakes recoverable. The individual approximate times and retry counts are kept in `PLAYTEST.md`.
 
 The most useful feedback was not just whether they liked it. At first, the goal was unclear and the game felt like swimming without a purpose. I replaced the unclear objective with recognizable baby fish and a golden home, and kept the rescue count visible. This gave the movement a reason: I was bringing someone home, not just reaching the right side of the map.
 
@@ -163,7 +156,7 @@ A longer version history is in `docs/ITERATIONS.md`.
 
 ## Final checks
 
-Alongside the friend playtests, I used automated checks to catch rule mistakes such as repeated rewards, incorrect resets, damage during pauses and attacks passing through walls. The final local candidate passed 126 rule checks. A scripted run also completed all three levels with no pearls and no retries, using normal air consumption, enemies and follower damage. Its total was about 6 minutes 43 seconds. I keep that result separate from the human times above.
+Alongside the friend playtests, I used automated checks to catch rule mistakes such as repeated rewards, incorrect resets, damage during pauses and attacks passing through walls. The final local candidate passed 126 rule checks. A scripted run also completed all three levels with no pearls and no retries, using normal air consumption, enemies and follower damage. Its total was about 6 minutes 43 seconds. This is a preset verification route that visits refill points and uses automated steering and dodging, not an optimized speedrun or a theoretical minimum. A human can choose a shorter or faster route. I keep this simulated time separate from the friend playtests.
 
 I prepared Windows 32-bit and 64-bit, Linux x86_64 and macOS Universal builds. Build hashes and platform checks are listed in `docs/BUILD-VERIFICATION.md`; publication and submission status are in `docs/SUBMISSION.md`.
 
