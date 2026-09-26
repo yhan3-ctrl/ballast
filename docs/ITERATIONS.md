@@ -1,6 +1,6 @@
 # Iteration evidence
 
-These are actual local implementation commits. Push/publication status belongs in SUBMISSION.md; this table does not claim pushes that have not happened. Earlier versions intentionally differ from current rules.
+These are actual implementation commits, now published in the public repository. Publication and submission status belongs in SUBMISSION.md. Earlier versions intentionally differ from current rules.
 
 | Commit | Change | Why |
 |---|---|---|

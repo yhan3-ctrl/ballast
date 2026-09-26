@@ -6,3 +6,7 @@ captures/*
 *.log
 
 saves/
+
+# Local publishing tools and PDF review intermediates
+tools/vendor/
+tmp/

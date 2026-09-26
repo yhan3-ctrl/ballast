@@ -4,6 +4,10 @@ By Yu Han, CSCI 5999B. Godot 4.7.2 stable, 2D Compatibility renderer.
 
 A surge scattered the young. Rescue three baby fish in each dive and bring them to the golden house. Complete Reef, Kelp Drift and Trench in order. Pearls are optional score items, never required to survive or finish.
 
+## Download and report
+
+[Download Ballast 1.0.0](https://github.com/yhan3-ctrl/ballast/releases/tag/v1.0.0) | [Game design report (PDF)](output/pdf/Ballast-Game-Design-Report-Yu-Han.pdf)
+
 ## Start
 
 Use the archive matching your operating system and extract it completely. Windows: launch `Ballast.exe`. Linux: launch `Ballast.x86_64` (set executable permission if your extractor does not preserve it). macOS: open `Ballast.app`. These student builds are not commercially signed/notarized; native platform acceptance is listed in `docs/BUILD-VERIFICATION.md`.
