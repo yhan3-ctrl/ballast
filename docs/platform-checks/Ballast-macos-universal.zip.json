@@ -1,0 +1,18 @@
+{
+  "asset": "Ballast-macos-universal.zip",
+  "sha256": "eac806cf726a8aaf3f34fcdf29bef2d8d828e2b0ce515b1d5a2da8c5b6464483",
+  "platform": "darwin",
+  "results": [
+    {
+      "mode": "headless",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "mode": "graphical",
+      "exit_code": -6,
+      "passed": false
+    }
+  ],
+  "limits": "Published application 180-frame startup; release templates do not execute the external campaign script. No full playthrough, audio listening or downloaded-app security acceptance claimed."
+}

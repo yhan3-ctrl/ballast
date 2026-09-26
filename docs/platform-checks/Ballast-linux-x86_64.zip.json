@@ -1,0 +1,18 @@
+{
+  "asset": "Ballast-linux-x86_64.zip",
+  "sha256": "c2927d3778c4250d79efe6fea14b2946b566c2f83c6ceca6847663ac66caea05",
+  "platform": "linux",
+  "results": [
+    {
+      "mode": "headless",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "mode": "graphical",
+      "exit_code": 0,
+      "passed": true
+    }
+  ],
+  "limits": "Published application 180-frame startup; release templates do not execute the external campaign script. No full playthrough, audio listening or downloaded-app security acceptance claimed."
+}

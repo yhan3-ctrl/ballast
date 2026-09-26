@@ -28,3 +28,11 @@ Total 403.18 simulated seconds, approximately 6:43. This supports zero-pearl fea
 ## macOS packaging repair, 2026-09-26
 
 The original exported app retained an invalid template signature. The macOS archive was replaced with an ad-hoc signed package. Strict codesign verification passes after fresh extraction in a local temporary directory, and the repaired app opened its graphical chapter introduction. This is not Apple notarization or a complete graphical/audio playthrough. Cloud-backed project folders were observed to add FinderInfo metadata that interferes with signature checks; signing and verification are performed outside them. Windows/Linux packages are unchanged.
+
+## Native published-package startup tests, 2026-09-26
+
+Run: https://github.com/yhan3-ctrl/ballast/actions/runs/36251759276
+
+Actual Release archives were downloaded and their SHA-256 digests verified. Windows x86_64, Windows x86_32 (on 64-bit Windows), and Linux x86_64 passed both 180-frame headless and graphical startup. Linux rendering used Xvfb and software OpenGL. macOS ARM64 passed strict package signature verification and headless startup, but graphical startup crashed in the hosted Apple virtual GPU / ANGLE driver. The overall workflow is green because macOS graphical startup is recorded but not a required gate; it must not be described as all graphical checks passing. The same repaired Mac package previously displayed its introduction locally.
+
+These checks do not verify complete playthroughs, audible output, native 32-bit Windows, Intel Mac execution, or browser-download Gatekeeper/SmartScreen acceptance. Individual machine-readable results are in platform-checks/. Earlier failed runs include a shared API rate limit and an unsupported external-script test method; their failures are not erased.

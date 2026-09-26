@@ -1,0 +1,18 @@
+{
+  "asset": "Ballast-windows-x86_32.zip",
+  "sha256": "a76abf3c5e710c94341a7744dd06ed82d00749807dd81b06c615f15266009ab3",
+  "platform": "win32",
+  "results": [
+    {
+      "mode": "headless",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "mode": "graphical",
+      "exit_code": 0,
+      "passed": true
+    }
+  ],
+  "limits": "Published application 180-frame startup; release templates do not execute the external campaign script. No full playthrough, audio listening or downloaded-app security acceptance claimed."
+}
