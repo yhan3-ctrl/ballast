@@ -6,7 +6,7 @@ A surge scattered the young. Rescue three baby fish in each dive and bring them 
 
 ## Download and report
 
-[Download Ballast 1.0.0](https://github.com/yhan3-ctrl/ballast/releases/tag/v1.0.0) | [Game design report (PDF)](output/pdf/Ballast-Game-Design-Report-Yu-Han.pdf)
+[Download Ballast 1.0.0](https://github.com/yhan3-ctrl/ballast/releases/tag/v1.0.0) 
 
 ## Start
 
@@ -53,4 +53,4 @@ For source: import `project.godot` into Godot 4.7.2 and click Run Project. Choos
 
 ## Credits
 
-Ballast was developed through iterative design and playtesting led by Yu Han. The game uses procedural artwork, synthesized event audio and original synthesized music. No commercial recordings or third-party art are included. Reproducible audio sources are in `tools/generate_audio.py` and `tools/generate_events.py`. Automated tests are documented separately from human playtests.
+Ballast was developed through iterative design and playtesting led by Yu Han. The game uses procedural artwork, synthesized event audio and original synthesized music. No commercial recordings or third-party art are included. Reproducible audio sources are in `tools/generate_audio.py` and `tools/generate_events.py`. 
