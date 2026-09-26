@@ -6,7 +6,7 @@ A surge scattered the young. Rescue three baby fish in each dive and bring them 
 
 ## Download and report
 
-[Download Ballast 1.0.0](https://github.com/yhan3-ctrl/ballast/releases/tag/v1.0.0) | [Game design report (PDF)](output/pdf/Ballast-Game-Design-Report-Yu-Han.pdf)
+[Download Ballast 1.0.0](https://github.com/yhan3-ctrl/ballast/releases/tag/v1.0.0) 
 
 ## Start
 
