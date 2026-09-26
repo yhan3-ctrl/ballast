@@ -3,7 +3,7 @@
 **Creator:** Yu Han (CSCI 5999B)
 **Engine:** Godot 4.7.2 stable, 2D Compatibility renderer
 **Theme:** Underwater
-**Status:** Local release candidate; no public repository or release has been published.
+**Version:** 1.0.0 local release candidate. Publication and external acceptance status are recorded in docs/SUBMISSION.md.
 
 ## Concept, genre and background
 
@@ -11,11 +11,18 @@ Ballast is a short, single-player underwater traversal and resource-management g
 
 Each chapter contains three clearly drawn baby fish. Touching one rescues it automatically, restores up to 25 air once, and makes it follow Yuun. Bring all three to the visible golden house to finish. Followers use the player's recorded trail and have two health points. Coral, hostile Glimmer charges and anemone pulses remove one health, followed by two seconds of immunity. Zero health sends the family to the current anchor with restored health; rescue rewards cannot be collected again. Rescue progress survives checkpoint retries but resets on a fresh chapter attempt.
 
+
+### Background and implemented setting
+
+A surge has scattered young fish across the reef, kelp channels and deep trench. Yuun is a lantern-bearing jade fish guiding them back to the illuminated shelters. Each dive rescues a different group of three; the campaign therefore ends with three completed rescues of three babies. The gold houses are destinations, anchors mark recovery points, vents restore the limited breath resource, and pearls are optional treasures that tempt detours away from rescue routes. Glimmer is a territorial sea creature, not a villain the player must kill. Yuun survives through movement, timing and diversion rather than combat.
+
+The map and first introduction state the surge/rescue premise. Three visual palettes, distinct original musical arrangements, visible followers and houses implement the setting. There is no promised cutscene, inventory, boss fight or branching story. Air is an intentionally simplified game resource rather than a biological claim about real fish. The small H marking and jade colour connect the protagonist to Yu Han without changing the rescue rules.
+
 ## What the game teaches
 
-The main skill is allocating limited air between movement, illumination and optional rewards. Players learn to glide with currents, steer around coral, use light selectively around Glimmer, and decide when a pearl detour is worth its air cost. Movement is a simplified force-and-drag model, not a simulation of real buoyancy.
+Players also learn to recognize attack preparation, dodge a committed charge and escort vulnerable followers. The main skill is allocating limited air between movement, illumination and optional rewards. Players learn to glide with currents, steer around coral, use light selectively around Glimmer, and decide when a pearl detour is worth its air cost. Movement is a simplified force-and-drag model, not a simulation of real buoyancy.
 
-The Reef introduces the controls and environmental rules, including a safe optional light-response example. The Kelp Drift applies the same rules to upper/lower route choices. The Trench combines constrained passages, changes in depth and a final upward current. Luring is available as a tactic; the current geometry does not prove every passage requires it. The intended learning and 5–10 minute first-play duration must still be checked with a new human player.
+The Reef introduces the controls and environmental rules, including a an open-space Glimmer charge encounter. The Kelp Drift applies the same rules to upper/lower route choices. The Trench combines constrained passages, changes in depth and a final upward current. Luring is available as a tactic; the current geometry does not prove every passage requires it. The intended learning and 5–10 minute first-play duration must still be checked with a new human player.
 
 ## Controls and chapter flow
 
@@ -51,13 +58,19 @@ Only a previously inactive forward anchor activates. Activation banks pending re
 
 ### Light, Glimmer and coral
 
-The lantern illuminates nearby geometry and attracts hostile Glimmer to Yuun. It grants no protection to Yuun or babies. Rock outlines, current arrows and hostile warning lines remain visible in darkness. Use light to bait a charge away from followers, then move off the marked line.
+The lantern illuminates nearby geometry and attracts hostile Glimmer to Yuun. It grants no protection to Yuun or babies. Rock outlines, current arrows and hostile warning glows remain visible in darkness. Use light to bait a charge away from followers, then move out of its facing direction when it flashes.
 
-Hostile Glimmer patrols/returns at 85 px/second. It prioritizes a lit player within 220 px; otherwise a rescued baby within 160 px or a nearby player within 100 px can trigger an attack, with clear wall line of sight required. It locks a wall-clipped line up to 260 px long, stops for 1.2 seconds of visible warning, charges at 330 px/second without retargeting, and rests harmlessly for 1.3 seconds, then must return home before targeting again. Only charging contact deals damage: 30 player air with knockback/grace, or one baby health. Walls stop the charge. Harmless observation Glimmer retains the light-attraction/return demonstration. Integrated rule tests and scripted physics traversal are recorded in BUILD-VERIFICATION.md; human usability remains a separate check.
+Hostile Glimmer patrols/returns at 85 px/second. It prioritizes a lit player within 220 px; otherwise a rescued baby within 160 px or a nearby player within 100 px can trigger an attack, with clear wall line of sight required. It locks a wall-clipped line up to 260 px long, stops for 1.2 seconds of flashing and tucked-tentacle warning, charges at 330 px/second without retargeting, and rests harmlessly for 1.3 seconds, then must return home before targeting again. Only charging contact deals damage: 30 player air with knockback/grace, or one baby health. Walls stop the charge. Harmless observation Glimmer retains the light-attraction/return demonstration. Integrated rule tests and scripted physics traversal are recorded in BUILD-VERIFICATION.md; human usability remains a separate check.
 
-The mint-coloured Reef observation specimen is harmless. Observing attraction and return can trigger a learning acknowledgement, but no door or completion condition depends on it. The former observation gate was removed after the player could not understand why the exit was blocked.
+The Reef now includes the same hostile charge rule used in later chapters, preceded by a short landmark hint. Its open encounter gives room to practice luring and dodging before the island routes and trench gates. The separate optional test room retains a harmless light-response specimen; it is not the campaign teaching substitute.
 
-Stinging coral removes 25 air, pushes the player away, and grants 1.2 seconds of damage immunity. A lethal hit records the coral cause. Respawn grants 0.7 seconds of grace. Low air adds a vignette and heartbeat, never a movement penalty. Death text identifies the cause.
+Stinging coral removes 25 air, pushes the player away, and grants 0.9 seconds of damage immunity. A lethal hit records the coral cause. Respawn grants 0.7 seconds of grace. Low air adds a vignette and heartbeat, never a movement penalty. Death text identifies the cause.
+
+### Pulses and follower recovery
+
+Anemones repeat a five-second cycle: 2.5 seconds safe (PASS NOW), one second warning (WAIT...), then 1.5 seconds active (PULSE!). Active pulses affect Yuun within 78 px for 20 air and knockback, with a local 1.5-second hit cooldown and normal player hit immunity. A follower within 72 px loses one health if outside its two-second hit grace. Wall line of sight is required. Pause/death stop pulse updates; retry resets pulses to their safe phase. Pulse zones are separated from essential vent/home centers.
+
+Followers follow sampled positions from Yuun's actual trail, with shorter spacing than the earlier escort prototype. Only rescued followers take damage; unrescued babies are not killed while waiting offscreen. Coral contact, charging Glimmer and pulses each remove one of two health points, never more than once per two-second follower grace period. A zero-health follower requests a family retry, not permanent loss. Retry restores both health points and two seconds of grace to rescued followers at the anchor. Reaching a new anchor does not itself heal follower health. Lamp use never blocks damage.
 
 ### Pearls and score
 
@@ -69,11 +82,25 @@ New anchors and the exit add `round(remaining_air) × 20` points before refill. 
 
 | Chapter | Layout and learning role | Identity |
 |---|---|---|
-| Reef | Broad slalom, vents, current exercises, coral avoidance, safe optional light observation, three baby rescues | Blue-green, slower original arrangement |
+| Reef | Broad slalom, vents, current exercises, coral avoidance, open-space charge practice, three baby rescues | Blue-green, slower original arrangement |
 | Kelp Drift | Three islands with different heights/widths; upper pearl detours and lower current-assisted routes near Glimmer | Green, stronger rhythmic original arrangement |
 | Trench | Low/high/low wall openings, Glimmer near approach routes, changes of depth and final upward flow to the elevated destination | Violet, fastest original arrangement |
 
 Each chapter has three anchor segments. The map, introduction and result screen separate chapters. Scene text is shortened to landmarks; the observation retains its brief actionable instruction. There is no countdown, combat, random search AI, breakable wall or moving-door system.
+
+
+### Learning progression by mechanic
+
+| Mechanic / decision | Reef: introduction and use | Kelp Drift: transfer | Trench: combined application |
+|---|---|---|---|
+| Thrust, air and refill | Swim to babies, use vents and forward anchors | Choose upper/lower routes with different motion costs | Manage depth changes and final ascent |
+| Currents and releasing input | Visible DRIFT, PUSH and RIP regions; glide feedback | Use lower currents or pay for upper detours | Combine currents with narrow gates |
+| Rescue and escort health | Touch babies; visible health dots; coral/pulse exposure | Carry followers through branching routes and Glimmer | Protect a longer group through constrained passages |
+| Light, warning and dodge | Short SPACE/lure hint and an actual hostile Glimmer encounter | Reuse the fixed-charge rule near route choices | Bait/dodge with less lateral space |
+| Timed hazards | One pulse anemone with safe/warning/active states | Repeat timing in each segment | Combine timing with vertical navigation |
+| Optional pearl banking | First pickup shows the banking rule; anchors settle rewards | Optional upper pearls versus lower current routes | Detours compete with escort and air priorities |
+
+No new player control or hazard rule is introduced only in the final chapter. This is a design mapping, not proof every player will notice or learn every mechanic. Players may skip optional pearls or bypass a threat successfully; human observation is needed to confirm understanding.
 
 ## Design schemas
 
@@ -91,49 +118,15 @@ Each chapter has three anchor segments. The map, introduction and result screen 
 
 ## Presentation and audio
 
-Yuun has procedural idle/swim/death animation, a lantern and an H-shaped jade marking. Glimmer pulses and moves its tentacles, changes colour when attracted, and displays a brief warning ring. Water particles, kelp silhouettes, fish schools, pickup bursts and movement trails supply motion.
+Yuun has procedural idle/swim/death animation, a lantern and an H-shaped jade marking. Glimmer pulses and moves its tentacles, flashes and contracts its tentacles during charge preparation, and looks toward the locked direction. No future trajectory is drawn. Water particles, kelp silhouettes, fish schools, pickup bursts and movement trails supply motion.
 
 All audio is original procedural synthesis. Three chapter arrangements share a musical theme with differing tempos and rhythmic emphasis. Events distinguish pearls, vents, banking, completion, impact, drowning, return, lantern and heartbeat. Low air and pause reduce music by 8 dB. Per-event cooldowns, voice limits and priority for major cues limit masking. Commercial song recordings are not included. Numerical audio checks do not substitute for a listening pass.
 
-## Iteration evidence
+## Iteration evidence and verification
 
-| Implementation commit | Change | Reason |
-|---|---|---|
-| `022ba4a` | Air budget, Yuun identity, chase speed, coral damage and air scoring | Make route decisions and danger matter |
-| `115040b` | Pending pearl banking and retry reset | Fix pearl farming combined with full-air efficiency scoring |
-| `ebf46b7` | First-pearl rule hint | Explain the new at-risk reward contract |
-| `6edef57` | Wall-aware Glimmer, actual return observation, exit settlement and telemetry | Correct fairness and consistency defects |
-| `c73296b` | Map, locks, introductions, results and saved best times | Make chapter boundaries explicit and remove live time pressure |
-| `a1f1572` | Varied chapter geometry and original arrangements | Distinguish the three chapters |
-| `8735460` | Original event cues and controlled mixing | Differentiate consequences without audio clutter |
+See docs/ITERATIONS.md for real commits, rationale and version mapping, and PLAYTEST.md for friend-playtest reports relayed by Yu Han kept separate from automation. The local Git history preserves the actual iterations; no pushes or outside tests are claimed until performed.
 
-The current final-pass commit is recorded in `docs/FINAL-REVIEW.md`. These are local implementation/design-review iterations, not fabricated human playtests or GitHub pushes. `PLAYTEST.md` distinguishes automated checks from human observations.
+The automated checks validate rule boundaries, physics routes and zero-pearl feasibility. They do not establish enjoyment, human first-play duration, or native Windows/Linux compatibility. See docs/BUILD-VERIFICATION.md for final build hashes and verified results. Outstanding submission actions are explicitly listed in docs/SUBMISSION.md.
 
-## Verification and submission status
-
-Rule regressions cover economy, banking/retry integrity, Glimmer wall interactions, observation completion, pause, chapter locks, timing and save/load. Static route checks include the player's clearance to anchors, vents and exits including all three baby locations. They do not prove difficulty, fun, dynamic puzzle success or duration.
-
-Remaining acceptance evidence: an unfamiliar player's complete three-chapter run with timing/confusion/death notes, audible/visual review, and actual Windows/Linux launches. Public GitHub repository/release and Blackboard submission remain unperformed because only local work has been authorised. The instructor collaborator invitation is recommended in the assignment, not mandatory. Builds and their exact verification status are listed in `docs/BUILD-VERIFICATION.md`.
-
-
-## Rescue redesign — 2026-09-24
-Direct player feedback: the exit was unclear, the old egg symbol was not recognizable, and traversal felt purposeless. The revised objective is explicit on the introduction and HUD: touch three baby fish and bring them to the golden house. An English introduction explains contact rescue; no new action key is required. The HUD shows rescued count and a direction arrow to the next missing baby, or home when all are found. The arrow is a direction hint, not a collision-free navigation path.
-
-Rescue requires proximity within 48 px and clear wall line of sight. Dead, paused or respawning players cannot rescue. Each baby awards up to 25 air only once per attempt, reports the actual gain and emits a celebratory cue. Rescued babies remain safe through retries; optional pearl banking still follows its existing risk rules. At home, fewer than three babies cannot complete the chapter; all three trigger settlement once, without any observation prerequisite. Existing chapter unlocks remain; old speed records are preserved separately and are not shown as rescue-mode records.
-
-Hands-off motion with a current now produces a brighter wake, a visible ring, a short sound and a live drain indicator. It does not secretly increase force or award free air: the positive feedback makes the existing reduced thrust expenditure perceptible. Holding thrust removes the glide cue.
-
-Rescue implementation: `3bd180b` (`v0.8.0-rescue`). 74 regression checks, 19 rescue checks and three static route checks passed. These validate implementation boundaries, not subjective fun.
-
-
-### v0.8.1 rescue clarity follow-up
-All player-facing text remains English; Chinese UI text was removed at the creator's explicit request. The direction arrow selects the nearest unrescued baby, and reaching home early explicitly states the missing count. Followers face their direction of movement. 74 regression checks and 21 rescue checks passed; three static route checks passed. Graphical capture still exits at native startup in the current tool environment; no new visual pass is claimed.
-
-### v0.8.2 — obstacle and route readability
-Creator feedback requested more weaving and clearer dangers. Added alternating ceiling/floor coral and upper/lower route obstacles, brighter rock outlines, explicit fork labels, and hostile Glimmer spikes, slanted eyes, fangs and an always-visible warning icon. Safe observation creatures retain round eyes. Damage rules are unchanged. Static clearance checks now avoid inflated coral bounds as well as rocks; all three chapters pass. This proves geometric reachability, not air-budget feasibility or human difficulty.
-
-### v0.9.0 — active escort and timed obstacles
-Creator feedback: chapter three felt easier than chapter two, followers faced no danger, and light had little purpose. Third-chapter baffles now require repeated depth changes. Pulse anemones run a five-second cycle: 2.5 seconds safe, one second warning, then 1.5 seconds active. A pulse deals 20 player air damage with knockback and a 1.5-second local cooldown, or one baby health (the lantern shield was removed in the subsequent charge revision). Walls block pulses. Retry resets all pulses to their safe phase and restores followers with two seconds of grace. Waiting, steering and light timing replace arbitrary score penalties. Difficulty progression and actual escort enjoyment remain hypotheses pending human play.
-
-### v0.9.1 charge revision — automated verification
-Reported friend feedback: light protection was confusing and continuous pursuit felt hard to evade. Removed shielding and introduced a fixed telegraphed attack with 1.2-second warning, 1.3-second rest and mandatory return home before rearming. Followers have shorter trail spacing. Moved the trench refill and kelp pulse to separate essential destinations from active hazards. 126 rule checks, three static routes and three zero-pearl physics traversals passed. All three traversals completed without retries in 403.5 simulated seconds total. This is automated evidence, not an independent human playtest or proof of subjective difficulty. See docs/BUILD-VERIFICATION.md.
+## Playtest-driven changes
+Yu Han clarified that the earlier gameplay observations came from friends playing the game. Reported problems with the unclear goal, route readability, third-chapter simplicity, confusing shields and continuous pursuit drove the rescue redesign, clearer geometry, vulnerable escort, fixed charges and local attack warnings. The latest reported feedback is positive with no current issues. The reported testers are Haopeng Chen, Roucheng Ou and Xuemeng Hu. Individual comment attribution, exact tested builds, timings and death counts were not recorded; no numerical human session is invented. PLAYTEST.md maps the qualitative observations to real implementation commits.

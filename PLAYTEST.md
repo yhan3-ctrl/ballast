@@ -1,3 +1,21 @@
+# Playtesting record — provenance clarification
+
+On 2026-09-25 Yu Han clarified that the earlier gameplay comments relayed in this conversation came from friends playing the game. Earlier entries that label these observations “creator feedback” describe the messenger incorrectly: classify them as **external friend playtesting, reported by Yu Han**. Yu Han identified the friend testers as Haopeng Chen, Roucheng Ou and Xuemeng Hu. Feedback is recorded as a group because individual attribution was not supplied. The observations below are qualitative; build hashes, session dates, completion times and death counts were not recorded. Automated tests remain a different evidence category.
+
+| Reported friend observation | Resulting revision | Evidence |
+|---|---|---|
+| Goal/eggs/exit were unclear; play felt like endless swimming | Visible baby fish, contact rescue, follow behaviour, house and objective HUD | 3bd180b, a48e143 |
+| More weaving needed; rocks/forks and dangerous jellyfish unclear | Alternating coral, persistent wall outlines, hostile visual distinction | a1f742a |
+| Third chapter too simple; babies invulnerable; light unhelpful | Trench baffles, follower health, pulse hazards | 64650f5 |
+| Light protected babies but not the player; difficult to understand | Removed shield, light now illuminates and baits attacks | f51bf88 |
+| Faster continuous pursuit difficult to evade | Stationary warning, committed straight charge, recovery and return | f51bf88 |
+| Fully displayed attack trajectory looked unnatural | Local flash, tucked tentacles and gaze replace path graphics | Final revision |
+| Latest report: no current issues, overall good | Retain scope; focus on consistency and delivery checks | User report 2026-09-25 |
+
+No numerical human duration is claimed. The 5–10 minute target has automated-route support, but still needs a timed human run. Historical wording below is retained for traceability and superseded by this provenance clarification.
+
+---
+
 # Ballast Verification and Playtest Log
 
 This file separates automated rule checks from human playtests. Automated checks do not establish clarity, fun, or actual completion time.
@@ -129,3 +147,9 @@ Scripted physical traversal uses real player physics, air, enemies, follower dam
 | Trench | 136.77 | 55.83 | 0 | 0 |
 
 Total 403.5 seconds. This proves a tested route exists, not human first-play duration, universal route safety or fun. Earlier failed controller runs exposed a pulse/exit overlap, a vent inside a pulse zone and repeated attacks before Glimmer returned home. Those were corrected. Shorter follower spacing and 1.2-second warning improve the available dodge window.
+
+### v0.9.2 — natural attack warning
+Creator reported that the fully displayed jellyfish trajectory felt unnatural. Removed the long path line, endpoint circle and DODGE/TIRED labels; replaced them with local flashing, gaze toward the locked direction and tucked tentacles. Timing and fixed-heading attack rules are unchanged. Eight isolated charge checks pass; graphical readability still needs creator confirmation.
+
+## 2026-09-25 — reported current feedback
+Yu Han: “目前没有问题，都很好” (“No issues currently; everything is good”). This is user-reported qualitative feedback. Exact tested build, tester identity, three-chapter completion, elapsed time and deaths were not supplied, so none are inferred. Earlier friend feedback about shields/chase readability remains documented separately.

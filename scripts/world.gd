@@ -410,9 +410,9 @@ func build_campaign_layout() -> void:
 				add_sign(Vector2(offset + 100, 230), "02 / BORROW THE CURRENT", "Blue arrows stay visible in darkness.\nFlow carries you while you save your breath.")
 				add_flow(Rect2(offset + 1175, 170, 230, 185), Vector2.LEFT, 300, "PUSH")
 			else:
-				add_sign(Vector2(offset + 90, 235), "03 / LIGHT CHANGES THINGS", "SPACE: lantern on / off. Approach the enclosure.\nLight attracts the Glimmer; darkness releases it.")
-				add_glimmer(Rect2(offset + 570, 170, 370, 200), seg, true)
-				add_sign(Vector2(offset + 620, 470), "WATCH IT RESPOND", "Light brings it closer.\nDarkness lets it return. This one is friendly.")
+				add_sign(Vector2(offset + 90, 235), "SPACE: LURE IT AWAY", "Light attracts Glimmer. Watch it flash, then move aside.")
+				add_glimmer(Rect2(offset + 570, 170, 370, 200), seg)
+				add_sign(Vector2(offset + 620, 470), "FLASH > DODGE > PASS", "It charges straight, then rests. Protect your followers.")
 				# The exit is now gated by visible rescue progress, not a hidden observation flag.
 		elif level_index == 1:
 			# Alternating islands make the optional upper route different in each room.
@@ -453,7 +453,7 @@ func build_campaign_layout() -> void:
 				add_flow(Rect2(offset + 1060, 270, 150, 330), Vector2.UP, 280, "DRIFT")
 				add_vent(Vector2(offset + 1140, 360), seg)
 				add_pearl_line(Vector2(offset + 1270, 285), Vector2(85, 0), 3, seg)
-			add_sign(Vector2(offset + 200, 220), ["ESCORT THROUGH THE GATES", "WAIT FOR THE PULSE", "KEEP THE FAMILY CLOSE"][seg], "SPACE: lure Glimmer. Dodge its marked charge, then pass.")
+			add_sign(Vector2(offset + 200, 220), ["ESCORT THROUGH THE GATES", "WAIT FOR THE PULSE", "KEEP THE FAMILY CLOSE"][seg], "SPACE: lure Glimmer. Dodge when it flashes, then pass.")
 		if level_index > 0 or seg == 1:
 			var pulse = preload("res://scripts/pulse_anemone.gd").new()
 			pulse.world = self

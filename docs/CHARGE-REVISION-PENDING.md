@@ -1,3 +1,3 @@
-# Charge revision — resolved in v0.9.1
+# Charge revision — resolved
 
-Previously blocked source files are readable. Integrated tests, zero-pearl scripted traversal and four exports now pass. See BUILD-VERIFICATION.md for evidence and remaining human/platform checks. Light is bait, never a shield. Warning is 1.2 seconds; recovery 1.3 seconds followed by mandatory return home.
+Final 1.0.0 has natural local warning, committed heading, recovery and mandatory return home. Shield and trajectory graphics removed. Tests/builds verified in BUILD-VERIFICATION.md.

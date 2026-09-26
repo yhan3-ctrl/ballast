@@ -154,12 +154,14 @@ func _draw() -> void:
 	var c := Color("f3aa98") if state == State.ATTRACTED else (Color("91d7c0") if harmless else Color("d7658b"))
 	if alert_left > 0.0:
 		draw_arc(Vector2.ZERO, 33, 0, TAU, 32, Color("ffd191"), 3.0, true)
+	var charging: bool = state == State.WINDUP
+	if charging: c = c.lerp(Color("ff9778"), 0.5 + 0.3 * sin(clock * 18))
 	var pulse: float = 1.0 + sin(clock * 3.5) * 0.06
 	draw_circle(Vector2.ZERO, 22 * pulse, Color(c, 0.16))
 	draw_colored_polygon(PackedVector2Array([Vector2(-19, 7), Vector2(-19, -5), Vector2(-10, -19), Vector2(10, -19), Vector2(19, -5), Vector2(19, 7)]), c)
 	for i in range(5):
 		var x: float = -14 + i * 7
-		var line := PackedVector2Array([Vector2(x, 7), Vector2(x + sin(clock * 4 + i) * 5, 18), Vector2(x + sin(clock * 4 + i + 1) * 5, 30)])
+		var line := PackedVector2Array([Vector2(x, 7), Vector2(x + sin(clock * 4 + i) * (2 if charging else 5), 12 if charging else 18), Vector2(x + sin(clock * 4 + i + 1) * (2 if charging else 5), 18 if charging else 30)])
 		draw_polyline(line, Color(c, 0.85), 2, true)
 	if harmless:
 		draw_circle(Vector2(-7, -3), 2.5, Color("283048"))

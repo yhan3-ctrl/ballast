@@ -1,23 +1,26 @@
-# Build verification — v0.9.1
+# Final local build verification — 1.0.0
 
-Four exports succeeded; archives passed CRC checks. Graphical/audio and Windows/Linux runtime checks remain unverified.
+Godot 4.7.2 stable, 2D Compatibility renderer. All four release exports completed and archive CRC checks passed. Packaged macOS binary passed a 120-frame headless startup check. This is not a graphical/audio acceptance test. Windows/Linux native launch and the instructor's hardware remain unverified.
+
+## Tests
+
+126 rule checks passed: 74 regression, 21 rescue, 12 escort, 8 integrated charge, 8 isolated charge and 3 zero-pearl victory-condition checks. Three static route checks passed, including separation of active pulse centers from vents/home.
+
+Three scripted physical traversals passed with actual air, collisions, active enemies, follower damage and checkpoint rules. Only pearl pickup collisions were disabled. No teleport, manual refill or invulnerability was used. The test steers with keyboard-equivalent inputs and internal map/attack knowledge; it is not a human playtest or proof that visual teaching is understood.
+
+| Chapter | Simulated duration | Retries | Pearls |
+|---|---:|---:|---:|
+| Reef, including hostile charge encounter | 119.23 s | 0 | 0 |
+| Kelp Drift | 147.18 s | 0 | 0 |
+| Trench | 136.77 s | 0 | 0 |
+
+Total 403.18 simulated seconds, approximately 6:43. This supports zero-pearl feasibility and a substantial route, not a measured human first-play duration. Qualitative friend feedback is documented in PLAYTEST.md.
+
+## Final archives
 
 | Archive | SHA-256 |
 |---|---|
-| builds/Ballast-windows-x86_64.zip | bcb330eb7d7ea4ac54624b03ffce11971285815845654535d2dd9f4f2d82fe8b |
-| builds/Ballast-windows-x86_32.zip | e93076a0ec7a4ebc170d64c6ef1809c1dc9b0078e433ce064640ba2f3c831d9f |
-| builds/Ballast-linux-x86_64.zip | eb644b9a94448658a9a28a208000e6943e483f0838c04ab463762560c171949f |
-| builds/macos/Ballast-macos-universal.zip | 9e2173fba94eb213e285d4aa20afee98ac878cc10282475d772e36eea7556a7a |
-
-## v0.9.1 final automated verification
-126 rule checks passed (74 regression, 21 rescue, 12 escort, 8 integrated charge, 8 isolated charge, 3 zero-pearl victory). Three static routes passed, including pulse separation from vents/home.
-
-Scripted physical traversal uses real player physics, air, enemies, follower damage and retries; only pearl collisions are disabled. Steering uses keyboard-equivalent -1/0/1 input, a grid route and a charge-line dodge heuristic. No teleporting, manual refill, invulnerability or disabled enemies in traversal. All three completed with zero pearls and zero retries:
-
-| Chapter | Simulated seconds | Exit air | Retries | Pearls |
-|---|---:|---:|---:|---:|
-| Reef | 119.55 | 84.19 | 0 | 0 |
-| Kelp Drift | 147.18 | 96.75 | 0 | 0 |
-| Trench | 136.77 | 55.83 | 0 | 0 |
-
-Total 403.5 seconds. This proves a tested route exists, not human first-play duration, universal route safety or fun. Earlier failed controller runs exposed a pulse/exit overlap, a vent inside a pulse zone and repeated attacks before Glimmer returned home. Those were corrected. Shorter follower spacing and 1.2-second warning improve the available dodge window.
+| builds/v1.0.0/Ballast-windows-x86_64.zip | 53a909311bf749f53998c83e5ac752d7c54caaefb8706ed0e75ee21c86e387ea |
+| builds/v1.0.0/Ballast-windows-x86_32.zip | a76abf3c5e710c94341a7744dd06ed82d00749807dd81b06c615f15266009ab3 |
+| builds/v1.0.0/Ballast-linux-x86_64.zip | c2927d3778c4250d79efe6fea14b2946b566c2f83c6ceca6847663ac66caea05 |
+| builds/v1.0.0/macos/Ballast-macos-universal.zip | f6c3799f7cdff90575306fe96c0c3a52ae83766b3993b58dacd6faeb0ff1d440 |

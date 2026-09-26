@@ -1,10 +1,10 @@
 extends Control
 var world
 const TITLES = ["THE REEF", "THE KELP DRIFT", "THE TRENCH"]
-const GOALS = ["TOUCH 3 BABY FISH. They follow you. Bring them to the golden house to win.", "Rescue 3 babies along the upper and lower routes. Bring them to the golden house.", "Find 3 babies in the trench. Ride the rising current and bring them home."]
+const GOALS = ["A surge scattered the young. TOUCH 3 BABY FISH and bring them to the golden house.", "Rescue 3 babies along the upper and lower routes. Bring them to the golden house.", "Find 3 babies in the trench. Ride the rising current and bring them home."]
 const TIPS = [
-	"Touch babies: +25 air. Escort them home. Each has 2 health dots.\nSPACE lights the way and lures Glimmer. It does not block damage. Red pulses hurt: wait until dim.",
-	"Glimmer marks a charge line. Move aside, then pass while it rests.\nUse light to draw attacks away from your followers. A baby losing both dots sends everyone to the anchor.",
+	"Touch babies: +25 air. Escort them home. Each has 2 health dots.\nSPACE lures Glimmer: when it flashes, move aside. Light is not a shield. Red pulses hurt.",
+	"Glimmer flashes and tucks its tentacles before charging. Move aside, then pass.\nUse light to draw attacks away from your followers. A baby losing both dots sends everyone to the anchor.",
 	"Weave through high and low gates. Wait for anemones to stop flashing.\nLure Glimmer away from babies, then dodge its fixed charge. Coral costs you 25 air."
 ]
 func _ready() -> void:
@@ -70,6 +70,7 @@ func refresh() -> void:
 	else:
 		label_at("BALLAST", Vector2(90, 75), Vector2(800, 90), 64)
 		label_at("YUUN THE JADEFIN   /   CHOOSE YOUR DIVE", Vector2(95, 170), Vector2(950, 40), 21)
+		label_at("A surge scattered the young. Bring three babies home in each dive.", Vector2(95, 225), Vector2(1050, 40), 18)
 		for i in range(3):
 			var index := i
 			var pos := Vector2(130 + i * 360, 300 + i * 85)

@@ -1,21 +1,5 @@
-# Ballast 救援版验收 — v0.8.0
+# Final review — 1.0.0
 
-## 一句话玩法
+Current rules and learning progression: ../GDD.md. Real friend feedback: ../PLAYTEST.md. Changes and commits: ITERATIONS.md. Exact packages and test evidence: BUILD-VERIFICATION.md. Outstanding external submission items: SUBMISSION.md.
 
-**碰到三条小鱼宝宝，让它们跟随；带它们走到金色小屋，即可通关。** 不需要额外交互按键。珍珠只是可选奖励。
-
-## 针对真实反馈的变化
-
-- 开始介绍使用英文通关说明和目标，画面持续显示救援数量和目标方向。
-- 目标是有鱼身、眼睛、尾巴、求救标记的小鱼，终点是有屋顶与门的小屋。
-- 救到宝宝立即恢复最多25空气、播放音效和粒子；满气也能救。
-- 死亡/锚点重试保留已救宝宝，本关从头重玩才清空；不能重复触碰刷补气。
-- 已移除第一关的水母观察门。观察可选，不再是隐藏通关条件。
-- 顺流松手滑行增加亮色拖尾、光环、短音效和实时耗气提示。
-- 原有解锁保留；旧版本的最快时间不当作救援模式纪录。
-
-## 验证范围
-
-规则回归、救援边界测试及三关静态通路检查见 `PLAYTEST.md`。通路检查包括宝宝位置，但不是完整动态通关证明。导出和启动检查见 `BUILD-VERIFICATION.md`。
-
-仍需新版实际试玩，确认目标易懂、救援有趣、通关用时合理；尚未声称完成听感/视觉全面验收或Windows/Linux实机检查。本版没有公开发布。教师要求的公开仓库、Release和提交仍需之后执行。
+The former shield and trajectory line are removed. Reef now contains an actual hostile charge encounter before its reuse in Kelp/Trench. Current docs define pulse timing, follower health and retry, air costs, warning/recovery and optional banking consistently. Automated success is not substituted for human timing or native Windows/Linux launch.
